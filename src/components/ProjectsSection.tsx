@@ -6,16 +6,16 @@ const projects = [
     description: "A tech-driven solution for lost-and-found management.",
     image: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b",
     link: "http://pmattscatalysts.com/missing-matters",
-    status: "active",
+    status: "active" as const,
   },
   {
     title: "Agri-Matts",
     description: "Sustainable land utilization for agriculture and energy.",
     image: "https://images.unsplash.com/photo-1472214103451-9374bd1c798e",
     link: "https://pmattscatalysts.com/portfolio/agri-matts/",
-    status: "active",
+    status: "active" as const,
   },
-  // ... Add more projects here
+  // Add more projects here
 ];
 
 export const ProjectsSection = () => {
