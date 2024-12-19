@@ -17,7 +17,6 @@ interface NewsItem {
   project: string;
 }
 
-// Sample news data (in a real app, this would come from an API)
 const newsItems: NewsItem[] = [
   {
     id: 1,
@@ -65,14 +64,6 @@ export const NewsSection = () => {
           <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
             Stay informed about our latest initiatives and project milestones
           </p>
-          <div className="flex items-center gap-8 text-muted-foreground">
-            <button className="group p-2 hover:bg-muted/80 rounded-full transition-colors">
-              <ChevronLeft className="h-6 w-6 group-hover:text-primary transition-colors" />
-            </button>
-            <button className="group p-2 hover:bg-muted/80 rounded-full transition-colors">
-              <ChevronRight className="h-6 w-6 group-hover:text-primary transition-colors" />
-            </button>
-          </div>
         </div>
         
         <Carousel
