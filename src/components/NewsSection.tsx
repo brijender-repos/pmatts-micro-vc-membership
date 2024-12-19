@@ -65,10 +65,13 @@ export const NewsSection = () => {
           <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
             Stay informed about our latest initiatives and project milestones
           </p>
-          <div className="flex items-center gap-2 text-muted-foreground">
-            <ChevronLeft className="h-4 w-4" />
-            <span className="text-sm">Scroll to explore more updates</span>
-            <ChevronRight className="h-4 w-4" />
+          <div className="flex items-center gap-8 text-muted-foreground">
+            <button className="group p-2 hover:bg-muted/80 rounded-full transition-colors">
+              <ChevronLeft className="h-6 w-6 group-hover:text-primary transition-colors" />
+            </button>
+            <button className="group p-2 hover:bg-muted/80 rounded-full transition-colors">
+              <ChevronRight className="h-6 w-6 group-hover:text-primary transition-colors" />
+            </button>
           </div>
         </div>
         
