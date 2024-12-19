@@ -1,7 +1,9 @@
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { ArrowLeft, ExternalLink } from "lucide-react";
 import { Link, useParams, Navigate } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
+import { ProjectHero } from "./projects/ProjectHero";
+import { ProjectDescription } from "./projects/ProjectDescription";
+import { ProjectFeatures } from "./projects/ProjectFeatures";
+import { ProjectActions } from "./projects/ProjectActions";
 
 interface ProjectDetails {
   title: string;
@@ -62,20 +64,11 @@ export const ProjectPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="relative h-[50vh] overflow-hidden">
-        <img
-          src={project.image}
-          alt={project.title}
-          className="absolute inset-0 w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 bg-black/50" />
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="text-center text-white">
-            <h1 className="text-4xl font-bold mb-4">{project.title}</h1>
-            <p className="text-xl max-w-2xl mx-auto">{project.description}</p>
-          </div>
-        </div>
-      </div>
+      <ProjectHero
+        title={project.title}
+        description={project.description}
+        image={project.image}
+      />
 
       <div className="container px-4 py-12">
         <Link to="/" className="inline-flex items-center text-primary hover:underline mb-8">
@@ -85,42 +78,10 @@ export const ProjectPage = () => {
 
         <div className="grid gap-8 md:grid-cols-[2fr_1fr]">
           <div className="space-y-8">
-            <Card>
-              <CardContent className="p-6">
-                <h2 className="text-2xl font-bold mb-4">About this Project</h2>
-                <p className="text-gray-600 dark:text-gray-400">{project.fullDescription}</p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="p-6">
-                <h2 className="text-2xl font-bold mb-4">Key Features</h2>
-                <ul className="space-y-2">
-                  {project.features.map((feature, index) => (
-                    <li key={index} className="flex items-start">
-                      <span className="mr-2">•</span>
-                      <span>{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-              </CardContent>
-            </Card>
+            <ProjectDescription description={project.fullDescription} />
+            <ProjectFeatures features={project.features} />
           </div>
-
-          <div className="space-y-4">
-            <Button className="w-full" asChild>
-              <a href={project.externalLink} target="_blank" rel="noopener noreferrer">
-                Visit Project Website
-                <ExternalLink className="ml-2 h-4 w-4" />
-              </a>
-            </Button>
-            <Button variant="outline" className="w-full">
-              Subscribe to Access Details
-            </Button>
-            <Button variant="secondary" className="w-full">
-              Invest Now
-            </Button>
-          </div>
+          <ProjectActions externalLink={project.externalLink} />
         </div>
       </div>
     </div>
