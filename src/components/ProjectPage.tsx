@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowLeft, ExternalLink } from "lucide-react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, Navigate } from "react-router-dom";
 
 interface ProjectDetails {
   title: string;
@@ -37,22 +37,27 @@ const projectsData: Record<string, ProjectDetails> = {
     ],
     externalLink: "https://pmattscatalysts.com/portfolio/agri-matts/"
   },
+  "solar-energy-matts": {
+    title: "Solar Energy-Matts",
+    description: "Integrating solar panels with agriculture.",
+    image: "https://images.unsplash.com/photo-1501854140801-50d01698950b",
+    fullDescription: "Clean energy generation through solar-agriculture synergy, contributing to sustainable development goals.",
+    features: [
+      "Efficient use of land for renewable energy",
+      "Contribution to SDG goals for sustainability",
+      "Integration with agricultural practices"
+    ],
+    externalLink: "https://pmattscatalysts.com/portfolio/solar-energy-matts/"
+  },
   // Add more projects here following the same pattern
 };
 
 export const ProjectPage = () => {
-  const { projectId } = useParams();
-  const project = projectId ? projectsData[projectId] : null;
+  const { slug } = useParams();
+  const project = slug ? projectsData[slug] : null;
 
   if (!project) {
-    return (
-      <div className="container px-4 py-24 text-center">
-        <h1 className="text-2xl font-bold">Project not found</h1>
-        <Link to="/" className="mt-4 inline-block text-primary hover:underline">
-          Return to home
-        </Link>
-      </div>
-    );
+    return <Navigate to="/" replace />;
   }
 
   return (
