@@ -6,9 +6,8 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { CalendarDays, ChevronLeft, ChevronRight } from "lucide-react";
+import { CalendarDays } from "lucide-react";
 
-// News data structure
 interface NewsItem {
   id: number;
   date: string;
@@ -104,8 +103,8 @@ export const NewsSection = () => {
             ))}
           </CarouselContent>
           
-          <CarouselPrevious className="hidden md:flex opacity-0 group-hover:opacity-100 transition-opacity duration-300 -left-12 bg-background/80 backdrop-blur-sm hover:bg-background" />
-          <CarouselNext className="hidden md:flex opacity-0 group-hover:opacity-100 transition-opacity duration-300 -right-12 bg-background/80 backdrop-blur-sm hover:bg-background" />
+          <CarouselPrevious className="absolute left-0 md:-left-12 opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-background/80 backdrop-blur-sm hover:bg-background border-primary hover:border-primary/80 z-20" />
+          <CarouselNext className="absolute right-0 md:-right-12 opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-background/80 backdrop-blur-sm hover:bg-background border-primary hover:border-primary/80 z-20" />
           
           <div className="mt-8 flex justify-center gap-2">
             <div className="flex gap-1">
