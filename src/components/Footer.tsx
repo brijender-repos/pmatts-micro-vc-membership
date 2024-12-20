@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Mail } from "lucide-react";
+import { Mail, Phone } from "lucide-react";
 import { Link } from "react-router-dom";
 
 export const Footer = () => {
@@ -31,9 +31,16 @@ export const Footer = () => {
           </div>
           <div>
             <h3 className="text-lg font-medium">Contact</h3>
-            <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
-              Email: contact@pmattscatalysts.com
-            </p>
+            <div className="mt-2 space-y-2 text-sm text-gray-500 dark:text-gray-400">
+              <p className="flex items-center gap-2">
+                <Mail className="h-4 w-4" />
+                email@pmattscatalysts.com
+              </p>
+              <p className="flex items-center gap-2">
+                <Phone className="h-4 w-4" />
+                +91 8008 107 889
+              </p>
+            </div>
           </div>
         </div>
         <div className="mt-8 border-t pt-8 text-center text-sm text-gray-500 dark:text-gray-400">
