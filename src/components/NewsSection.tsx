@@ -56,7 +56,7 @@ const newsItems: NewsItem[] = [
 
 export const NewsSection = () => {
   return (
-    <section className="py-16 bg-gradient-to-b from-[#9b87f5]/10 via-[#7E69AB]/5 to-background relative">
+    <section className="py-16 bg-gradient-to-b from-[#9b87f5]/5 via-[#7E69AB]/3 to-background relative">
       <div className="container px-4 md:px-6">
         <div className="flex flex-col items-center justify-center space-y-4 text-center mb-12">
           <h2 className="text-3xl font-bold tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-[#8B5CF6] to-[#D946EF] sm:text-4xl md:text-5xl">
