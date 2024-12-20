@@ -1,4 +1,4 @@
-import { ProjectCard } from "./projects/ProjectCard";
+import { ProjectCard } from "./ProjectCard";
 
 const projects = [
   {
@@ -68,7 +68,7 @@ const projects = [
 
 export const ProjectsSection = () => {
   return (
-    <section className="py-24 bg-gradient-to-b from-background to-muted/50">
+    <section id="projects-section" className="py-24 bg-gradient-to-b from-background to-muted/50">
       <div className="container px-4 md:px-6">
         <div className="flex flex-col items-center justify-center space-y-4 text-center">
           <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">Our Projects</h2>

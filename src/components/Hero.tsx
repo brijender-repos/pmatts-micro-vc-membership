@@ -2,6 +2,13 @@ import { Button } from "@/components/ui/button";
 import { UserPlus, Globe } from "lucide-react";
 
 export const Hero = () => {
+  const scrollToProjects = () => {
+    const projectsSection = document.querySelector('#projects-section');
+    if (projectsSection) {
+      projectsSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <div className="relative min-h-[80vh] flex items-center justify-center bg-gradient-to-r from-primary/10 to-secondary/10">
       <div className="container px-4 md:px-6">
@@ -19,7 +26,12 @@ export const Hero = () => {
               <UserPlus className="mr-2 h-5 w-5" />
               Join Us
             </Button>
-            <Button variant="outline" className="h-11 px-8" size="lg">
+            <Button 
+              variant="outline" 
+              className="h-11 px-8" 
+              size="lg"
+              onClick={scrollToProjects}
+            >
               <Globe className="mr-2 h-5 w-5" />
               Explore Our Projects
             </Button>
