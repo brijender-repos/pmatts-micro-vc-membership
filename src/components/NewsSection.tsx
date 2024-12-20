@@ -106,11 +106,11 @@ export const NewsSection = () => {
           </CarouselContent>
           
           <CarouselPrevious className="absolute left-2 md:-left-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 
-            bg-white/80 backdrop-blur-sm hover:bg-[#8B5CF6] border-[#8B5CF6] hover:border-[#8B5CF6] 
-            w-10 h-10 md:w-12 md:h-12 z-20 [&>svg]:text-[#8B5CF6] hover:[&>svg]:text-white" />
+            bg-white/80 backdrop-blur-sm hover:bg-white/80 border-[#8B5CF6] hover:border-[#8B5CF6] 
+            w-10 h-10 md:w-12 md:h-12 z-20 [&>svg]:text-[#8B5CF6]" />
           <CarouselNext className="absolute right-2 md:-right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 
-            bg-white/80 backdrop-blur-sm hover:bg-[#8B5CF6] border-[#8B5CF6] hover:border-[#8B5CF6] 
-            w-10 h-10 md:w-12 md:h-12 z-20 [&>svg]:text-[#8B5CF6] hover:[&>svg]:text-white" />
+            bg-white/80 backdrop-blur-sm hover:bg-white/80 border-[#8B5CF6] hover:border-[#8B5CF6] 
+            w-10 h-10 md:w-12 md:h-12 z-20 [&>svg]:text-[#8B5CF6]" />
           
           <div className="mt-8 flex justify-center gap-2">
             <div className="flex gap-1">
