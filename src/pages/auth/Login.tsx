@@ -26,7 +26,12 @@ const Login = () => {
       if (event === "USER_UPDATED" && session) {
         navigate("/members/dashboard");
       }
-      // Handle authentication errors
+      if (event === "PASSWORD_RECOVERY") {
+        toast({
+          title: "Password Reset Email Sent",
+          description: "Check your email for the password reset link.",
+        });
+      }
       if (event === "SIGNED_OUT") {
         toast({
           title: "Signed out",
@@ -65,6 +70,14 @@ const Login = () => {
               variables: {
                 sign_in: {
                   social_provider_text: "Sign in with Google",
+                  forgotten_password_text: "Forgot your password?",
+                  button_label: "Sign in",
+                },
+                forgotten_password: {
+                  button_label: "Send reset instructions",
+                  email_label: "Email address",
+                  email_input_placeholder: "Your email address",
+                  link_text: "Back to sign in",
                 },
               },
             }}
