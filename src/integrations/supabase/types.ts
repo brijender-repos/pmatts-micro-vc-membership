@@ -9,6 +9,51 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      kyc_details: {
+        Row: {
+          aadhar_image_url: string | null
+          aadhar_name: string | null
+          aadhar_number: string | null
+          created_at: string
+          id: string
+          pan_image_url: string | null
+          pan_name: string | null
+          pan_number: string | null
+          status: Database["public"]["Enums"]["kyc_status"] | null
+          updated_at: string
+          user_id: string | null
+          verification_notes: string | null
+        }
+        Insert: {
+          aadhar_image_url?: string | null
+          aadhar_name?: string | null
+          aadhar_number?: string | null
+          created_at?: string
+          id?: string
+          pan_image_url?: string | null
+          pan_name?: string | null
+          pan_number?: string | null
+          status?: Database["public"]["Enums"]["kyc_status"] | null
+          updated_at?: string
+          user_id?: string | null
+          verification_notes?: string | null
+        }
+        Update: {
+          aadhar_image_url?: string | null
+          aadhar_name?: string | null
+          aadhar_number?: string | null
+          created_at?: string
+          id?: string
+          pan_image_url?: string | null
+          pan_name?: string | null
+          pan_number?: string | null
+          status?: Database["public"]["Enums"]["kyc_status"] | null
+          updated_at?: string
+          user_id?: string | null
+          verification_notes?: string | null
+        }
+        Relationships: []
+      }
       newsletter_subscriptions: {
         Row: {
           created_at: string
@@ -68,7 +113,13 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      kyc_status:
+        | "not_started"
+        | "aadhar_submitted"
+        | "pan_submitted"
+        | "verification_pending"
+        | "verified"
+        | "rejected"
     }
     CompositeTypes: {
       [_ in never]: never
