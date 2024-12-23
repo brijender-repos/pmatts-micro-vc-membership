@@ -71,6 +71,7 @@ export function ProjectTiles({ investments }: ProjectTilesProps) {
         };
         
         const isUpcoming = project.status === "upcoming";
+        const projectSlug = project.title.toLowerCase().replace(/\s+/g, '-');
         
         return (
           <Card 
@@ -84,7 +85,7 @@ export function ProjectTiles({ investments }: ProjectTilesProps) {
             <CardHeader className="p-4 pb-2">
               <CardTitle className="text-sm font-medium leading-tight group">
                 <Link 
-                  to={`/projects/${project.title.toLowerCase().replace(/\s+/g, '-')}`}
+                  to={`/projects/${projectSlug}`}
                   className="hover:text-primary flex items-center justify-between"
                 >
                   {project.title}
