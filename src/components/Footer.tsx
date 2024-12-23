@@ -1,7 +1,6 @@
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Mail, Phone } from "lucide-react";
 import { Link } from "react-router-dom";
+import { Mail, Phone } from "lucide-react";
+import { NewsletterSubscription } from "./NewsletterSubscription";
 
 export const Footer = () => {
   return (
@@ -21,13 +20,7 @@ export const Footer = () => {
           </div>
           <div>
             <h3 className="text-lg font-medium">Newsletter</h3>
-            <div className="mt-2 flex max-w-md gap-2">
-              <Input placeholder="Enter your email" type="email" />
-              <Button>
-                <Mail className="mr-2 h-4 w-4" />
-                Subscribe
-              </Button>
-            </div>
+            <NewsletterSubscription />
           </div>
           <div>
             <h3 className="text-lg font-medium">Contact</h3>
