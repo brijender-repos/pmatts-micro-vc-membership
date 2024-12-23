@@ -6,7 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import { ProjectPage } from "./components/ProjectPage";
 import FAQs from "./pages/FAQs";
-import Dashboard from "./pages/Dashboard";
+import Dashboard from "./pages/members/Dashboard";
 
 const queryClient = new QueryClient();
 
