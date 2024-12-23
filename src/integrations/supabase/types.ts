@@ -9,6 +9,56 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      investments: {
+        Row: {
+          amount: number
+          created_at: string
+          equity_percentage: number | null
+          id: string
+          investment_date: string
+          investment_type: Database["public"]["Enums"]["investment_type"]
+          notes: string | null
+          project_name: string
+          units: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          equity_percentage?: number | null
+          id?: string
+          investment_date?: string
+          investment_type: Database["public"]["Enums"]["investment_type"]
+          notes?: string | null
+          project_name: string
+          units?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          equity_percentage?: number | null
+          id?: string
+          investment_date?: string
+          investment_type?: Database["public"]["Enums"]["investment_type"]
+          notes?: string | null
+          project_name?: string
+          units?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "investments_project_name_fkey"
+            columns: ["project_name"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["name"]
+          },
+        ]
+      }
       kyc_details: {
         Row: {
           aadhar_image_url: string | null
@@ -105,6 +155,39 @@ export type Database = {
         }
         Relationships: []
       }
+      projects: {
+        Row: {
+          category: string
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          start_date: string
+          status: Database["public"]["Enums"]["project_status"]
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          start_date?: string
+          status?: Database["public"]["Enums"]["project_status"]
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          start_date?: string
+          status?: Database["public"]["Enums"]["project_status"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -113,6 +196,12 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
+      investment_type:
+        | "investment"
+        | "follow_on"
+        | "distribution"
+        | "exit"
+        | "dividend"
       kyc_status:
         | "not_started"
         | "aadhar_submitted"
@@ -120,6 +209,7 @@ export type Database = {
         | "verification_pending"
         | "verified"
         | "rejected"
+      project_status: "active" | "completed" | "upcoming"
     }
     CompositeTypes: {
       [_ in never]: never

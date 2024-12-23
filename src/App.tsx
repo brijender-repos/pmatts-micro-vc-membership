@@ -8,6 +8,7 @@ import { ProjectPage } from "./components/ProjectPage";
 import FAQs from "./pages/FAQs";
 import Dashboard from "./pages/members/Dashboard";
 import Settings from "./pages/members/Settings";
+import Portfolio from "./pages/members/Portfolio";
 import Login from "./pages/auth/Login";
 import Callback from "./pages/auth/Callback";
 import { AuthGuard } from "./components/auth/AuthGuard";
@@ -34,6 +35,7 @@ const App = () => (
               <Routes>
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/settings" element={<Settings />} />
+                <Route path="/portfolio" element={<Portfolio />} />
               </Routes>
             </AuthGuard>
           } />
