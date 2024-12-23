@@ -90,6 +90,7 @@ const Login = () => {
                 },
               },
             }}
+            view="sign_in"
           />
         </div>
       </div>
