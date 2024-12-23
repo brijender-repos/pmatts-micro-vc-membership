@@ -6,7 +6,7 @@ import { KYCSettings } from "@/components/members/KYCSettings";
 import { Badge } from "@/components/ui/badge";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { CheckCircle2, Clock, AlertCircle, Separator } from "lucide-react";
+import { CheckCircle2, Clock, AlertCircle } from "lucide-react";
 
 const Settings = () => {
   const [kycStatus, setKYCStatus] = useState<string | null>(null);
@@ -92,7 +92,7 @@ const Settings = () => {
                 value="notifications"
                 className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none px-2 pb-4"
               >
-                Notifications
+                Newsletter
               </TabsTrigger>
               <TabsTrigger 
                 value="kyc"
