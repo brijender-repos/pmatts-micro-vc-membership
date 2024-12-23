@@ -4,6 +4,7 @@ import { Auth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { Separator } from "@/components/ui/separator";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -61,6 +62,24 @@ const Login = () => {
             }}
             providers={["google"]}
             redirectTo={`${window.location.origin}/auth/callback`}
+            localization={{
+              variables: {
+                sign_in: {
+                  divider_text: (
+                    <div className="relative">
+                      <div className="absolute inset-0 flex items-center">
+                        <Separator className="w-full" />
+                      </div>
+                      <div className="relative flex justify-center text-xs uppercase">
+                        <span className="bg-card px-2 text-muted-foreground">
+                          or
+                        </span>
+                      </div>
+                    </div>
+                  ),
+                },
+              },
+            }}
           />
         </div>
       </div>
