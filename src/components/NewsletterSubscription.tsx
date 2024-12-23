@@ -26,7 +26,7 @@ export const NewsletterSubscription = () => {
         .from("newsletter_subscriptions")
         .select()
         .eq("email", email)
-        .single();
+        .maybeSingle();
 
       if (existingSubscription) {
         toast.error("This email is already subscribed to our newsletter.");
