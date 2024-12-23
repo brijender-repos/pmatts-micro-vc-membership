@@ -5,7 +5,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { KYCWizard } from "./kyc/KYCWizard";
 import { KYCStatus } from "./kyc/KYCStatus";
-import { CheckCircle2, Circle, ArrowRight } from "lucide-react";
+import { CheckCircle2, Circle } from "lucide-react";
 
 interface KYCSettingsProps {
   onStatusChange?: () => void;
@@ -66,9 +66,11 @@ export function KYCSettings({ onStatusChange }: KYCSettingsProps) {
 
   const WorkflowStep = ({ number, label, isLast = false }: { number: number; label: string; isLast?: boolean }) => {
     const status = getStepStatus(number);
+    const previousStepStatus = number > 1 ? getStepStatus(number - 1) : 'completed';
+    
     return (
-      <div className="flex items-center">
-        <div className="flex flex-col items-center">
+      <div className="flex items-center flex-1">
+        <div className="flex flex-col items-center relative">
           {status === 'completed' ? (
             <div className="rounded-full bg-green-100 p-2">
               <CheckCircle2 className="h-6 w-6 text-green-500" />
@@ -81,8 +83,16 @@ export function KYCSettings({ onStatusChange }: KYCSettingsProps) {
           <span className="mt-2 text-sm font-medium text-gray-700">{label}</span>
         </div>
         {!isLast && (
-          <div className="flex-1 mx-4">
-            <div className={`h-1 ${status === 'completed' ? 'bg-green-500' : 'bg-gray-200'}`} />
+          <div className="flex-1 h-[2px] mx-4 mt-5">
+            <div 
+              className={`h-full transition-colors duration-300 ${
+                previousStepStatus === 'completed' && status === 'completed' 
+                  ? 'bg-green-500' 
+                  : previousStepStatus === 'completed' 
+                    ? 'bg-green-200'
+                    : 'bg-gray-200'
+              }`}
+            />
           </div>
         )}
       </div>
@@ -103,7 +113,7 @@ export function KYCSettings({ onStatusChange }: KYCSettingsProps) {
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="bg-white p-6 rounded-lg shadow-sm border">
-          <div className="flex justify-between items-center">
+          <div className="flex justify-between items-start w-full">
             <WorkflowStep number={1} label="Aadhar" />
             <WorkflowStep number={2} label="PAN" />
             <WorkflowStep number={3} label="Verification" />
