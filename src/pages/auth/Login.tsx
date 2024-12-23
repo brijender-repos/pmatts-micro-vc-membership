@@ -3,9 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { Auth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 const Login = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -21,10 +23,20 @@ const Login = () => {
       if (event === "SIGNED_IN" && session) {
         navigate("/members/dashboard");
       }
+      if (event === "USER_UPDATED" && session) {
+        navigate("/members/dashboard");
+      }
+      // Handle authentication errors
+      if (event === "SIGNED_OUT") {
+        toast({
+          title: "Signed out",
+          description: "You have been signed out successfully.",
+        });
+      }
     });
 
     return () => subscription.unsubscribe();
-  }, [navigate]);
+  }, [navigate, toast]);
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
@@ -48,6 +60,14 @@ const Login = () => {
               },
             }}
             providers={["google"]}
+            redirectTo={`${window.location.origin}/auth/callback`}
+            onError={(error) => {
+              toast({
+                variant: "destructive",
+                title: "Authentication Error",
+                description: error.message,
+              });
+            }}
           />
         </div>
       </div>
