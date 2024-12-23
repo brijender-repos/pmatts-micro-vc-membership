@@ -70,14 +70,20 @@ export function KYCSettings({ onStatusChange }: KYCSettingsProps) {
       <div className="flex items-center">
         <div className="flex flex-col items-center">
           {status === 'completed' ? (
-            <CheckCircle2 className="h-8 w-8 text-green-500" />
+            <div className="rounded-full bg-green-100 p-2">
+              <CheckCircle2 className="h-6 w-6 text-green-500" />
+            </div>
           ) : (
-            <Circle className="h-8 w-8 text-muted-foreground" />
+            <div className="rounded-full bg-gray-100 p-2">
+              <Circle className="h-6 w-6 text-muted-foreground" />
+            </div>
           )}
-          <span className="mt-2 text-sm font-medium">{label}</span>
+          <span className="mt-2 text-sm font-medium text-gray-700">{label}</span>
         </div>
         {!isLast && (
-          <ArrowRight className="h-6 w-6 mx-4 text-muted-foreground" />
+          <div className="flex-1 mx-4">
+            <div className={`h-1 ${status === 'completed' ? 'bg-green-500' : 'bg-gray-200'}`} />
+          </div>
         )}
       </div>
     );
@@ -96,8 +102,8 @@ export function KYCSettings({ onStatusChange }: KYCSettingsProps) {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
-        <div className="flex justify-center py-6 bg-muted/50 rounded-lg">
-          <div className="flex items-center">
+        <div className="bg-white p-6 rounded-lg shadow-sm border">
+          <div className="flex justify-between items-center">
             <WorkflowStep number={1} label="Aadhar" />
             <WorkflowStep number={2} label="PAN" />
             <WorkflowStep number={3} label="Verification" />
@@ -117,7 +123,10 @@ export function KYCSettings({ onStatusChange }: KYCSettingsProps) {
           <div className="space-y-4">
             <KYCStatus kycDetails={kycDetails} />
             {(!kycDetails || kycDetails.status === 'not_started' || kycDetails.status === 'rejected') && (
-              <Button onClick={() => setShowWizard(true)}>
+              <Button 
+                onClick={() => setShowWizard(true)}
+                className="w-full"
+              >
                 {kycDetails?.status === 'rejected' ? 'Retry KYC Verification' : 'Start KYC Verification'}
               </Button>
             )}
