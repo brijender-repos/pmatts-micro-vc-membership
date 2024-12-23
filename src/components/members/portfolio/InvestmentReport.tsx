@@ -1,4 +1,4 @@
-import { Document, Page, Text, View, StyleSheet, PDFViewer } from "@react-pdf/renderer";
+import { Document, Page, Text, View, StyleSheet } from "@react-pdf/renderer";
 import { formatCurrency } from "@/lib/utils";
 
 interface Investment {
@@ -72,11 +72,13 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   table: {
-    display: 'table',
+    display: 'flex',
+    flexDirection: 'column',
     width: 'auto',
     marginBottom: 30,
   },
   tableRow: {
+    display: 'flex',
     flexDirection: 'row',
     borderBottomWidth: 1,
     borderBottomColor: '#666',
