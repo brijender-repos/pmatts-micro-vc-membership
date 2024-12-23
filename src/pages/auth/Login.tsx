@@ -26,12 +26,6 @@ const Login = () => {
       if (event === "USER_UPDATED" && session) {
         navigate("/members/dashboard");
       }
-      if (event === "PASSWORD_RECOVERY") {
-        toast({
-          title: "Password Reset Email Sent",
-          description: "Check your email for the password reset link.",
-        });
-      }
       if (event === "SIGNED_OUT") {
         toast({
           title: "Signed out",
@@ -80,13 +74,6 @@ const Login = () => {
                   button_label: "Sign up",
                   password_label: "Create a Password",
                   email_label: "Email",
-                },
-                forgotten_password: {
-                  button_label: "Send reset instructions",
-                  email_label: "Email address",
-                  email_input_placeholder: "Your email address",
-                  link_text: "Forgot your password?",
-                  confirmation_text: "Check your email for the password reset link",
                 },
               },
             }}
