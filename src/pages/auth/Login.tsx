@@ -73,7 +73,7 @@ const Login = () => {
                   button_label: "Sign in",
                   password_label: "Password",
                   email_label: "Email",
-                  forgotten_password_label: "Forgot your password?",
+                  forgotten_text: "Forgot your password?",
                   link_text: "Already have an account? Sign in",
                 },
                 sign_up: {
