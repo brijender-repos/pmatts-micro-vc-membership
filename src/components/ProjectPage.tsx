@@ -8,15 +8,15 @@ import { ProjectFeatures } from "./projects/ProjectFeatures";
 import { ProjectActions } from "./projects/ProjectActions";
 
 // Project Data
-import missingMattersData from "../data/missing-matters.json";
-import agriMattsData from "../data/agri-matts.json";
-import solarEnergyMattsData from "../data/solar-energy-matts.json";
-import taxpayerMattsData from "../data/taxpayer-matts.json";
-import empowerherData from "../data/empowerher.json";
-import eduMattsData from "../data/edu-matts.json";
-import healthMattsData from "../data/health-matts.json";
-import techMattsData from "../data/tech-matts.json";
-import waterMattsData from "../data/water-matts.json";
+import missingMattersData from "../data/projects/missing-matters.json";
+import agriMattsData from "../data/projects/agri-matts.json";
+import solarEnergyMattsData from "../data/projects/solar-energy-matts.json";
+import taxpayerMattsData from "../data/projects/taxpayer-matts.json";
+import empowerherData from "../data/projects/empowerher.json";
+import eduMattsData from "../data/projects/edu-matts.json";
+import healthMattsData from "../data/projects/health-matts.json";
+import techMattsData from "../data/projects/tech-matts.json";
+import waterMattsData from "../data/projects/water-matts.json";
 
 // Types
 interface ProjectDetails {
