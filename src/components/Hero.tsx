@@ -1,11 +1,30 @@
 import { Button } from "@/components/ui/button";
-import { UserPlus, Globe } from "lucide-react";
+import { UserPlus, Globe, Lock } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/components/ui/use-toast";
 
 export const Hero = () => {
+  const navigate = useNavigate();
+  const { toast } = useToast();
+
   const scrollToProjects = () => {
     const projectsSection = document.querySelector('#projects-section');
     if (projectsSection) {
       projectsSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  const handleMembersAccess = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session) {
+      navigate('/members/dashboard');
+    } else {
+      toast({
+        title: "Authentication Required",
+        description: "Please sign in to access the members area",
+      });
+      navigate('/auth/login');
     }
   };
 
@@ -21,7 +40,7 @@ export const Hero = () => {
           <p className="mx-auto max-w-[700px] text-gray-500 md:text-xl dark:text-gray-400">
             Join us in creating positive societal transformation through innovative technologies and community initiatives.
           </p>
-          <div className="space-x-4">
+          <div className="flex flex-wrap justify-center gap-4">
             <Button className="h-11 px-8" size="lg">
               <UserPlus className="mr-2 h-5 w-5" />
               Join Us
@@ -34,6 +53,15 @@ export const Hero = () => {
             >
               <Globe className="mr-2 h-5 w-5" />
               Explore Our Projects
+            </Button>
+            <Button
+              variant="secondary"
+              className="h-11 px-8"
+              size="lg"
+              onClick={handleMembersAccess}
+            >
+              <Lock className="mr-2 h-5 w-5" />
+              Members Access
             </Button>
           </div>
         </div>
