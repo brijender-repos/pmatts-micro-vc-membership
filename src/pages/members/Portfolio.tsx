@@ -1,7 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { InvestmentSummary } from "@/components/members/portfolio/InvestmentSummary";
-import { ProjectTiles } from "@/components/members/portfolio/ProjectTiles";
 import { InvestmentHistory } from "@/components/members/portfolio/InvestmentHistory";
 import { Skeleton } from "@/components/ui/skeleton";
 import { supabase } from "@/integrations/supabase/client";
@@ -33,8 +32,6 @@ export default function Portfolio() {
         ) : (
           <>
             <InvestmentSummary investments={investments || []} />
-            <h2 className="text-2xl font-semibold mb-4">Project wise Investments</h2>
-            <ProjectTiles investments={investments || []} />
             <h2 className="text-2xl font-semibold mb-4">Investment History</h2>
             <InvestmentHistory investments={investments || []} />
           </>

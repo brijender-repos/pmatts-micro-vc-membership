@@ -49,9 +49,10 @@ export function ProjectTiles({ investments }: ProjectTilesProps) {
   }, {} as Record<string, { project_name: string; total_invested: number; total_units: number; }>);
 
   return (
-    <div className="grid gap-3 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 mb-8">
+    <div className="grid gap-3 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
       {allProjects.map((project) => {
         const investment = projectTotals[project.title] || {
+          project_name: project.title,  // Ensure project_name is always present
           total_invested: 0,
           total_units: 0,
         };
