@@ -12,6 +12,8 @@ import Portfolio from "./pages/members/Portfolio";
 import Login from "./pages/auth/Login";
 import Callback from "./pages/auth/Callback";
 import { AuthGuard } from "./components/auth/AuthGuard";
+import { ManageLayout } from "./components/layouts/ManageLayout";
+import ManageIndex from "./pages/manage/Index";
 
 const queryClient = new QueryClient();
 
@@ -39,6 +41,15 @@ const App = () => (
               </Routes>
             </AuthGuard>
           } />
+
+          {/* Management routes */}
+          <Route path="/manage" element={
+            <AuthGuard>
+              <ManageLayout />
+            </AuthGuard>
+          }>
+            <Route index element={<ManageIndex />} />
+          </Route>
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
