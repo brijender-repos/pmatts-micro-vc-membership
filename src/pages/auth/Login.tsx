@@ -71,13 +71,23 @@ const Login = () => {
                 sign_in: {
                   social_provider_text: "Sign in with Google",
                   button_label: "Sign in",
+                  password_label: "Password",
+                  email_label: "Email",
                   forgotten_password_label: "Forgot your password?",
+                  link_text: "Already have an account? Sign in",
+                },
+                sign_up: {
+                  link_text: "Don't have an account? Sign up",
+                  button_label: "Sign up",
+                  password_label: "Create a Password",
+                  email_label: "Email",
                 },
                 forgotten_password: {
                   button_label: "Send reset instructions",
                   email_label: "Email address",
                   email_input_placeholder: "Your email address",
                   link_text: "Back to sign in",
+                  confirmation_text: "Check your email for the password reset link",
                 },
               },
             }}
