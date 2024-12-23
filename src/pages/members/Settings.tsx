@@ -1,6 +1,7 @@
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ProfileSettings } from "@/components/members/ProfileSettings";
+import { NewsletterSettings } from "@/components/members/NewsletterSettings";
 
 const Settings = () => {
   return (
@@ -14,9 +15,13 @@ const Settings = () => {
         <Tabs defaultValue="profile" className="space-y-4">
           <TabsList>
             <TabsTrigger value="profile">Profile</TabsTrigger>
+            <TabsTrigger value="notifications">Notifications</TabsTrigger>
           </TabsList>
           <TabsContent value="profile" className="space-y-4">
             <ProfileSettings />
+          </TabsContent>
+          <TabsContent value="notifications" className="space-y-4">
+            <NewsletterSettings />
           </TabsContent>
         </Tabs>
       </div>

@@ -54,6 +54,35 @@ export const NewsletterSubscription = () => {
     }
   };
 
+  const handleUnsubscribe = async () => {
+    try {
+      setIsLoading(true);
+      
+      // Validate email
+      emailSchema.parse(email);
+      
+      // Delete subscription
+      const { error } = await supabase
+        .from("newsletter_subscriptions")
+        .delete()
+        .eq("email", email);
+
+      if (error) throw error;
+
+      toast.success("You have been unsubscribed from our newsletter.");
+      setEmail("");
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        toast.error(error.errors[0].message);
+      } else {
+        console.error("Unsubscribe error:", error);
+        toast.error("Failed to unsubscribe. Please try again later.");
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <form onSubmit={handleSubscribe} className="mt-2 flex max-w-md gap-2">
       <Input
@@ -67,6 +96,14 @@ export const NewsletterSubscription = () => {
       <Button type="submit" disabled={isLoading}>
         <Mail className="mr-2 h-4 w-4" />
         Subscribe
+      </Button>
+      <Button 
+        type="button" 
+        variant="outline"
+        disabled={isLoading}
+        onClick={handleUnsubscribe}
+      >
+        Unsubscribe
       </Button>
     </form>
   );
