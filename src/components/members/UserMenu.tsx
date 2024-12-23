@@ -58,7 +58,7 @@ export const UserMenu = () => {
           </Avatar>
         </button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-72">
+      <DropdownMenuContent align="end" className="w-72 bg-background border shadow-lg">
         <div className="flex items-center gap-4 p-4">
           <Avatar className="h-16 w-16">
             <AvatarImage src={user?.profile?.avatar_url} />
@@ -71,8 +71,8 @@ export const UserMenu = () => {
             <p className="text-xs text-muted-foreground">{user?.email}</p>
           </div>
         </div>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem className="py-3">
+        <DropdownMenuSeparator className="bg-border" />
+        <DropdownMenuItem className="py-3 focus:bg-accent">
           <Mail className="mr-3 h-4 w-4" />
           <div className="flex flex-col">
             <span className="text-sm">Email</span>
@@ -80,7 +80,7 @@ export const UserMenu = () => {
           </div>
         </DropdownMenuItem>
         {user?.profile?.phone && (
-          <DropdownMenuItem className="py-3">
+          <DropdownMenuItem className="py-3 focus:bg-accent">
             <Phone className="mr-3 h-4 w-4" />
             <div className="flex flex-col">
               <span className="text-sm">Phone</span>
@@ -88,12 +88,12 @@ export const UserMenu = () => {
             </div>
           </DropdownMenuItem>
         )}
-        <DropdownMenuItem className="py-3" onClick={() => navigate('/members/settings')}>
+        <DropdownMenuItem className="py-3 focus:bg-accent" onClick={() => navigate('/members/settings')}>
           <Settings className="mr-3 h-4 w-4" />
           <span>Settings</span>
         </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem className="py-3" onClick={handleSignOut}>
+        <DropdownMenuSeparator className="bg-border" />
+        <DropdownMenuItem className="py-3 focus:bg-accent" onClick={handleSignOut}>
           <LogOut className="mr-3 h-4 w-4" />
           <span>Sign out</span>
         </DropdownMenuItem>
