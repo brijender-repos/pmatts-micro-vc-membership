@@ -65,7 +65,7 @@ export default function Portfolio() {
               }
               fileName={`investment-report-${new Date().toISOString().split('T')[0]}.pdf`}
             >
-              {({ loading }: { loading: boolean }) => (
+              {({ loading }) => (
                 <Button disabled={loading}>
                   <Download className="mr-2 h-4 w-4" />
                   {loading ? "Generating PDF..." : "Download Report"}
