@@ -3,15 +3,15 @@ import { useNavigate } from "react-router-dom";
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { LogOut, User, Mail, Phone, Settings } from "lucide-react";
+import { User } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
+import { UserMenuHeader } from "./UserMenuHeader";
+import { UserMenuItems } from "./UserMenuItems";
 
 export const UserMenu = () => {
   const navigate = useNavigate();
@@ -59,44 +59,17 @@ export const UserMenu = () => {
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-72 bg-background border shadow-lg">
-        <div className="flex items-center gap-4 p-4">
-          <Avatar className="h-16 w-16">
-            <AvatarImage src={user?.profile?.avatar_url} />
-            <AvatarFallback>
-              <User className="h-8 w-8" />
-            </AvatarFallback>
-          </Avatar>
-          <div className="space-y-1">
-            <p className="text-sm font-medium">{user?.profile?.full_name || 'User'}</p>
-            <p className="text-xs text-muted-foreground">{user?.email}</p>
-          </div>
-        </div>
+        <UserMenuHeader
+          fullName={user?.profile?.full_name}
+          email={user?.email}
+          avatarUrl={user?.profile?.avatar_url}
+        />
         <DropdownMenuSeparator className="bg-border" />
-        <DropdownMenuItem className="py-3 focus:bg-accent">
-          <Mail className="mr-3 h-4 w-4" />
-          <div className="flex flex-col">
-            <span className="text-sm">Email</span>
-            <span className="text-xs text-muted-foreground">{user?.email}</span>
-          </div>
-        </DropdownMenuItem>
-        {user?.profile?.phone && (
-          <DropdownMenuItem className="py-3 focus:bg-accent">
-            <Phone className="mr-3 h-4 w-4" />
-            <div className="flex flex-col">
-              <span className="text-sm">Phone</span>
-              <span className="text-xs text-muted-foreground">{user?.profile?.phone}</span>
-            </div>
-          </DropdownMenuItem>
-        )}
-        <DropdownMenuItem className="py-3 focus:bg-accent" onClick={() => navigate('/members/settings')}>
-          <Settings className="mr-3 h-4 w-4" />
-          <span>Settings</span>
-        </DropdownMenuItem>
-        <DropdownMenuSeparator className="bg-border" />
-        <DropdownMenuItem className="py-3 focus:bg-accent" onClick={handleSignOut}>
-          <LogOut className="mr-3 h-4 w-4" />
-          <span>Sign out</span>
-        </DropdownMenuItem>
+        <UserMenuItems
+          email={user?.email}
+          phone={user?.profile?.phone}
+          onSignOut={handleSignOut}
+        />
       </DropdownMenuContent>
     </DropdownMenu>
   );
