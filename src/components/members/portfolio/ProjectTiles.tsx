@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { Plus, ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
 import { formatCurrency } from "@/lib/utils";
 
 // Import all project data
@@ -29,7 +30,9 @@ interface ProjectTilesProps {
   }[];
 }
 
+// Reorder projects to put Missing Matters first
 const allProjects = [
+  missingMatters,
   eduMatts,
   agriMatts,
   taxpayerMatts,
@@ -37,7 +40,6 @@ const allProjects = [
   healthMatts,
   solarEnergyMatts,
   waterMatts,
-  missingMatters,
   techMatts,
 ];
 
@@ -68,6 +70,8 @@ export function ProjectTiles({ investments }: ProjectTilesProps) {
           total_units: 0,
         };
         
+        const isUpcoming = project.status === "upcoming";
+        
         return (
           <Card 
             key={project.title}
@@ -78,8 +82,14 @@ export function ProjectTiles({ investments }: ProjectTilesProps) {
             }`}
           >
             <CardHeader className="p-4 pb-2">
-              <CardTitle className="text-sm font-medium leading-tight">
-                {project.title}
+              <CardTitle className="text-sm font-medium leading-tight group">
+                <Link 
+                  to={`/projects/${project.title.toLowerCase().replace(/\s+/g, '-')}`}
+                  className="hover:text-primary flex items-center justify-between"
+                >
+                  {project.title}
+                  <ArrowRight className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                </Link>
               </CardTitle>
             </CardHeader>
             <CardContent className="p-4 pt-2 space-y-2">
@@ -91,17 +101,18 @@ export function ProjectTiles({ investments }: ProjectTilesProps) {
                   {formatCurrency(investment.total_invested)}
                 </p>
               </div>
-              {investment.total_invested > 0 && (
-                <div>
-                  <p className="text-xs text-muted-foreground">Units</p>
-                  <p className="text-lg font-semibold text-primary">
-                    {investment.total_units}
-                  </p>
-                </div>
-              )}
+              <div>
+                <p className="text-xs text-muted-foreground">Units</p>
+                <p className={`text-lg font-semibold ${
+                  investment.total_units > 0 ? 'text-primary' : 'text-muted-foreground'
+                }`}>
+                  {investment.total_units}
+                </p>
+              </div>
               <Button 
                 className="w-full h-8 text-xs"
                 variant={investment.total_invested > 0 ? "outline" : "default"}
+                disabled={isUpcoming}
               >
                 <Plus className="mr-1 h-3 w-3" />
                 {investment.total_invested > 0 ? 'Invest More' : 'Invest'}
