@@ -7,7 +7,11 @@ import { KYCWizard } from "./kyc/KYCWizard";
 import { KYCStatus } from "./kyc/KYCStatus";
 import { CheckCircle2, Circle, ArrowRight } from "lucide-react";
 
-export function KYCSettings() {
+interface KYCSettingsProps {
+  onStatusChange?: () => void;
+}
+
+export function KYCSettings({ onStatusChange }: KYCSettingsProps) {
   const { toast } = useToast();
   const [loading, setLoading] = useState(true);
   const [kycDetails, setKYCDetails] = useState<any>(null);
@@ -30,6 +34,7 @@ export function KYCSettings() {
 
       if (error) throw error;
       setKYCDetails(data);
+      onStatusChange?.();
     } catch (error) {
       console.error('Error loading KYC details:', error);
       toast({
