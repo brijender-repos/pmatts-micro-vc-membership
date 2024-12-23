@@ -7,6 +7,8 @@ import Index from "./pages/Index";
 import { ProjectPage } from "./components/ProjectPage";
 import FAQs from "./pages/FAQs";
 import Dashboard from "./pages/members/Dashboard";
+import Login from "./pages/auth/Login";
+import { AuthGuard } from "./components/auth/AuthGuard";
 
 const queryClient = new QueryClient();
 
@@ -17,10 +19,20 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
+          {/* Public routes */}
           <Route path="/" element={<Index />} />
           <Route path="/projects/:slug" element={<ProjectPage />} />
           <Route path="/faqs" element={<FAQs />} />
-          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/auth/login" element={<Login />} />
+          
+          {/* Protected routes */}
+          <Route path="/members/*" element={
+            <AuthGuard>
+              <Routes>
+                <Route path="/dashboard" element={<Dashboard />} />
+              </Routes>
+            </AuthGuard>
+          } />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
