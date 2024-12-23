@@ -6,7 +6,7 @@ import { KYCSettings } from "@/components/members/KYCSettings";
 import { Badge } from "@/components/ui/badge";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { CheckCircle2, Clock, AlertCircle } from "lucide-react";
+import { CheckCircle2, Clock, AlertCircle, Separator } from "lucide-react";
 
 const Settings = () => {
   const [kycStatus, setKYCStatus] = useState<string | null>(null);
@@ -80,13 +80,28 @@ const Settings = () => {
         </div>
 
         <Tabs defaultValue="profile" className="space-y-4">
-          <TabsList>
-            <TabsTrigger value="profile">Profile</TabsTrigger>
-            <TabsTrigger value="notifications">Notifications</TabsTrigger>
-            <TabsTrigger value="kyc">
-              <KYCTabTrigger />
-            </TabsTrigger>
-          </TabsList>
+          <div className="border-b">
+            <TabsList className="w-full justify-start h-12 bg-transparent p-0 space-x-8">
+              <TabsTrigger 
+                value="profile"
+                className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none px-2 pb-4"
+              >
+                Profile
+              </TabsTrigger>
+              <TabsTrigger 
+                value="notifications"
+                className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none px-2 pb-4"
+              >
+                Notifications
+              </TabsTrigger>
+              <TabsTrigger 
+                value="kyc"
+                className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none px-2 pb-4"
+              >
+                <KYCTabTrigger />
+              </TabsTrigger>
+            </TabsList>
+          </div>
           <TabsContent value="profile" className="space-y-4">
             <ProfileSettings />
           </TabsContent>
