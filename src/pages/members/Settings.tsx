@@ -6,7 +6,7 @@ import { KYCSettings } from "@/components/members/KYCSettings";
 import { Badge } from "@/components/ui/badge";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { CheckCircle2, Clock } from "lucide-react";
+import { CheckCircle2, Clock, AlertCircle } from "lucide-react";
 
 const Settings = () => {
   const [kycStatus, setKYCStatus] = useState<string | null>(null);
@@ -32,24 +32,42 @@ const Settings = () => {
     }
   };
 
-  const KYCTabTrigger = () => (
-    <div className="flex items-center gap-2">
-      <span>KYC</span>
-      {kycStatus && (
-        kycStatus === 'verified' ? (
-          <Badge className="bg-green-500 flex items-center gap-1">
-            <CheckCircle2 className="h-3 w-3" />
-            Completed
-          </Badge>
-        ) : (
-          <Badge variant="secondary" className="flex items-center gap-1">
-            <Clock className="h-3 w-3" />
-            Pending
-          </Badge>
-        )
-      )}
-    </div>
-  );
+  const KYCTabTrigger = () => {
+    const getBadgeContent = () => {
+      switch (kycStatus) {
+        case 'verified':
+          return {
+            icon: <CheckCircle2 className="h-3 w-3" />,
+            text: 'Completed',
+            className: 'bg-green-500'
+          };
+        case 'verification_pending':
+          return {
+            icon: <Clock className="h-3 w-3" />,
+            text: 'Pending',
+            className: 'bg-yellow-500'
+          };
+        default:
+          return {
+            icon: <AlertCircle className="h-3 w-3" />,
+            text: 'Not Started',
+            className: 'bg-gray-500'
+          };
+      }
+    };
+
+    const badgeContent = getBadgeContent();
+
+    return (
+      <div className="flex items-center gap-2">
+        <span>KYC</span>
+        <Badge className={`flex items-center gap-1 ${badgeContent.className}`}>
+          {badgeContent.icon}
+          {badgeContent.text}
+        </Badge>
+      </div>
+    );
+  };
 
   return (
     <DashboardLayout>
