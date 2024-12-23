@@ -14,6 +14,7 @@ import Callback from "./pages/auth/Callback";
 import { AuthGuard } from "./components/auth/AuthGuard";
 import { ManageLayout } from "./components/layouts/ManageLayout";
 import ManageIndex from "./pages/manage/Index";
+import Users from "./pages/manage/Users";
 
 const queryClient = new QueryClient();
 
@@ -49,6 +50,7 @@ const App = () => (
             </AuthGuard>
           }>
             <Route index element={<ManageIndex />} />
+            <Route path="users" element={<Users />} />
           </Route>
         </Routes>
       </BrowserRouter>
