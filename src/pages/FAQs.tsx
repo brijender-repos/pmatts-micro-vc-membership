@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Accordion,
   AccordionContent,
@@ -6,10 +7,13 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { ChevronLeft } from "lucide-react";
 import faqData from "@/data/faqs.json";
 
 export const FAQs = () => {
   const [searchQuery, setSearchQuery] = useState("");
+  const navigate = useNavigate();
 
   const filteredFAQs = faqData.faqs.filter(
     (faq) =>
@@ -20,6 +24,15 @@ export const FAQs = () => {
   return (
     <div className="min-h-screen bg-background py-16">
       <div className="container px-4 md:px-6">
+        <Button
+          variant="ghost"
+          className="mb-6 -ml-4 text-muted-foreground hover:text-primary"
+          onClick={() => navigate(-1)}
+        >
+          <ChevronLeft className="mr-2 h-4 w-4" />
+          Back
+        </Button>
+
         <div className="flex flex-col items-center justify-center space-y-4 text-center mb-12">
           <h1 className="text-4xl font-bold tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-[#8B5CF6] to-[#D946EF] sm:text-5xl md:text-6xl">
             Frequently Asked Questions
