@@ -7,6 +7,7 @@ import Index from "./pages/Index";
 import { ProjectPage } from "./components/ProjectPage";
 import FAQs from "./pages/FAQs";
 import Dashboard from "./pages/members/Dashboard";
+import Settings from "./pages/members/Settings";
 import Login from "./pages/auth/Login";
 import Callback from "./pages/auth/Callback";
 import { AuthGuard } from "./components/auth/AuthGuard";
@@ -32,6 +33,7 @@ const App = () => (
             <AuthGuard>
               <Routes>
                 <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/settings" element={<Settings />} />
               </Routes>
             </AuthGuard>
           } />
