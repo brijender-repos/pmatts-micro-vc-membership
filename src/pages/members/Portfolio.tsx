@@ -33,7 +33,7 @@ export default function Portfolio() {
         ) : (
           <>
             <InvestmentSummary investments={investments || []} />
-            <h2 className="text-2xl font-semibold mb-4">Your Projects</h2>
+            <h2 className="text-2xl font-semibold mb-4">Project wise Investments</h2>
             <ProjectTiles investments={investments || []} />
             <h2 className="text-2xl font-semibold mb-4">Investment History</h2>
             <InvestmentHistory investments={investments || []} />
