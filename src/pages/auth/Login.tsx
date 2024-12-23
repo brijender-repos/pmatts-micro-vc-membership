@@ -70,8 +70,8 @@ const Login = () => {
               variables: {
                 sign_in: {
                   social_provider_text: "Sign in with Google",
-                  forgotten_password_text: "Forgot your password?",
                   button_label: "Sign in",
+                  forgotten_password_label: "Forgot your password?",
                 },
                 forgotten_password: {
                   button_label: "Send reset instructions",
