@@ -8,6 +8,7 @@ import { ProjectPage } from "./components/ProjectPage";
 import FAQs from "./pages/FAQs";
 import Dashboard from "./pages/members/Dashboard";
 import Login from "./pages/auth/Login";
+import Callback from "./pages/auth/Callback";
 import { AuthGuard } from "./components/auth/AuthGuard";
 
 const queryClient = new QueryClient();
@@ -24,6 +25,7 @@ const App = () => (
           <Route path="/projects/:slug" element={<ProjectPage />} />
           <Route path="/faqs" element={<FAQs />} />
           <Route path="/auth/login" element={<Login />} />
+          <Route path="/auth/callback" element={<Callback />} />
           
           {/* Protected routes */}
           <Route path="/members/*" element={
