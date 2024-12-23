@@ -1,9 +1,13 @@
 import { Link, useParams, Navigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
+
+// Project Components
 import { ProjectHero } from "./projects/ProjectHero";
 import { ProjectDescription } from "./projects/ProjectDescription";
 import { ProjectFeatures } from "./projects/ProjectFeatures";
 import { ProjectActions } from "./projects/ProjectActions";
+
+// Project Data
 import missingMattersData from "../data/missing-matters.json";
 import agriMattsData from "../data/agri-matts.json";
 import solarEnergyMattsData from "../data/solar-energy-matts.json";
@@ -14,6 +18,7 @@ import healthMattsData from "../data/health-matts.json";
 import techMattsData from "../data/tech-matts.json";
 import waterMattsData from "../data/water-matts.json";
 
+// Types
 interface ProjectDetails {
   title: string;
   description: string;
@@ -23,6 +28,7 @@ interface ProjectDetails {
   externalLink: string;
 }
 
+// Project Data Map
 const projectsData: Record<string, ProjectDetails> = {
   "missing-matters": missingMattersData,
   "agri-matts": agriMattsData,
@@ -32,12 +38,17 @@ const projectsData: Record<string, ProjectDetails> = {
   "edu-matts": eduMattsData,
   "health-matts": healthMattsData,
   "tech-matts": techMattsData,
-  "water-matts": waterMattsData
+  "water-matts": waterMattsData,
+};
+
+// Helper function to get project data
+const getProjectData = (slug: string): ProjectDetails | null => {
+  return projectsData[slug] || null;
 };
 
 export const ProjectPage = () => {
-  const { slug } = useParams();
-  const project = slug ? projectsData[slug] : null;
+  const { slug } = useParams<{ slug: string }>();
+  const project = slug ? getProjectData(slug) : null;
 
   if (!project) {
     return <Navigate to="/" replace />;
@@ -52,7 +63,10 @@ export const ProjectPage = () => {
       />
 
       <div className="container px-4 py-12">
-        <Link to="/" className="inline-flex items-center text-primary hover:underline mb-8">
+        <Link 
+          to="/" 
+          className="inline-flex items-center text-primary hover:underline mb-8"
+        >
           <ArrowLeft className="mr-2 h-4 w-4" />
           Back to Projects
         </Link>
