@@ -94,21 +94,23 @@ export function ProjectTiles({ investments }: ProjectTilesProps) {
               </CardTitle>
             </CardHeader>
             <CardContent className="p-4 pt-2 space-y-2">
-              <div>
-                <p className="text-xs text-muted-foreground">Total Invested</p>
-                <p className={`text-lg font-semibold ${
-                  investment.total_invested > 0 ? 'text-primary' : 'text-muted-foreground'
-                }`}>
-                  {formatCurrency(investment.total_invested)}
-                </p>
-              </div>
-              <div>
-                <p className="text-xs text-muted-foreground">Units</p>
-                <p className={`text-lg font-semibold ${
-                  investment.total_units > 0 ? 'text-primary' : 'text-muted-foreground'
-                }`}>
-                  {investment.total_units}
-                </p>
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <p className="text-xs text-muted-foreground">Total Invested</p>
+                  <p className={`text-lg font-semibold ${
+                    investment.total_invested > 0 ? 'text-primary' : 'text-muted-foreground'
+                  }`}>
+                    {formatCurrency(investment.total_invested)}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground">Units</p>
+                  <p className={`text-lg font-semibold ${
+                    investment.total_units > 0 ? 'text-primary' : 'text-muted-foreground'
+                  }`}>
+                    {investment.total_units}
+                  </p>
+                </div>
               </div>
               <Button 
                 className="w-full h-8 text-xs"
