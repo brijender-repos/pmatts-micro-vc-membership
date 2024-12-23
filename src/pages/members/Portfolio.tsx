@@ -65,10 +65,10 @@ export default function Portfolio() {
               }
               fileName={`investment-report-${new Date().toISOString().split('T')[0]}.pdf`}
             >
-              {({ loading }) => (
-                <Button disabled={loading}>
+              {(props) => (
+                <Button disabled={props.loading}>
                   <Download className="mr-2 h-4 w-4" />
-                  {loading ? "Generating PDF..." : "Download Report"}
+                  {props.loading ? "Generating PDF..." : "Download Report"}
                 </Button>
               )}
             </PDFDownloadLink>
