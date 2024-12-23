@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { supabase } from "@/integrations/supabase/client"
+import type { Tables } from "@/integrations/supabase/types"
 import {
   Table,
   TableBody,
@@ -29,15 +30,7 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination"
 
-interface User {
-  id: string
-  email: string
-  created_at: string
-  last_sign_in_at: string | null
-  is_active: boolean
-  full_name: string | null
-  phone: string | null
-}
+type Profile = Tables<"profiles">
 
 export default function Users() {
   const { toast } = useToast()
@@ -52,7 +45,7 @@ export default function Users() {
     queryFn: async () => {
       let query = supabase
         .from("profiles")
-        .select("id, user_id, full_name, phone, created_at", { count: "exact" })
+        .select("*", { count: "exact" })
         .range((page - 1) * itemsPerPage, page * itemsPerPage - 1)
         .order(sortBy, { ascending: sortOrder === "asc" })
 
@@ -67,7 +60,7 @@ export default function Users() {
       if (error) throw error
 
       return {
-        users: data,
+        users: data as Profile[],
         total: count || 0,
       }
     },
