@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   DropdownMenu,
@@ -16,7 +16,7 @@ export const UserMenu = () => {
   const { toast } = useToast();
   const [user, setUser] = useState<any>(null);
 
-  useState(() => {
+  useEffect(() => {
     const getUser = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
@@ -29,7 +29,7 @@ export const UserMenu = () => {
       }
     };
     getUser();
-  });
+  }, []); // Empty dependency array means this effect runs once on mount
 
   const handleSignOut = async () => {
     const { error } = await supabase.auth.signOut();
