@@ -73,7 +73,6 @@ const Login = () => {
                   button_label: "Sign in",
                   password_label: "Password",
                   email_label: "Email",
-                  forgotten_text: "Forgot your password?",
                   link_text: "Already have an account? Sign in",
                 },
                 sign_up: {
@@ -86,7 +85,7 @@ const Login = () => {
                   button_label: "Send reset instructions",
                   email_label: "Email address",
                   email_input_placeholder: "Your email address",
-                  link_text: "Back to sign in",
+                  link_text: "Forgot your password?",
                   confirmation_text: "Check your email for the password reset link",
                 },
               },
