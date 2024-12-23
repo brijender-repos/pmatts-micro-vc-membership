@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   Table,
   TableBody,
@@ -6,9 +7,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { ArrowDown, ArrowUp } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
-import { format } from "date-fns";
-import { Badge } from "@/components/ui/badge";
 
 interface Investment {
   id: string;
@@ -18,7 +19,6 @@ interface Investment {
   units?: number;
   equity_percentage?: number;
   investment_date: string;
-  notes?: string;
   projects: {
     name: string;
     status: string;
@@ -29,24 +29,33 @@ interface InvestmentHistoryProps {
   investments: Investment[];
 }
 
-export function InvestmentHistory({ investments }: InvestmentHistoryProps) {
-  const sortedInvestments = [...investments].sort(
-    (a, b) => new Date(b.investment_date).getTime() - new Date(a.investment_date).getTime()
-  );
+type SortField = 'investment_date' | 'project_name';
+type SortOrder = 'asc' | 'desc';
 
-  const getInvestmentTypeColor = (type: string) => {
-    switch (type) {
-      case 'investment':
-      case 'follow_on':
-        return 'bg-green-500';
-      case 'distribution':
-      case 'dividend':
-        return 'bg-blue-500';
-      case 'exit':
-        return 'bg-purple-500';
-      default:
-        return 'bg-gray-500';
+export function InvestmentHistory({ investments }: InvestmentHistoryProps) {
+  const [sortField, setSortField] = useState<SortField>('investment_date');
+  const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
+
+  const sortedInvestments = [...investments].sort((a, b) => {
+    const aValue = a[sortField];
+    const bValue = b[sortField];
+    const multiplier = sortOrder === 'asc' ? 1 : -1;
+    
+    return aValue < bValue ? -1 * multiplier : aValue > bValue ? 1 * multiplier : 0;
+  });
+
+  const toggleSort = (field: SortField) => {
+    if (sortField === field) {
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortField(field);
+      setSortOrder('asc');
     }
+  };
+
+  const SortIcon = ({ field }: { field: SortField }) => {
+    if (sortField !== field) return null;
+    return sortOrder === 'asc' ? <ArrowUp className="ml-2 h-4 w-4" /> : <ArrowDown className="ml-2 h-4 w-4" />;
   };
 
   return (
@@ -54,38 +63,41 @@ export function InvestmentHistory({ investments }: InvestmentHistoryProps) {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Date</TableHead>
-            <TableHead>Project</TableHead>
+            <TableHead>
+              <Button 
+                variant="ghost" 
+                className="p-0 font-bold hover:bg-transparent"
+                onClick={() => toggleSort('investment_date')}
+              >
+                Date
+                <SortIcon field="investment_date" />
+              </Button>
+            </TableHead>
+            <TableHead>
+              <Button 
+                variant="ghost" 
+                className="p-0 font-bold hover:bg-transparent"
+                onClick={() => toggleSort('project_name')}
+              >
+                Project
+                <SortIcon field="project_name" />
+              </Button>
+            </TableHead>
             <TableHead>Type</TableHead>
-            <TableHead>Amount</TableHead>
-            <TableHead>Units</TableHead>
-            <TableHead>Equity %</TableHead>
-            <TableHead>Notes</TableHead>
+            <TableHead className="text-right">Amount</TableHead>
+            <TableHead className="text-right">Units</TableHead>
+            <TableHead className="text-right">Equity %</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {sortedInvestments.map((investment) => (
             <TableRow key={investment.id}>
-              <TableCell>
-                {format(new Date(investment.investment_date), 'MMM d, yyyy')}
-              </TableCell>
-              <TableCell>
-                {investment.project_name}
-                <Badge variant="outline" className="ml-2">
-                  {investment.projects.status}
-                </Badge>
-              </TableCell>
-              <TableCell>
-                <Badge className={getInvestmentTypeColor(investment.investment_type)}>
-                  {investment.investment_type}
-                </Badge>
-              </TableCell>
-              <TableCell>{formatCurrency(investment.amount)}</TableCell>
-              <TableCell>{investment.units || '-'}</TableCell>
-              <TableCell>{investment.equity_percentage ? `${investment.equity_percentage}%` : '-'}</TableCell>
-              <TableCell className="max-w-[200px] truncate">
-                {investment.notes || '-'}
-              </TableCell>
+              <TableCell>{new Date(investment.investment_date).toLocaleDateString()}</TableCell>
+              <TableCell>{investment.project_name}</TableCell>
+              <TableCell className="capitalize">{investment.investment_type.replace('_', ' ')}</TableCell>
+              <TableCell className="text-right">{formatCurrency(investment.amount)}</TableCell>
+              <TableCell className="text-right">{investment.units || '-'}</TableCell>
+              <TableCell className="text-right">{investment.equity_percentage ? `${investment.equity_percentage}%` : '-'}</TableCell>
             </TableRow>
           ))}
         </TableBody>
