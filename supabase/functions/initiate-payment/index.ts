@@ -31,6 +31,7 @@ serve(async (req) => {
     // Create Supabase client with auth context
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
+      console.error('No authorization header provided');
       throw new Error('No authorization header');
     }
 
@@ -48,6 +49,8 @@ serve(async (req) => {
 
     const { user_id, project_name, units, notes } = requestData;
     const amount = units * 116 // INR 116 per unit
+
+    console.log('Calculated amount:', { units, amount });
 
     // Validate units
     if (units <= 0 || units > 5) {
@@ -79,6 +82,8 @@ serve(async (req) => {
       )
     }
 
+    console.log('Retrieved user profile:', profile);
+
     // Save initial investment record using the authenticated client
     const { data: investment, error: investmentError } = await supabaseClient
       .from('investments')
@@ -107,6 +112,8 @@ serve(async (req) => {
       )
     }
 
+    console.log('Created investment record:', investment);
+
     const transactionId = `txn_${investment.id}_${Date.now()}`
 
     // Update transaction ID
@@ -126,6 +133,8 @@ serve(async (req) => {
       )
     }
 
+    console.log('Updated transaction ID:', transactionId);
+
     // Get user email
     const { data: { user }, error: userError } = await supabaseClient.auth.getUser()
     
@@ -139,6 +148,8 @@ serve(async (req) => {
         }
       )
     }
+
+    console.log('Retrieved user details:', { email: user.email });
 
     const merchantKey = Deno.env.get('PAYU_MERCHANT_KEY')
     const merchantSalt = Deno.env.get('PAYU_MERCHANT_SALT')
@@ -178,6 +189,8 @@ serve(async (req) => {
 
     // Generate hash for live mode
     const hashString = `${paymentData.key}|${paymentData.txnid}|${paymentData.amount}|${paymentData.productinfo}|${paymentData.firstname}|${paymentData.email}|||||||||||${merchantSalt}`
+    console.log('Hash string (without salt):', hashString.replace(merchantSalt, '***'));
+    
     const hashBuffer = await crypto.subtle.digest(
       "SHA-512",
       new TextEncoder().encode(hashString)
@@ -185,6 +198,7 @@ serve(async (req) => {
     const hashArray = Array.from(new Uint8Array(hashBuffer))
     const hash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
 
+    console.log('Generated hash:', hash);
     console.log('Payment request processed successfully');
 
     return new Response(

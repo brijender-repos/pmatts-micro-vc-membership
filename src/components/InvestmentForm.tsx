@@ -46,11 +46,20 @@ export function InvestmentForm({ projectName, onSuccess, onError }: InvestmentFo
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       setIsSubmitting(true);
+      console.log('Starting investment submission process:', { projectName, values });
       
       const { data: { session } } = await supabase.auth.getSession();
       if (!session?.user) {
         throw new Error("Please sign in to invest");
       }
+      console.log('User session verified:', { userId: session.user.id });
+
+      console.log('Initiating payment with edge function:', {
+        user_id: session.user.id,
+        project_name: projectName,
+        units: values.units,
+        notes: values.notes,
+      });
 
       const { data, error } = await supabase.functions.invoke('initiate-payment', {
         body: {
@@ -61,7 +70,12 @@ export function InvestmentForm({ projectName, onSuccess, onError }: InvestmentFo
         },
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Payment initiation error:', error);
+        throw error;
+      }
+
+      console.log('Payment data received from edge function:', data);
 
       // Show processing message
       toast({
@@ -69,10 +83,12 @@ export function InvestmentForm({ projectName, onSuccess, onError }: InvestmentFo
         description: "You will be redirected to the payment gateway...",
       });
 
-      // Create and submit PayU form for live mode
+      // Create and submit PayU form
       const payuForm = document.createElement('form');
       payuForm.method = 'POST';
       payuForm.action = 'https://secure.payu.in/_payment';
+
+      console.log('Creating PayU form with fields:', data);
 
       Object.entries(data).forEach(([key, value]) => {
         const input = document.createElement('input');
@@ -80,10 +96,12 @@ export function InvestmentForm({ projectName, onSuccess, onError }: InvestmentFo
         input.name = key;
         input.value = value as string;
         payuForm.appendChild(input);
+        console.log(`Added PayU form field: ${key}=${value}`);
       });
 
       // Add an event listener for when the form is submitted
       window.addEventListener('payu_callback', (event: any) => {
+        console.log('Received PayU callback:', event.detail);
         if (event.detail.status === 'success') {
           toast({
             title: "Payment Successful",
@@ -98,12 +116,13 @@ export function InvestmentForm({ projectName, onSuccess, onError }: InvestmentFo
         }
       }, { once: true });
 
+      console.log('Submitting PayU form...');
       document.body.appendChild(payuForm);
       payuForm.submit();
       
       onSuccess?.();
     } catch (error) {
-      console.error('Investment error:', error);
+      console.error('Investment submission error:', error);
       toast({
         title: "Investment Error",
         description: error instanceof Error ? error.message : "Failed to process investment",
