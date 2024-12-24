@@ -71,23 +71,45 @@ export function InvestmentForm({ projectName, onSuccess, onError }: InvestmentFo
 
       paymentLogger.log('Payment data created', data);
 
-      // Create form and submit to PayU
-      const form = document.createElement('form');
-      form.method = 'post';
-      form.action = 'https://secure.payu.in/_payment';
+      // Create and submit form to PayU
+      const payuForm = document.createElement('form');
+      payuForm.method = 'POST';
+      payuForm.action = 'https://secure.payu.in/_payment';
+      payuForm.style.display = 'none'; // Hide the form
+
+      // Required PayU parameters
+      const requiredParams = [
+        'key', 'txnid', 'amount', 'productinfo', 'firstname', 
+        'email', 'phone', 'surl', 'furl', 'hash'
+      ];
+
+      // Validate required parameters
+      const missingParams = requiredParams.filter(param => !data[param]);
+      if (missingParams.length > 0) {
+        throw new Error(`Missing required PayU parameters: ${missingParams.join(', ')}`);
+      }
 
       // Add all payment parameters as hidden fields
       Object.entries(data).forEach(([key, value]) => {
-        const input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = key;
-        input.value = value as string;
-        form.appendChild(input);
+        if (value !== undefined && value !== null) {
+          const input = document.createElement('input');
+          input.type = 'hidden';
+          input.name = key;
+          input.value = String(value);
+          payuForm.appendChild(input);
+        }
+      });
+
+      paymentLogger.log('Submitting form to PayU', {
+        action: payuForm.action,
+        params: Object.fromEntries(
+          Object.entries(data).map(([k, v]) => [k, k === 'hash' ? '***' : v])
+        )
       });
 
       // Add form to body and submit
-      document.body.appendChild(form);
-      form.submit();
+      document.body.appendChild(payuForm);
+      payuForm.submit();
       
       onSuccess?.();
     } catch (error) {

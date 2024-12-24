@@ -98,7 +98,8 @@ serve(async (req) => {
       phone: profile.phone || '',
       surl: `${baseUrl}/payment/success`,
       furl: `${baseUrl}/payment/failure`,
-      udf1: investment.id // Store investment ID for webhook reference
+      udf1: investment.id, // Store investment ID for webhook reference
+      service_provider: 'payu_paisa',
     };
 
     // Generate hash
