@@ -100,8 +100,11 @@ serve(async (req) => {
       throw new Error(payuData.message || 'Failed to create payment link')
     }
 
+    // Format the payment URL to match PayU's format (https://pmny.in/PAYUMN/...)
+    const paymentUrl = payuData.payment_link.replace('https://secure.payu.in', 'https://pmny.in')
+
     return new Response(
-      JSON.stringify({ paymentUrl: payuData.payment_link }),
+      JSON.stringify({ paymentUrl }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )
   } catch (error) {
