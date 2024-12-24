@@ -16,7 +16,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
-import { InvestmentFormData, UNIT_PRICE, MAX_UNITS } from "@/types/payment";
+import { UNIT_PRICE, MAX_UNITS } from "@/types/payment";
 import { paymentLogger } from "@/utils/paymentLogger";
 import { PaymentDebugPanel } from "./payment/PaymentDebugPanel";
 
@@ -55,14 +55,14 @@ export function InvestmentForm({ projectName, onSuccess, onError }: InvestmentFo
       }
       paymentLogger.log('User session verified', { userId: session.user.id });
 
-      paymentLogger.log('Initiating payment with edge function', {
+      paymentLogger.log('Creating payment link', {
         user_id: session.user.id,
         project_name: projectName,
         units: values.units,
         notes: values.notes,
       });
 
-      const { data, error } = await supabase.functions.invoke('initiate-payment', {
+      const { data, error } = await supabase.functions.invoke('create-payment-link', {
         body: {
           user_id: session.user.id,
           project_name: projectName,
@@ -71,73 +71,27 @@ export function InvestmentForm({ projectName, onSuccess, onError }: InvestmentFo
         },
       });
 
-      if (error) {
-        paymentLogger.log('Payment initiation error', error);
-        throw error;
+      if (error || !data?.paymentUrl) {
+        paymentLogger.log('Payment link creation error', error || 'No payment URL received');
+        throw error || new Error('Failed to create payment link');
       }
 
-      paymentLogger.log('Payment data received', data);
-
-      // Validate required PayU fields
-      const requiredFields = ['key', 'txnid', 'amount', 'productinfo', 'firstname', 'email', 'surl', 'furl', 'hash'];
-      const missingFields = requiredFields.filter(field => !data[field]);
-      
-      if (missingFields.length > 0) {
-        paymentLogger.log('Missing required PayU fields', { missingFields });
-        throw new Error(`Missing required PayU fields: ${missingFields.join(', ')}`);
-      }
+      paymentLogger.log('Payment link created', { paymentUrl: data.paymentUrl });
 
       toast({
-        title: "Processing Payment",
-        description: "You will be redirected to the payment gateway...",
+        title: "Payment Link Created",
+        description: "Redirecting to payment page...",
       });
 
-      // Create and submit PayU form
-      const payuForm = document.createElement('form');
-      payuForm.method = 'POST';
-      payuForm.action = 'https://secure.payu.in/_payment';
-
-      paymentLogger.log('Creating PayU form', {
-        ...data,
-        hash: `${(data.hash as string).substring(0, 10)}...`, // Only log part of the hash
-      });
-
-      Object.entries(data).forEach(([key, value]) => {
-        const input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = key;
-        input.value = value as string;
-        payuForm.appendChild(input);
-        paymentLogger.log('Added form field', { key, value: key === 'hash' ? `${(value as string).substring(0, 10)}...` : value });
-      });
-
-      window.addEventListener('payu_callback', (event: any) => {
-        paymentLogger.log('PayU callback received', event.detail);
-        if (event.detail.status === 'success') {
-          toast({
-            title: "Payment Successful",
-            description: "Your investment has been processed successfully.",
-          });
-        } else {
-          toast({
-            title: "Payment Failed",
-            description: event.detail.message || "Sorry, unable to process payment. Please try again.",
-            variant: "destructive",
-          });
-        }
-      }, { once: true });
-
-      paymentLogger.log('Submitting PayU form', { action: payuForm.action });
-      document.body.appendChild(payuForm);
-      
-      // Add a small delay to ensure logs are written before redirect
+      // Add a small delay to ensure logs are written
       await new Promise(resolve => setTimeout(resolve, 1000));
       
-      payuForm.submit();
+      // Redirect to PayU payment page
+      window.location.href = data.paymentUrl;
       
       onSuccess?.();
     } catch (error) {
-      paymentLogger.log('Investment submission error', { error });
+      paymentLogger.log('Investment submission error', error);
       toast({
         title: "Investment Error",
         description: error instanceof Error ? error.message : "Failed to process investment",
