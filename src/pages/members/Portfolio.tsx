@@ -6,7 +6,7 @@ import { InvestmentReport } from "@/components/members/portfolio/InvestmentRepor
 import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { PDFDownloadLink } from "@react-pdf/renderer";
+import { PDFDownloadLink, BlobProvider } from "@react-pdf/renderer";
 
 export default function Portfolio() {
   const { data: investments, isLoading } = useQuery({
@@ -65,7 +65,7 @@ export default function Portfolio() {
     <div className="container mx-auto p-4 space-y-8">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Investment Portfolio</h1>
-        <PDFDownloadLink
+        <BlobProvider
           document={
             <InvestmentReport 
               investments={investments || []}
@@ -74,15 +74,19 @@ export default function Portfolio() {
               activeProjects={activeProjects}
             />
           }
-          fileName={`investment-report-${new Date().toISOString().split('T')[0]}.pdf`}
         >
-          {({ loading }) => (
-            <Button disabled={loading} type="button">
-              <Download className="mr-2 h-4 w-4" />
-              {loading ? "Generating PDF..." : "Download Report"}
+          {({ url, loading }) => (
+            <Button 
+              disabled={loading} 
+              asChild
+            >
+              <a href={url || '#'} download={`investment-report-${new Date().toISOString().split('T')[0]}.pdf`}>
+                <Download className="mr-2 h-4 w-4" />
+                {loading ? "Generating PDF..." : "Download Report"}
+              </a>
             </Button>
           )}
-        </PDFDownloadLink>
+        </BlobProvider>
       </div>
 
       <InvestmentSummary investments={investments || []} />

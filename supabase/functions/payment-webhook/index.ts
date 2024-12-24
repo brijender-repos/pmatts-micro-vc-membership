@@ -48,10 +48,43 @@ serve(async (req) => {
 
     // Map PayU status to our transaction status
     let transactionStatus = 'initiated'
-    if (status === 'success' || unmappedstatus === 'captured') {
-      transactionStatus = 'success'
-    } else if (status === 'failure' || error || errorMessage) {
-      transactionStatus = 'failure'
+    switch(unmappedstatus || status) {
+      case 'success':
+      case 'captured':
+        transactionStatus = 'success'
+        break
+      case 'failure':
+      case 'failed':
+        transactionStatus = 'failure'
+        break
+      case 'bounced':
+        transactionStatus = 'bounced'
+        break
+      case 'userCancelled':
+        transactionStatus = 'cancelled'
+        break
+      case 'userDropped':
+        transactionStatus = 'dropped'
+        break
+      case 'auto_refund':
+        transactionStatus = 'auto_refund'
+        break
+      case 'refund_success':
+        transactionStatus = 'refund_success'
+        break
+      case 'refund_pending':
+        transactionStatus = 'refund_pending'
+        break
+      case 'refund_failed':
+        transactionStatus = 'refund_failed'
+        break
+      case 'in_progress':
+        transactionStatus = 'in_progress'
+        break
+      default:
+        if (error || errorMessage) {
+          transactionStatus = 'failure'
+        }
     }
 
     console.log('Updating transaction status to:', transactionStatus);
