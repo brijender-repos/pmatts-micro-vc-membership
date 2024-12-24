@@ -7,20 +7,29 @@ import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { PDFDownloadLink, BlobProvider } from "@react-pdf/renderer";
+import { useSearchParams } from "react-router-dom";
 
 export default function Portfolio() {
+  const [searchParams] = useSearchParams();
+  const projectFilter = searchParams.get('project');
+
   const { data: investments, isLoading } = useQuery({
     queryKey: ["investments"],
     queryFn: async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session?.user) return [];
 
-      const { data, error } = await supabase
+      const query = supabase
         .from("investments")
         .select("*, projects(name, status)")
         .eq("user_id", session.user.id)
         .order("investment_date", { ascending: false });
 
+      if (projectFilter) {
+        query.eq("project_name", projectFilter);
+      }
+
+      const { data, error } = await query;
       if (error) throw error;
       return data;
     },
@@ -64,7 +73,14 @@ export default function Portfolio() {
   return (
     <div className="container mx-auto p-4 space-y-8">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Investment Portfolio</h1>
+        <div>
+          <h1 className="text-2xl font-bold">Investment Portfolio</h1>
+          {projectFilter && (
+            <p className="text-muted-foreground mt-1">
+              Filtered by project: {projectFilter}
+            </p>
+          )}
+        </div>
         <BlobProvider
           document={
             <InvestmentReport 
