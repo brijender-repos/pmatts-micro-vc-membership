@@ -54,15 +54,16 @@ export function ProjectTile({ title, status, investment }: ProjectTileProps) {
           totalInvested={investment.total_invested}
           totalUnits={investment.total_units}
         />
-        <Button 
-          className="w-full h-8 text-xs"
-          variant={investment.total_invested > 0 ? "outline" : "default"}
-          disabled={isUpcoming}
-          onClick={handleInvestClick}
-        >
-          <Plus className="mr-1 h-3 w-3" />
-          {investment.total_invested > 0 ? 'Invest More' : 'Invest'}
-        </Button>
+        {!isUpcoming && (
+          <Button 
+            className="w-full h-8 text-xs"
+            variant={investment.total_invested > 0 ? "outline" : "default"}
+            onClick={handleInvestClick}
+          >
+            <Plus className="mr-1 h-3 w-3" />
+            {investment.total_invested > 0 ? 'Invest More' : 'Invest'}
+          </Button>
+        )}
       </CardContent>
     </Card>
   );
