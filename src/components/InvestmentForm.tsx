@@ -63,6 +63,12 @@ export function InvestmentForm({ projectName, onSuccess, onError }: InvestmentFo
 
       if (error) throw error;
 
+      // Show processing message
+      toast({
+        title: "Processing Payment",
+        description: "You will be redirected to the payment gateway...",
+      });
+
       // Create and submit PayU form for live mode
       const payuForm = document.createElement('form');
       payuForm.method = 'POST';
@@ -75,6 +81,22 @@ export function InvestmentForm({ projectName, onSuccess, onError }: InvestmentFo
         input.value = value as string;
         payuForm.appendChild(input);
       });
+
+      // Add an event listener for when the form is submitted
+      window.addEventListener('payu_callback', (event: any) => {
+        if (event.detail.status === 'success') {
+          toast({
+            title: "Payment Successful",
+            description: "Your investment has been processed successfully.",
+          });
+        } else {
+          toast({
+            title: "Payment Failed",
+            description: event.detail.message || "Sorry, unable to process payment. Please try again.",
+            variant: "destructive",
+          });
+        }
+      }, { once: true });
 
       document.body.appendChild(payuForm);
       payuForm.submit();

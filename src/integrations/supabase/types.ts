@@ -20,6 +20,7 @@ export type Database = {
           notes: string | null
           project_name: string
           transaction_id: string | null
+          transaction_status: string
           units: number | null
           updated_at: string
           user_id: string
@@ -34,6 +35,7 @@ export type Database = {
           notes?: string | null
           project_name: string
           transaction_id?: string | null
+          transaction_status?: string
           units?: number | null
           updated_at?: string
           user_id: string
@@ -48,6 +50,7 @@ export type Database = {
           notes?: string | null
           project_name?: string
           transaction_id?: string | null
+          transaction_status?: string
           units?: number | null
           updated_at?: string
           user_id?: string
