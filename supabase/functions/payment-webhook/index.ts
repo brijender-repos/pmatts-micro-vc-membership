@@ -12,6 +12,8 @@ serve(async (req) => {
   }
 
   try {
+    console.log('Received PayU webhook event');
+    
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_ANON_KEY') ?? ''
@@ -21,23 +23,45 @@ serve(async (req) => {
     const txnid = formData.get('txnid')
     const status = formData.get('status')
     const hash = formData.get('hash')
+    const error = formData.get('error')
+    const errorMessage = formData.get('error_Message')
+    const unmappedstatus = formData.get('unmappedstatus')
+
+    console.log('PayU webhook data:', {
+      txnid,
+      status,
+      unmappedstatus,
+      error: error || errorMessage,
+    });
 
     // Verify hash (implement according to PayU documentation)
     const merchantKey = Deno.env.get('PAYU_MERCHANT_KEY')
     const merchantSalt = Deno.env.get('PAYU_MERCHANT_SALT')
 
     if (!txnid || !status || !hash || !merchantKey || !merchantSalt) {
+      console.error('Missing required parameters');
       return new Response(
         JSON.stringify({ error: 'Missing required parameters' }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
       )
     }
 
+    // Map PayU status to our transaction status
+    let transactionStatus = 'initiated'
+    if (status === 'success' || unmappedstatus === 'captured') {
+      transactionStatus = 'success'
+    } else if (status === 'failure' || error || errorMessage) {
+      transactionStatus = 'failure'
+    }
+
+    console.log('Updating transaction status to:', transactionStatus);
+
     // Update investment status
     const { error: updateError } = await supabaseClient
       .from('investments')
       .update({ 
-        notes: `Payment ${status}`,
+        transaction_status: transactionStatus,
+        notes: error || errorMessage || `Payment ${status}`,
       })
       .eq('transaction_id', txnid)
 
@@ -48,6 +72,17 @@ serve(async (req) => {
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
       )
     }
+
+    // Dispatch custom event for frontend notification
+    const event = new CustomEvent('payu_callback', {
+      detail: {
+        status: transactionStatus,
+        message: error || errorMessage || `Payment ${status}`,
+      },
+    });
+    window.dispatchEvent(event);
+
+    console.log('Successfully processed PayU webhook');
 
     return new Response(
       JSON.stringify({ message: 'Payment status updated successfully' }),
