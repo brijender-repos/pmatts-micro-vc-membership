@@ -17,6 +17,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { InvestmentFormData, UNIT_PRICE, MAX_UNITS } from "@/types/payment";
+import { paymentLogger } from "@/utils/paymentLogger";
+import { PaymentDebugPanel } from "./payment/PaymentDebugPanel";
 
 const formSchema = z.object({
   units: z.number()
@@ -34,7 +36,6 @@ interface InvestmentFormProps {
 export function InvestmentForm({ projectName, onSuccess, onError }: InvestmentFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
-
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -46,15 +47,15 @@ export function InvestmentForm({ projectName, onSuccess, onError }: InvestmentFo
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       setIsSubmitting(true);
-      console.log('Starting investment submission process:', { projectName, values });
+      paymentLogger.log('Starting investment submission', { projectName, values });
       
       const { data: { session } } = await supabase.auth.getSession();
       if (!session?.user) {
         throw new Error("Please sign in to invest");
       }
-      console.log('User session verified:', { userId: session.user.id });
+      paymentLogger.log('User session verified', { userId: session.user.id });
 
-      console.log('Initiating payment with edge function:', {
+      paymentLogger.log('Initiating payment with edge function', {
         user_id: session.user.id,
         project_name: projectName,
         units: values.units,
@@ -71,22 +72,21 @@ export function InvestmentForm({ projectName, onSuccess, onError }: InvestmentFo
       });
 
       if (error) {
-        console.error('Payment initiation error:', error);
+        paymentLogger.log('Payment initiation error', error);
         throw error;
       }
 
-      console.log('Payment data received from edge function:', data);
+      paymentLogger.log('Payment data received', data);
 
       // Validate required PayU fields
       const requiredFields = ['key', 'txnid', 'amount', 'productinfo', 'firstname', 'email', 'surl', 'furl', 'hash'];
       const missingFields = requiredFields.filter(field => !data[field]);
       
       if (missingFields.length > 0) {
-        console.error('Missing required PayU fields:', missingFields);
+        paymentLogger.log('Missing required PayU fields', { missingFields });
         throw new Error(`Missing required PayU fields: ${missingFields.join(', ')}`);
       }
 
-      // Show processing message
       toast({
         title: "Processing Payment",
         description: "You will be redirected to the payment gateway...",
@@ -97,9 +97,9 @@ export function InvestmentForm({ projectName, onSuccess, onError }: InvestmentFo
       payuForm.method = 'POST';
       payuForm.action = 'https://secure.payu.in/_payment';
 
-      console.log('Creating PayU form with fields:', {
+      paymentLogger.log('Creating PayU form', {
         ...data,
-        hash: `${(data.hash as string).substring(0, 10)}...`, // Only log part of the hash for security
+        hash: `${(data.hash as string).substring(0, 10)}...`, // Only log part of the hash
       });
 
       Object.entries(data).forEach(([key, value]) => {
@@ -108,16 +108,11 @@ export function InvestmentForm({ projectName, onSuccess, onError }: InvestmentFo
         input.name = key;
         input.value = value as string;
         payuForm.appendChild(input);
-        if (key !== 'hash') { // Don't log the full hash
-          console.log(`Added PayU form field: ${key}=${value}`);
-        } else {
-          console.log(`Added PayU form field: hash=${(value as string).substring(0, 10)}...`);
-        }
+        paymentLogger.log('Added form field', { key, value: key === 'hash' ? `${(value as string).substring(0, 10)}...` : value });
       });
 
-      // Add an event listener for when the form is submitted
       window.addEventListener('payu_callback', (event: any) => {
-        console.log('Received PayU callback:', event.detail);
+        paymentLogger.log('PayU callback received', event.detail);
         if (event.detail.status === 'success') {
           toast({
             title: "Payment Successful",
@@ -132,7 +127,7 @@ export function InvestmentForm({ projectName, onSuccess, onError }: InvestmentFo
         }
       }, { once: true });
 
-      console.log('Submitting PayU form...');
+      paymentLogger.log('Submitting PayU form', { action: payuForm.action });
       document.body.appendChild(payuForm);
       
       // Add a small delay to ensure logs are written before redirect
@@ -142,7 +137,7 @@ export function InvestmentForm({ projectName, onSuccess, onError }: InvestmentFo
       
       onSuccess?.();
     } catch (error) {
-      console.error('Investment submission error:', error);
+      paymentLogger.log('Investment submission error', { error });
       toast({
         title: "Investment Error",
         description: error instanceof Error ? error.message : "Failed to process investment",
@@ -155,50 +150,53 @@ export function InvestmentForm({ projectName, onSuccess, onError }: InvestmentFo
   };
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <FormField
-          control={form.control}
-          name="units"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Number of Units</FormLabel>
-              <FormControl>
-                <Input
-                  type="number"
-                  min={1}
-                  max={MAX_UNITS}
-                  {...field}
-                  onChange={(e) => field.onChange(parseInt(e.target.value))}
-                />
-              </FormControl>
-              <FormDescription>
-                Cost per unit: ₹{UNIT_PRICE.toLocaleString('en-IN')} | 
-                Total: ₹{(field.value * UNIT_PRICE).toLocaleString('en-IN')}
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+    <>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <FormField
+            control={form.control}
+            name="units"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Number of Units</FormLabel>
+                <FormControl>
+                  <Input
+                    type="number"
+                    min={1}
+                    max={MAX_UNITS}
+                    {...field}
+                    onChange={(e) => field.onChange(parseInt(e.target.value))}
+                  />
+                </FormControl>
+                <FormDescription>
+                  Cost per unit: ₹{UNIT_PRICE.toLocaleString('en-IN')} | 
+                  Total: ₹{(field.value * UNIT_PRICE).toLocaleString('en-IN')}
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-        <FormField
-          control={form.control}
-          name="notes"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Notes (Optional)</FormLabel>
-              <FormControl>
-                <Textarea {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+          <FormField
+            control={form.control}
+            name="notes"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Notes (Optional)</FormLabel>
+                <FormControl>
+                  <Textarea {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-        <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? "Processing..." : "Invest Now"}
-        </Button>
-      </form>
-    </Form>
+          <Button type="submit" disabled={isSubmitting}>
+            {isSubmitting ? "Processing..." : "Invest Now"}
+          </Button>
+        </form>
+      </Form>
+      <PaymentDebugPanel />
+    </>
   );
 }
