@@ -79,7 +79,27 @@ serve(async (req) => {
     };
 
     // Generate hash as per PayU documentation
-    const hashString = `${paymentData.key}|${paymentData.txnid}|${paymentData.amount}|${paymentData.productinfo}|${paymentData.firstname}|${paymentData.email}|||||||||||${merchantSalt}`;
+    // Hash Sequence: key|txnid|amount|productinfo|firstname|email|udf1|udf2|udf3|udf4|udf5||||||SALT
+    const hashString = [
+      paymentData.key,
+      paymentData.txnid,
+      paymentData.amount,
+      paymentData.productinfo,
+      paymentData.firstname,
+      paymentData.email,
+      paymentData.udf1,
+      paymentData.udf2,
+      paymentData.udf3,
+      '', // udf4
+      '', // udf5
+      '', // udf6
+      '', // udf7
+      '', // udf8
+      '', // udf9
+      '', // udf10
+      merchantSalt
+    ].join('|');
+
     console.log('Hash string (without salt):', hashString.replace(merchantSalt, '***'));
     
     const hashBuffer = await crypto.subtle.digest(
