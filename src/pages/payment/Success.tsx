@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import { CheckCircle } from "lucide-react";
@@ -8,15 +8,17 @@ import { paymentLogger } from "@/utils/paymentLogger";
 export default function PaymentSuccess() {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [searchParams] = useSearchParams();
 
   useEffect(() => {
-    paymentLogger.log('Payment success page loaded', window.location.search);
+    const params = Object.fromEntries(searchParams.entries());
+    paymentLogger.log('Payment success page loaded', params);
     
     toast({
       title: "Payment Successful",
       description: "Your investment has been processed successfully.",
     });
-  }, [toast]);
+  }, [toast, searchParams]);
 
   return (
     <div className="container mx-auto px-4 py-16">

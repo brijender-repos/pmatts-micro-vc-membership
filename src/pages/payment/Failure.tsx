@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import { XCircle } from "lucide-react";
@@ -8,16 +8,18 @@ import { paymentLogger } from "@/utils/paymentLogger";
 export default function PaymentFailure() {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [searchParams] = useSearchParams();
 
   useEffect(() => {
-    paymentLogger.log('Payment failure page loaded', window.location.search);
+    const params = Object.fromEntries(searchParams.entries());
+    paymentLogger.log('Payment failure page loaded', params);
     
     toast({
       title: "Payment Failed",
       description: "There was an issue processing your payment. Please try again.",
       variant: "destructive",
     });
-  }, [toast]);
+  }, [toast, searchParams]);
 
   return (
     <div className="container mx-auto px-4 py-16">
