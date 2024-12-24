@@ -15,24 +15,33 @@ interface PaymentRequest {
 }
 
 serve(async (req) => {
+  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders })
   }
 
   try {
+    // Parse the request body
+    const requestData = await req.json() as PaymentRequest;
+    console.log('Payment request received:', requestData);
+
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_ANON_KEY') ?? ''
     )
 
-    const { user_id, project_name, units, notes } = await req.json() as PaymentRequest
+    const { user_id, project_name, units, notes } = requestData;
     const amount = units * 30000 // INR 30,000 per unit
 
     // Validate units
     if (units <= 0 || units > 5) {
+      console.error('Invalid units:', units);
       return new Response(
         JSON.stringify({ error: 'Invalid number of units. Must be between 1 and 5.' }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
+        { 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }, 
+          status: 400 
+        }
       )
     }
 
@@ -44,10 +53,13 @@ serve(async (req) => {
       .single()
 
     if (profileError) {
-      console.error('Error fetching profile:', profileError)
+      console.error('Error fetching profile:', profileError);
       return new Response(
         JSON.stringify({ error: 'Error fetching user profile' }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
+        { 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }, 
+          status: 500 
+        }
       )
     }
 
@@ -69,40 +81,61 @@ serve(async (req) => {
       .single()
 
     if (investmentError) {
-      console.error('Error creating investment:', investmentError)
+      console.error('Error creating investment:', investmentError);
       return new Response(
         JSON.stringify({ error: 'Error creating investment record' }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
+        { 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }, 
+          status: 500 
+        }
       )
     }
 
     const transactionId = `txn_${investment.id}_${Date.now()}`
 
     // Update transaction ID
-    await supabaseClient
+    const { error: updateError } = await supabaseClient
       .from('investments')
       .update({ transaction_id: transactionId })
       .eq('id', investment.id)
+
+    if (updateError) {
+      console.error('Error updating transaction ID:', updateError);
+      return new Response(
+        JSON.stringify({ error: 'Error updating transaction ID' }),
+        { 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }, 
+          status: 500 
+        }
+      )
+    }
 
     // Get user email from auth
     const { data: { user }, error: userError } = await supabaseClient.auth.admin.getUserById(user_id)
     
     if (userError || !user) {
-      console.error('Error fetching user:', userError)
+      console.error('Error fetching user:', userError);
       return new Response(
         JSON.stringify({ error: 'Error fetching user details' }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
+        { 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }, 
+          status: 500 
+        }
       )
     }
 
     const merchantKey = Deno.env.get('PAYU_MERCHANT_KEY')
     const merchantSalt = Deno.env.get('PAYU_MERCHANT_SALT')
-    const baseUrl = Deno.env.get('PUBLIC_SITE_URL')
+    const baseUrl = Deno.env.get('PUBLIC_SITE_URL') || 'https://your-site-url.com'
 
-    if (!merchantKey || !merchantSalt || !baseUrl) {
+    if (!merchantKey || !merchantSalt) {
+      console.error('Missing PayU configuration');
       return new Response(
-        JSON.stringify({ error: 'Missing configuration' }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
+        JSON.stringify({ error: 'Missing payment gateway configuration' }),
+        { 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }, 
+          status: 500 
+        }
       )
     }
 
@@ -119,6 +152,8 @@ serve(async (req) => {
       furl: `${baseUrl}/payment/failure`,
     }
 
+    console.log('Payment data prepared:', { ...paymentData, key: '***', amount: amount });
+
     // Generate hash
     const hashString = `${paymentData.key}|${paymentData.txnid}|${paymentData.amount}|${paymentData.productinfo}|${paymentData.firstname}|${paymentData.email}|||||||||||${merchantSalt}`
     const hashBuffer = await crypto.subtle.digest(
@@ -128,15 +163,29 @@ serve(async (req) => {
     const hashArray = Array.from(new Uint8Array(hashBuffer))
     const hash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
 
+    console.log('Payment request processed successfully');
+
     return new Response(
       JSON.stringify({ ...paymentData, hash }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      { 
+        headers: { 
+          ...corsHeaders, 
+          'Content-Type': 'application/json'
+        },
+        status: 200
+      }
     )
   } catch (error) {
-    console.error('Error processing payment:', error)
+    console.error('Error processing payment:', error);
     return new Response(
-      JSON.stringify({ error: 'Internal server error' }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
+      JSON.stringify({ 
+        error: 'Internal server error', 
+        details: error instanceof Error ? error.message : 'Unknown error'
+      }),
+      { 
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }, 
+        status: 500 
+      }
     )
   }
 })
