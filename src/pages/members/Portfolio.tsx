@@ -4,17 +4,18 @@ import { InvestmentHistory } from "@/components/members/portfolio/InvestmentHist
 import { InvestmentSummary } from "@/components/members/portfolio/InvestmentSummary";
 import { InvestmentReport } from "@/components/members/portfolio/InvestmentReport";
 import { Button } from "@/components/ui/button";
-import { Download } from "lucide-react";
+import { Download, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { PDFDownloadLink, BlobProvider } from "@react-pdf/renderer";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 
 export default function Portfolio() {
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const projectFilter = searchParams.get('project');
 
   const { data: investments, isLoading } = useQuery({
-    queryKey: ["investments"],
+    queryKey: ["investments", projectFilter],
     queryFn: async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session?.user) return [];
@@ -34,6 +35,10 @@ export default function Portfolio() {
       return data;
     },
   });
+
+  const handleResetFilter = () => {
+    navigate('/members/portfolio');
+  };
 
   if (isLoading) {
     return (
@@ -76,9 +81,20 @@ export default function Portfolio() {
         <div>
           <h1 className="text-2xl font-bold">Investment Portfolio</h1>
           {projectFilter && (
-            <p className="text-muted-foreground mt-1">
-              Filtered by project: {projectFilter}
-            </p>
+            <div className="flex items-center gap-2 mt-1">
+              <p className="text-muted-foreground">
+                Filtered by project: {projectFilter}
+              </p>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-6 px-2"
+                onClick={handleResetFilter}
+              >
+                <X className="h-4 w-4" />
+                Reset Filter
+              </Button>
+            </div>
           )}
         </div>
         <BlobProvider
