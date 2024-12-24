@@ -45,7 +45,10 @@ serve(async (req) => {
 
     console.log('Using merchant key:', merchantKey.substring(0, 4) + '...');
 
-    const txnid = `txn_${investment_id}_${Date.now()}`;
+    // Generate a shorter transaction ID using timestamp and last 6 chars of investment_id
+    const timestamp = Date.now().toString().slice(-6); // Last 6 digits of timestamp
+    const investmentShort = investment_id.slice(-6); // Last 6 chars of investment UUID
+    const txnid = `tx${timestamp}${investmentShort}`; // Format: tx<6-digit-timestamp><6-chars-investment>
 
     // Update transaction ID in the investment record
     const supabaseClient = createClient(
