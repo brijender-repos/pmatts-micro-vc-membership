@@ -77,6 +77,15 @@ export function InvestmentForm({ projectName, onSuccess, onError }: InvestmentFo
 
       console.log('Payment data received from edge function:', data);
 
+      // Validate required PayU fields
+      const requiredFields = ['key', 'txnid', 'amount', 'productinfo', 'firstname', 'email', 'surl', 'furl', 'hash'];
+      const missingFields = requiredFields.filter(field => !data[field]);
+      
+      if (missingFields.length > 0) {
+        console.error('Missing required PayU fields:', missingFields);
+        throw new Error(`Missing required PayU fields: ${missingFields.join(', ')}`);
+      }
+
       // Show processing message
       toast({
         title: "Processing Payment",
@@ -88,7 +97,10 @@ export function InvestmentForm({ projectName, onSuccess, onError }: InvestmentFo
       payuForm.method = 'POST';
       payuForm.action = 'https://secure.payu.in/_payment';
 
-      console.log('Creating PayU form with fields:', data);
+      console.log('Creating PayU form with fields:', {
+        ...data,
+        hash: `${data.hash.substring(0, 10)}...`, // Only log part of the hash for security
+      });
 
       Object.entries(data).forEach(([key, value]) => {
         const input = document.createElement('input');
@@ -96,7 +108,11 @@ export function InvestmentForm({ projectName, onSuccess, onError }: InvestmentFo
         input.name = key;
         input.value = value as string;
         payuForm.appendChild(input);
-        console.log(`Added PayU form field: ${key}=${value}`);
+        if (key !== 'hash') { // Don't log the full hash
+          console.log(`Added PayU form field: ${key}=${value}`);
+        } else {
+          console.log(`Added PayU form field: hash=${value.substring(0, 10)}...`);
+        }
       });
 
       // Add an event listener for when the form is submitted
