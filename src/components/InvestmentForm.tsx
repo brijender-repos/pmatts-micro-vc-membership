@@ -99,7 +99,7 @@ export function InvestmentForm({ projectName, onSuccess, onError }: InvestmentFo
 
       console.log('Creating PayU form with fields:', {
         ...data,
-        hash: `${data.hash.substring(0, 10)}...`, // Only log part of the hash for security
+        hash: `${(data.hash as string).substring(0, 10)}...`, // Only log part of the hash for security
       });
 
       Object.entries(data).forEach(([key, value]) => {
@@ -111,7 +111,7 @@ export function InvestmentForm({ projectName, onSuccess, onError }: InvestmentFo
         if (key !== 'hash') { // Don't log the full hash
           console.log(`Added PayU form field: ${key}=${value}`);
         } else {
-          console.log(`Added PayU form field: hash=${value.substring(0, 10)}...`);
+          console.log(`Added PayU form field: hash=${(value as string).substring(0, 10)}...`);
         }
       });
 
@@ -134,6 +134,10 @@ export function InvestmentForm({ projectName, onSuccess, onError }: InvestmentFo
 
       console.log('Submitting PayU form...');
       document.body.appendChild(payuForm);
+      
+      // Add a small delay to ensure logs are written before redirect
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
       payuForm.submit();
       
       onSuccess?.();
