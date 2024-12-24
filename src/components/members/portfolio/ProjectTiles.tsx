@@ -11,6 +11,8 @@ import solarEnergyMatts from "@/data/projects/solar-energy-matts.json";
 import waterMatts from "@/data/projects/water-matts.json";
 import missingMatters from "@/data/projects/missing-matters.json";
 import techMatts from "@/data/projects/tech-matts.json";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 interface ProjectTilesProps {
   investments: Investment[];
@@ -30,8 +32,26 @@ const allProjects = [
 ];
 
 export function ProjectTiles({ investments }: ProjectTilesProps) {
-  // Calculate totals per project
-  const projectTotals = investments.reduce((acc, inv) => {
+  // Fetch latest investment data
+  const { data: latestInvestments } = useQuery({
+    queryKey: ["investments"],
+    queryFn: async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.user) return [];
+
+      const { data, error } = await supabase
+        .from("investments")
+        .select("*")
+        .eq("user_id", session.user.id)
+        .order("investment_date", { ascending: false });
+
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  // Calculate totals per project using latest data
+  const projectTotals = (latestInvestments || investments).reduce((acc, inv) => {
     if (!acc[inv.project_name]) {
       acc[inv.project_name] = {
         project_name: inv.project_name,
@@ -52,7 +72,7 @@ export function ProjectTiles({ investments }: ProjectTilesProps) {
     <div className="grid gap-3 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
       {allProjects.map((project) => {
         const investment = projectTotals[project.title] || {
-          project_name: project.title,  // Ensure project_name is always present
+          project_name: project.title,
           total_invested: 0,
           total_units: 0,
         };
