@@ -1,6 +1,5 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
-import { paymentLogger } from '../utils/payment-logger.ts'
 import { crypto } from "https://deno.land/std@0.177.0/crypto/mod.ts";
 
 const corsHeaders = {
@@ -21,11 +20,10 @@ serve(async (req) => {
   }
 
   try {
-    const requestData = await req.json() as PaymentRequest
-    paymentLogger.log('Payment request received', requestData)
-
-    const { user_id, project_name, units, notes } = requestData
-    const amount = units * 116 // ₹116 per unit
+    console.log('Payment request received');
+    
+    const requestData = await req.json() as PaymentRequest;
+    console.log('Payment request data:', requestData);
 
     // Create Supabase client
     const supabaseClient = createClient(
@@ -33,15 +31,18 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
     )
 
+    const { user_id, project_name, units, notes } = requestData;
+    const amount = units * 100; // ₹100 per unit
+
     // Get user details
     const { data: profile } = await supabaseClient
       .from('profiles')
       .select('full_name, phone')
       .eq('id', user_id)
-      .single()
+      .single();
 
     if (!profile) {
-      throw new Error('User profile not found')
+      throw new Error('User profile not found');
     }
 
     // Create initial investment record
@@ -57,34 +58,34 @@ serve(async (req) => {
         transaction_status: 'initiated'
       }])
       .select()
-      .single()
+      .single();
 
     if (investmentError) {
-      throw investmentError
+      throw investmentError;
     }
 
     // Get user email
-    const { data: { user }, error: userError } = await supabaseClient.auth.admin.getUserById(user_id)
+    const { data: { user }, error: userError } = await supabaseClient.auth.admin.getUserById(user_id);
     
     if (userError || !user) {
-      throw new Error('Error fetching user details')
+      throw new Error('Error fetching user details');
     }
 
-    const merchantKey = Deno.env.get('PAYU_MERCHANT_KEY')
-    const merchantSalt = Deno.env.get('PAYU_MERCHANT_SALT')
-    const baseUrl = req.headers.get('origin') || 'https://pmatts-micro-vc-membership.lovable.app'
+    const merchantKey = Deno.env.get('PAYU_MERCHANT_KEY');
+    const merchantSalt = Deno.env.get('PAYU_MERCHANT_SALT');
+    const baseUrl = req.headers.get('origin') || 'https://pmatts-micro-vc-membership.lovable.app';
 
     if (!merchantKey || !merchantSalt) {
-      throw new Error('Missing PayU configuration')
+      throw new Error('Missing PayU configuration');
     }
 
-    const txnid = `txn_${investment.id}_${Date.now()}`
+    const txnid = `txn_${investment.id}_${Date.now()}`;
 
     // Update transaction ID
     await supabaseClient
       .from('investments')
       .update({ transaction_id: txnid })
-      .eq('id', investment.id)
+      .eq('id', investment.id);
 
     // Prepare PayU payment data
     const paymentData = {
@@ -98,28 +99,28 @@ serve(async (req) => {
       surl: `${baseUrl}/payment/success`,
       furl: `${baseUrl}/payment/failure`,
       udf1: investment.id // Store investment ID for webhook reference
-    }
+    };
 
     // Generate hash
-    const hashString = `${paymentData.key}|${paymentData.txnid}|${paymentData.amount}|${paymentData.productinfo}|${paymentData.firstname}|${paymentData.email}|||||||||||${merchantSalt}`
+    const hashString = `${paymentData.key}|${paymentData.txnid}|${paymentData.amount}|${paymentData.productinfo}|${paymentData.firstname}|${paymentData.email}|||||||||||${merchantSalt}`;
     const hashBuffer = await crypto.subtle.digest(
       "SHA-512",
       new TextEncoder().encode(hashString)
-    )
-    const hashArray = Array.from(new Uint8Array(hashBuffer))
-    const hash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
+    );
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const hash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 
-    paymentLogger.log('Generated payment data', { ...paymentData, hash })
+    console.log('Generated payment data', { ...paymentData, hash: '***' });
 
     return new Response(
       JSON.stringify({ ...paymentData, hash }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    )
+    );
   } catch (error) {
-    paymentLogger.log('Error creating payment', error)
+    console.error('Error creating payment:', error);
     return new Response(
       JSON.stringify({ error: error.message }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
-    )
+    );
   }
-})
+});

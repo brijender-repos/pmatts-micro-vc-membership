@@ -55,13 +55,6 @@ export function InvestmentForm({ projectName, onSuccess, onError }: InvestmentFo
       }
       paymentLogger.log('User session verified', { userId: session.user.id });
 
-      paymentLogger.log('Creating payment data', {
-        user_id: session.user.id,
-        project_name: projectName,
-        units: values.units,
-        notes: values.notes,
-      });
-
       const { data, error } = await supabase.functions.invoke('create-payment-link', {
         body: {
           user_id: session.user.id,

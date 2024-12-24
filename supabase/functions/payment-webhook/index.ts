@@ -106,15 +106,6 @@ serve(async (req) => {
       )
     }
 
-    // Dispatch custom event for frontend notification
-    const event = new CustomEvent('payu_callback', {
-      detail: {
-        status: transactionStatus,
-        message: error || errorMessage || `Payment ${status}`,
-      },
-    });
-    window.dispatchEvent(event);
-
     console.log('Successfully processed PayU webhook');
 
     return new Response(
