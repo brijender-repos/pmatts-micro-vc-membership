@@ -18,5 +18,5 @@ export interface InvestmentFormData {
   notes?: string;
 }
 
-export const UNIT_PRICE = 30000; // INR 30,000 per unit
+export const UNIT_PRICE = 116; // INR 116 per unit
 export const MAX_UNITS = 5;
