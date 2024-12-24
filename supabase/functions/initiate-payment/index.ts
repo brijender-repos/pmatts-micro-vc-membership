@@ -15,7 +15,6 @@ interface PaymentRequest {
 }
 
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { 
       headers: corsHeaders,
@@ -26,13 +25,25 @@ serve(async (req) => {
   try {
     console.log('Received payment request');
     
-    // Parse the request body
     const requestData = await req.json() as PaymentRequest;
     console.log('Payment request data:', requestData);
 
+    // Create Supabase client with auth context
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      throw new Error('No authorization header');
+    }
+
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_ANON_KEY') ?? ''
+      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
+      {
+        global: {
+          headers: {
+            Authorization: authHeader
+          }
+        }
+      }
     )
 
     const { user_id, project_name, units, notes } = requestData;
@@ -68,7 +79,7 @@ serve(async (req) => {
       )
     }
 
-    // Save initial investment record
+    // Save initial investment record using the authenticated client
     const { data: investment, error: investmentError } = await supabaseClient
       .from('investments')
       .insert([
@@ -115,8 +126,8 @@ serve(async (req) => {
       )
     }
 
-    // Get user email from auth
-    const { data: { user }, error: userError } = await supabaseClient.auth.admin.getUserById(user_id)
+    // Get user email
+    const { data: { user }, error: userError } = await supabaseClient.auth.getUser()
     
     if (userError || !user) {
       console.error('Error fetching user:', userError);
