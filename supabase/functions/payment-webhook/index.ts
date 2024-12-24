@@ -6,6 +6,24 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
+interface PayUResponse {
+  mihpayid?: string;
+  mode?: string;
+  status?: string;
+  key?: string;
+  txnid?: string;
+  amount?: string;
+  addedon?: string;
+  productinfo?: string;
+  firstname?: string;
+  email?: string;
+  phone?: string;
+  udf1?: string;
+  udf2?: string;
+  udf3?: string;
+  hash?: string;
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders })
@@ -19,104 +37,92 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_ANON_KEY') ?? ''
     )
 
-    const formData = await req.formData()
-    const txnid = formData.get('txnid')
-    const status = formData.get('status')
-    const hash = formData.get('hash')
-    const error = formData.get('error')
-    const errorMessage = formData.get('error_Message')
-    const unmappedstatus = formData.get('unmappedstatus')
+    // Get the request path to determine the event type
+    const url = new URL(req.url);
+    const path = url.pathname.split('/').pop();
+    console.log('Webhook event type:', path);
 
-    console.log('PayU webhook data:', {
-      txnid,
-      status,
-      unmappedstatus,
-      error: error || errorMessage,
+    // Parse both body and query parameters
+    const formData = await req.formData();
+    const queryParams = url.searchParams;
+    
+    // Combine form data and query parameters
+    const payUResponse: PayUResponse = {
+      mihpayid: formData.get('mihpayid')?.toString() || queryParams.get('mihpayid') || undefined,
+      mode: formData.get('mode')?.toString() || queryParams.get('mode') || undefined,
+      status: formData.get('status')?.toString() || queryParams.get('status') || undefined,
+      key: formData.get('key')?.toString() || queryParams.get('key') || undefined,
+      txnid: formData.get('txnid')?.toString() || queryParams.get('txnid') || undefined,
+      amount: formData.get('amount')?.toString() || queryParams.get('amount') || undefined,
+      addedon: formData.get('addedon')?.toString() || queryParams.get('addedon') || undefined,
+      productinfo: formData.get('productinfo')?.toString() || queryParams.get('productinfo') || undefined,
+      firstname: formData.get('firstname')?.toString() || queryParams.get('firstname') || undefined,
+      email: formData.get('email')?.toString() || queryParams.get('email') || undefined,
+      phone: formData.get('phone')?.toString() || queryParams.get('phone') || undefined,
+      udf1: formData.get('udf1')?.toString() || queryParams.get('udf1') || undefined,
+      udf2: formData.get('udf2')?.toString() || queryParams.get('udf2') || undefined,
+      udf3: formData.get('udf3')?.toString() || queryParams.get('udf3') || undefined,
+      hash: formData.get('hash')?.toString() || queryParams.get('hash') || undefined,
+    };
+
+    console.log('PayU response data:', {
+      ...payUResponse,
+      hash: '***' // Mask hash in logs
     });
 
-    // Verify hash (implement according to PayU documentation)
-    const merchantKey = Deno.env.get('PAYU_MERCHANT_KEY')
-    const merchantSalt = Deno.env.get('PAYU_MERCHANT_SALT')
-
-    if (!txnid || !status || !hash || !merchantKey || !merchantSalt) {
-      console.error('Missing required parameters');
-      return new Response(
-        JSON.stringify({ error: 'Missing required parameters' }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
-      )
-    }
-
-    // Map PayU status to our transaction status
-    let transactionStatus = 'initiated'
-    switch(unmappedstatus || status) {
-      case 'success':
-      case 'captured':
-        transactionStatus = 'success'
-        break
-      case 'failure':
+    // Update transaction status based on the webhook event type
+    let transactionStatus = 'initiated';
+    switch(path) {
+      case 'successful':
+        transactionStatus = 'success';
+        break;
       case 'failed':
-        transactionStatus = 'failure'
-        break
-      case 'bounced':
-        transactionStatus = 'bounced'
-        break
-      case 'userCancelled':
-        transactionStatus = 'cancelled'
-        break
-      case 'userDropped':
-        transactionStatus = 'dropped'
-        break
-      case 'auto_refund':
-        transactionStatus = 'auto_refund'
-        break
-      case 'refund_success':
-        transactionStatus = 'refund_success'
-        break
-      case 'refund_pending':
-        transactionStatus = 'refund_pending'
-        break
-      case 'refund_failed':
-        transactionStatus = 'refund_failed'
-        break
-      case 'in_progress':
-        transactionStatus = 'in_progress'
-        break
+        transactionStatus = 'failure';
+        break;
+      case 'refund':
+        transactionStatus = 'refunded';
+        break;
+      case 'dispute':
+        transactionStatus = 'disputed';
+        break;
       default:
-        if (error || errorMessage) {
-          transactionStatus = 'failure'
-        }
+        console.log('Unknown webhook event type:', path);
+        return new Response(
+          JSON.stringify({ error: 'Invalid webhook event type' }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
+        );
     }
 
-    console.log('Updating transaction status to:', transactionStatus);
+    // Update investment status if transaction ID exists
+    if (payUResponse.txnid) {
+      const { error: updateError } = await supabaseClient
+        .from('investments')
+        .update({ 
+          transaction_status: transactionStatus,
+          notes: `Payment ${transactionStatus} - PayU ID: ${payUResponse.mihpayid}`,
+        })
+        .eq('transaction_id', payUResponse.txnid);
 
-    // Update investment status
-    const { error: updateError } = await supabaseClient
-      .from('investments')
-      .update({ 
-        transaction_status: transactionStatus,
-        notes: error || errorMessage || `Payment ${status}`,
-      })
-      .eq('transaction_id', txnid)
-
-    if (updateError) {
-      console.error('Error updating investment:', updateError)
-      return new Response(
-        JSON.stringify({ error: 'Error updating investment status' }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
-      )
+      if (updateError) {
+        console.error('Error updating investment:', updateError);
+        return new Response(
+          JSON.stringify({ error: 'Error updating investment status' }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
+        );
+      }
     }
 
     console.log('Successfully processed PayU webhook');
 
     return new Response(
-      JSON.stringify({ message: 'Payment status updated successfully' }),
+      JSON.stringify({ message: 'Payment processed successfully' }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    )
+    );
   } catch (error) {
-    console.error('Error processing webhook:', error)
+    console.error('Error processing webhook:', error);
     return new Response(
       JSON.stringify({ error: 'Internal server error' }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
-    )
+    );
   }
-})
+});
