@@ -39,8 +39,11 @@ serve(async (req) => {
     const baseUrl = req.headers.get('origin') || 'https://pmatts-micro-vc-membership.lovable.app';
 
     if (!merchantKey || !merchantSalt) {
+      console.error('Missing PayU configuration');
       throw new Error('Missing PayU configuration');
     }
+
+    console.log('Using merchant key:', merchantKey.substring(0, 4) + '...');
 
     const txnid = `txn_${investment_id}_${Date.now()}`;
 
@@ -74,6 +77,8 @@ serve(async (req) => {
 
     // Generate hash as per PayU documentation
     const hashString = `${paymentData.key}|${paymentData.txnid}|${paymentData.amount}|${paymentData.productinfo}|${paymentData.firstname}|${paymentData.email}|||||||||||${merchantSalt}`;
+    console.log('Hash string (without salt):', hashString.replace(merchantSalt, '***'));
+    
     const hashBuffer = await crypto.subtle.digest(
       "SHA-512",
       new TextEncoder().encode(hashString)
