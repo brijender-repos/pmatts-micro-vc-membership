@@ -17,13 +17,18 @@ interface PaymentRequest {
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders })
+    return new Response(null, { 
+      headers: corsHeaders,
+      status: 204,
+    })
   }
 
   try {
+    console.log('Received payment request');
+    
     // Parse the request body
     const requestData = await req.json() as PaymentRequest;
-    console.log('Payment request received:', requestData);
+    console.log('Payment request data:', requestData);
 
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
@@ -152,7 +157,13 @@ serve(async (req) => {
       furl: `${baseUrl}/payment/failure`,
     }
 
-    console.log('Payment data prepared:', { ...paymentData, key: '***', amount: amount });
+    console.log('Payment data prepared:', { 
+      ...paymentData, 
+      key: '***', 
+      amount: amount,
+      surl: paymentData.surl,
+      furl: paymentData.furl
+    });
 
     // Generate hash
     const hashString = `${paymentData.key}|${paymentData.txnid}|${paymentData.amount}|${paymentData.productinfo}|${paymentData.firstname}|${paymentData.email}|||||||||||${merchantSalt}`
