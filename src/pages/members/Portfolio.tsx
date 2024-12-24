@@ -41,12 +41,39 @@ export default function Portfolio() {
     );
   }
 
+  // Calculate summary values for the report
+  const totalInvested = investments?.reduce((total, inv) => {
+    if (inv.investment_type === 'investment' || inv.investment_type === 'follow_on') {
+      return total + inv.amount;
+    }
+    return total;
+  }, 0) || 0;
+
+  const totalReturns = investments?.reduce((total, inv) => {
+    if (inv.investment_type === 'distribution' || inv.investment_type === 'dividend' || inv.investment_type === 'exit') {
+      return total + inv.amount;
+    }
+    return total;
+  }, 0) || 0;
+
+  const activeProjects = new Set(
+    investments?.filter(inv => inv.projects?.status === 'active')
+      .map(inv => inv.project_name)
+  ).size || 0;
+
   return (
     <div className="container mx-auto p-4 space-y-8">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Investment Portfolio</h1>
         <PDFDownloadLink
-          document={<InvestmentReport investments={investments || []} />}
+          document={
+            <InvestmentReport 
+              investments={investments || []}
+              totalInvested={totalInvested}
+              totalReturns={totalReturns}
+              activeProjects={activeProjects}
+            />
+          }
           fileName={`investment-report-${new Date().toISOString().split('T')[0]}.pdf`}
         >
           {({ loading }) => (
