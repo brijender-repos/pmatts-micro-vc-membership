@@ -47,7 +47,7 @@ serve(async (req) => {
     )
 
     const { user_id, project_name, units, notes } = requestData;
-    const amount = units * 30000 // INR 30,000 per unit
+    const amount = units * 116 // INR 116 per unit
 
     // Validate units
     if (units <= 0 || units > 5) {
@@ -155,7 +155,7 @@ serve(async (req) => {
       )
     }
 
-    // Prepare PayU payment data
+    // Prepare PayU payment data for live mode
     const paymentData = {
       key: merchantKey,
       txnid: transactionId,
@@ -176,7 +176,7 @@ serve(async (req) => {
       furl: paymentData.furl
     });
 
-    // Generate hash
+    // Generate hash for live mode
     const hashString = `${paymentData.key}|${paymentData.txnid}|${paymentData.amount}|${paymentData.productinfo}|${paymentData.firstname}|${paymentData.email}|||||||||||${merchantSalt}`
     const hashBuffer = await crypto.subtle.digest(
       "SHA-512",

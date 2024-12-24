@@ -63,7 +63,7 @@ export function InvestmentForm({ projectName, onSuccess, onError }: InvestmentFo
 
       if (error) throw error;
 
-      // Create and submit PayU form
+      // Create and submit PayU form for live mode
       const payuForm = document.createElement('form');
       payuForm.method = 'POST';
       payuForm.action = 'https://secure.payu.in/_payment';
