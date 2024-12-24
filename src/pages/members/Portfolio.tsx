@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { PDFDownloadLink } from "@react-pdf/renderer";
+import type { BlobProvider } from "@react-pdf/renderer";
 
 export default function Portfolio() {
   const { data: investments, isLoading } = useQuery({
@@ -65,8 +66,8 @@ export default function Portfolio() {
               }
               fileName={`investment-report-${new Date().toISOString().split('T')[0]}.pdf`}
             >
-              {({ loading }: { loading: boolean }) => (
-                <Button disabled={loading}>
+              {({ loading }) => (
+                <Button disabled={loading} type="button">
                   <Download className="mr-2 h-4 w-4" />
                   {loading ? "Generating PDF..." : "Download Report"}
                 </Button>

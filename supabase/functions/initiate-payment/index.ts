@@ -126,7 +126,7 @@ serve(async (req) => {
 
     const merchantKey = Deno.env.get('PAYU_MERCHANT_KEY')
     const merchantSalt = Deno.env.get('PAYU_MERCHANT_SALT')
-    const baseUrl = Deno.env.get('PUBLIC_SITE_URL') || 'https://your-site-url.com'
+    const baseUrl = req.headers.get('origin') || 'https://pmatts-micro-vc-membership.lovable.app'
 
     if (!merchantKey || !merchantSalt) {
       console.error('Missing PayU configuration');
