@@ -11,6 +11,8 @@ import Settings from "./pages/members/Settings";
 import Portfolio from "./pages/members/Portfolio";
 import Login from "./pages/auth/Login";
 import Callback from "./pages/auth/Callback";
+import PaymentSuccess from "./pages/payment/Success";
+import PaymentFailure from "./pages/payment/Failure";
 import { AuthGuard } from "./components/auth/AuthGuard";
 import { ManageLayout } from "./components/layouts/ManageLayout";
 import ManageIndex from "./pages/manage/Index";
@@ -31,6 +33,8 @@ const App = () => (
           <Route path="/faqs" element={<FAQs />} />
           <Route path="/auth/login" element={<Login />} />
           <Route path="/auth/callback" element={<Callback />} />
+          <Route path="/payment/success" element={<PaymentSuccess />} />
+          <Route path="/payment/failure" element={<PaymentFailure />} />
           
           {/* Protected routes */}
           <Route path="/members/*" element={
