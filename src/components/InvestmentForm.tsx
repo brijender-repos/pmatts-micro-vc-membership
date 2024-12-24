@@ -55,7 +55,7 @@ export function InvestmentForm({ projectName, onSuccess, onError }: InvestmentFo
       }
       paymentLogger.log('User session verified', { userId: session.user.id });
 
-      paymentLogger.log('Creating payment link', {
+      paymentLogger.log('Creating payment data', {
         user_id: session.user.id,
         project_name: projectName,
         units: values.units,
@@ -71,23 +71,30 @@ export function InvestmentForm({ projectName, onSuccess, onError }: InvestmentFo
         },
       });
 
-      if (error || !data?.paymentUrl) {
-        paymentLogger.log('Payment link creation error', error || 'No payment URL received');
-        throw error || new Error('Failed to create payment link');
+      if (error || !data) {
+        paymentLogger.log('Payment data creation error', error || 'No payment data received');
+        throw error || new Error('Failed to create payment data');
       }
 
-      paymentLogger.log('Payment link created', { paymentUrl: data.paymentUrl });
+      paymentLogger.log('Payment data created', data);
 
-      toast({
-        title: "Payment Link Created",
-        description: "Redirecting to payment page...",
+      // Create form and submit to PayU
+      const form = document.createElement('form');
+      form.method = 'post';
+      form.action = 'https://secure.payu.in/_payment';
+
+      // Add all payment parameters as hidden fields
+      Object.entries(data).forEach(([key, value]) => {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = key;
+        input.value = value as string;
+        form.appendChild(input);
       });
 
-      // Add a small delay to ensure logs are written
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Redirect to PayU payment page
-      window.location.href = data.paymentUrl;
+      // Add form to body and submit
+      document.body.appendChild(form);
+      form.submit();
       
       onSuccess?.();
     } catch (error) {

@@ -1,13 +1,14 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 import { paymentLogger } from '../utils/payment-logger.ts'
+import { crypto } from "https://deno.land/std@0.177.0/crypto/mod.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
-interface PaymentLinkRequest {
+interface PaymentRequest {
   user_id: string;
   project_name: string;
   units: number;
@@ -20,8 +21,8 @@ serve(async (req) => {
   }
 
   try {
-    const requestData = await req.json() as PaymentLinkRequest
-    paymentLogger.log('Payment link request received', requestData)
+    const requestData = await req.json() as PaymentRequest
+    paymentLogger.log('Payment request received', requestData)
 
     const { user_id, project_name, units, notes } = requestData
     const amount = units * 116 // ₹116 per unit
@@ -52,7 +53,7 @@ serve(async (req) => {
         investment_type: 'investment',
         amount,
         units,
-        notes: notes || 'Payment Link Created',
+        notes: notes || 'Payment Initiated',
         transaction_status: 'initiated'
       }])
       .select()
@@ -62,53 +63,60 @@ serve(async (req) => {
       throw investmentError
     }
 
-    // PayU Payment Link API parameters
-    const paymentLinkData = {
-      key: Deno.env.get('PAYU_MERCHANT_KEY'),
-      txnid: `txn_${investment.id}_${Date.now()}`,
+    // Get user email
+    const { data: { user }, error: userError } = await supabaseClient.auth.admin.getUserById(user_id)
+    
+    if (userError || !user) {
+      throw new Error('Error fetching user details')
+    }
+
+    const merchantKey = Deno.env.get('PAYU_MERCHANT_KEY')
+    const merchantSalt = Deno.env.get('PAYU_MERCHANT_SALT')
+    const baseUrl = req.headers.get('origin') || 'https://pmatts-micro-vc-membership.lovable.app'
+
+    if (!merchantKey || !merchantSalt) {
+      throw new Error('Missing PayU configuration')
+    }
+
+    const txnid = `txn_${investment.id}_${Date.now()}`
+
+    // Update transaction ID
+    await supabaseClient
+      .from('investments')
+      .update({ transaction_id: txnid })
+      .eq('id', investment.id)
+
+    // Prepare PayU payment data
+    const paymentData = {
+      key: merchantKey,
+      txnid: txnid,
       amount: amount.toString(),
       productinfo: project_name,
       firstname: profile.full_name || 'User',
+      email: user.email,
       phone: profile.phone || '',
-      email: (await supabaseClient.auth.getUser()).data.user?.email,
-      surl: `${req.headers.get('origin')}/payment/success`,
-      furl: `${req.headers.get('origin')}/payment/failure`,
-      curl: `${req.headers.get('origin')}/payment/cancel`,
+      surl: `${baseUrl}/payment/success`,
+      furl: `${baseUrl}/payment/failure`,
       udf1: investment.id // Store investment ID for webhook reference
     }
 
-    // Update investment with transaction ID
-    await supabaseClient
-      .from('investments')
-      .update({ transaction_id: paymentLinkData.txnid })
-      .eq('id', investment.id)
+    // Generate hash
+    const hashString = `${paymentData.key}|${paymentData.txnid}|${paymentData.amount}|${paymentData.productinfo}|${paymentData.firstname}|${paymentData.email}|||||||||||${merchantSalt}`
+    const hashBuffer = await crypto.subtle.digest(
+      "SHA-512",
+      new TextEncoder().encode(hashString)
+    )
+    const hashArray = Array.from(new Uint8Array(hashBuffer))
+    const hash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
 
-    // Call PayU API to create payment link
-    const payuResponse = await fetch('https://api.payu.in/postservice/PayUBiz/createPaymentLink', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${Deno.env.get('PAYU_AUTH_TOKEN')}`
-      },
-      body: JSON.stringify(paymentLinkData)
-    })
-
-    const payuData = await payuResponse.json()
-    paymentLogger.log('PayU payment link created', payuData)
-
-    if (!payuData.status || payuData.status !== 'success') {
-      throw new Error(payuData.message || 'Failed to create payment link')
-    }
-
-    // Format the payment URL to match PayU's format (https://pmny.in/PAYUMN/...)
-    const paymentUrl = payuData.payment_link.replace('https://secure.payu.in', 'https://pmny.in')
+    paymentLogger.log('Generated payment data', { ...paymentData, hash })
 
     return new Response(
-      JSON.stringify({ paymentUrl }),
+      JSON.stringify({ ...paymentData, hash }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )
   } catch (error) {
-    paymentLogger.log('Error creating payment link', error)
+    paymentLogger.log('Error creating payment', error)
     return new Response(
       JSON.stringify({ error: error.message }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
