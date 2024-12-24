@@ -60,9 +60,17 @@ export function InvestmentDialog({ projectName, open, onOpenChange }: Investment
         throw new Error("Please sign in to invest");
       }
 
-      const amount = values.units * UNIT_PRICE;
-      const paymentLink = `https://pmny.in/PAYUMN/yrJqKQpnMTBF?amount=${amount}&productinfo=${encodeURIComponent(projectName)}&firstname=${encodeURIComponent(session.user.email || '')}&udf1=${encodeURIComponent(session.user.id)}&udf2=${encodeURIComponent(values.notes || '')}`;
-      
+      // Get user profile for additional details
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('full_name, phone')
+        .eq('id', session.user.id)
+        .single();
+
+      if (!profile) {
+        throw new Error("User profile not found");
+      }
+
       // Create initial investment record
       const { data: investment, error: investmentError } = await supabase
         .from('investments')
@@ -70,7 +78,7 @@ export function InvestmentDialog({ projectName, open, onOpenChange }: Investment
           user_id: session.user.id,
           project_name: projectName,
           investment_type: 'investment',
-          amount,
+          amount: values.units * UNIT_PRICE,
           units: values.units,
           notes: values.notes,
           transaction_status: 'initiated'
@@ -82,11 +90,31 @@ export function InvestmentDialog({ projectName, open, onOpenChange }: Investment
         throw investmentError;
       }
 
-      // Update payment link with investment ID
-      const finalPaymentLink = `${paymentLink}&udf3=${investment.id}`;
-      paymentLogger.log('Opening payment link', { finalPaymentLink });
+      // Generate payment link with all required parameters
+      const { data, error } = await supabase.functions.invoke('create-payment-link', {
+        body: {
+          user_id: session.user.id,
+          project_name: projectName,
+          units: values.units,
+          notes: values.notes,
+          investment_id: investment.id,
+          user_details: {
+            name: profile.full_name || session.user.email?.split('@')[0] || 'User',
+            email: session.user.email,
+            phone: profile.phone || ''
+          }
+        },
+      });
+
+      if (error || !data) {
+        paymentLogger.log('Payment link creation error', error || 'No payment data received');
+        throw error || new Error('Failed to create payment link');
+      }
+
+      paymentLogger.log('Payment link created', { paymentLink: data.payment_link });
       
-      window.open(finalPaymentLink, '_blank');
+      // Open payment link in new tab
+      window.open(data.payment_link, '_blank');
       onOpenChange(false);
       
       toast({
