@@ -3,12 +3,15 @@ import { useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import { XCircle } from "lucide-react";
+import { paymentLogger } from "@/utils/paymentLogger";
 
 export default function PaymentFailure() {
   const navigate = useNavigate();
   const { toast } = useToast();
 
   useEffect(() => {
+    paymentLogger.log('Payment failure page loaded', window.location.search);
+    
     toast({
       title: "Payment Failed",
       description: "There was an issue processing your payment. Please try again.",

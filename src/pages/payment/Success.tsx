@@ -3,12 +3,15 @@ import { useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import { CheckCircle } from "lucide-react";
+import { paymentLogger } from "@/utils/paymentLogger";
 
 export default function PaymentSuccess() {
   const navigate = useNavigate();
   const { toast } = useToast();
 
   useEffect(() => {
+    paymentLogger.log('Payment success page loaded', window.location.search);
+    
     toast({
       title: "Payment Successful",
       description: "Your investment has been processed successfully.",

@@ -20,7 +20,13 @@ const Login = () => {
     checkAuth();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log('Auth state changed:', event, session?.user?.email);
+      
       if (event === "SIGNED_IN" && session) {
+        toast({
+          title: "Welcome back!",
+          description: "You have successfully signed in.",
+        });
         navigate("/members/dashboard");
       }
       if (event === "USER_UPDATED" && session) {
@@ -31,6 +37,7 @@ const Login = () => {
           title: "Signed out",
           description: "You have been signed out successfully.",
         });
+        navigate("/auth/login");
       }
     });
 

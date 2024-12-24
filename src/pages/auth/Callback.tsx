@@ -8,22 +8,29 @@ const Callback = () => {
   const { toast } = useToast();
 
   useEffect(() => {
-    // Handle the OAuth callback
     const handleOAuthCallback = async () => {
       try {
-        // Get the session to confirm the user is authenticated
+        console.log('Processing OAuth callback');
         const { data: { session }, error } = await supabase.auth.getSession();
         
-        if (error) throw error;
+        if (error) {
+          console.error('Auth callback error:', error);
+          throw error;
+        }
         
         if (session) {
+          console.log('Session obtained, redirecting to dashboard');
           toast({
             title: "Welcome!",
             description: "You have successfully signed in.",
           });
           navigate("/members/dashboard");
+        } else {
+          console.log('No session found, redirecting to login');
+          navigate("/auth/login");
         }
       } catch (error: any) {
+        console.error('Auth callback error:', error);
         toast({
           variant: "destructive",
           title: "Authentication Error",
@@ -36,7 +43,6 @@ const Callback = () => {
     handleOAuthCallback();
   }, [navigate, toast]);
 
-  // Show a loading state while processing
   return (
     <div className="min-h-screen bg-background flex items-center justify-center">
       <div className="animate-pulse text-center">
