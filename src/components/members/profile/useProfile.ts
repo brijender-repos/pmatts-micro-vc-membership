@@ -26,13 +26,13 @@ export function useProfile() {
         throw new Error("No user found");
       }
 
-      // Get email from auth session
+      // Get email from session only
       setEmail(session.user.email || "");
 
-      // Get profile data from profiles table
+      // Get profile data from profiles table only
       const { data: profile, error } = await supabase
         .from('profiles')
-        .select('*')
+        .select('full_name, phone, avatar_url')
         .eq('user_id', session.user.id)
         .maybeSingle();
 
@@ -66,14 +66,17 @@ export function useProfile() {
         throw new Error("No user found");
       }
 
-      // Only update the profiles table using user_id
+      // Explicitly define which profile fields we update
+      const profileUpdate = {
+        full_name: data.full_name,
+        phone: data.phone,
+        updated_at: new Date().toISOString(),
+      };
+
+      // Update profiles table only, using user_id
       const { error } = await supabase
         .from('profiles')
-        .update({
-          full_name: data.full_name,
-          phone: data.phone,
-          updated_at: new Date().toISOString(),
-        })
+        .update(profileUpdate)
         .eq('user_id', session.user.id);
 
       if (error) {
