@@ -13,8 +13,10 @@ export interface Investment {
   investment_date: string;
   notes?: string;
   transaction_id?: string;
+  transaction_status: string;
   projects?: {
     name: string;
     status: string;
   };
+  user_id: string;
 }

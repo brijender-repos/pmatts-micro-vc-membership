@@ -7,6 +7,14 @@ import { InvestmentHistory } from "@/components/members/portfolio/InvestmentHist
 import { InvestmentSummary } from "@/components/members/portfolio/InvestmentSummary"
 import { ProjectTiles } from "@/components/members/portfolio/ProjectTiles"
 
+interface UserProfile {
+  id: string;
+  full_name: string | null;
+  email: string | null;
+  phone: string | null;
+  is_active: boolean | null;
+}
+
 export default function UserDetails() {
   const { userId } = useParams()
 
@@ -17,16 +25,19 @@ export default function UserDetails() {
         .from("profiles")
         .select(`
           *,
-          auth_users:auth.users(email)
+          user:user_id (
+            email
+          )
         `)
         .eq("id", userId)
         .single()
 
       if (error) throw error
+      
       return {
         ...data,
-        email: data.auth_users?.email
-      }
+        email: data.user?.email
+      } as UserProfile
     },
   })
 

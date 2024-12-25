@@ -21,6 +21,18 @@ import {
 import { formatCurrency } from "@/lib/utils"
 import { Link } from "react-router-dom"
 
+interface InvestmentWithUser {
+  id: string;
+  investment_date: string;
+  project_name: string;
+  investment_type: string;
+  amount: number;
+  units: number | null;
+  user_id: string;
+  user_name: string | null;
+  user_email: string | null;
+}
+
 export default function Investments() {
   const [searchTerm, setSearchTerm] = useState("")
   const [sortBy, setSortBy] = useState("investment_date")
@@ -29,31 +41,25 @@ export default function Investments() {
   const { data: investments, isLoading } = useQuery({
     queryKey: ["all-investments", searchTerm, sortBy, sortOrder],
     queryFn: async () => {
-      let query = supabase
+      const { data, error } = await supabase
         .from("investments")
         .select(`
           *,
-          projects(name, status),
-          investor:profiles!inner(
+          profiles!inner (
             full_name,
-            auth_users:auth.users(email)
+            auth_users:user_id (
+              email
+            )
           )
         `)
         .order(sortBy, { ascending: sortOrder === "asc" })
 
-      if (searchTerm) {
-        query = query.or(
-          `investor.full_name.ilike.%${searchTerm}%,investor.auth_users.email.ilike.%${searchTerm}%,project_name.ilike.%${searchTerm}%`
-        )
-      }
-
-      const { data, error } = await query
       if (error) throw error
 
-      return data.map(investment => ({
+      return (data || []).map((investment): InvestmentWithUser => ({
         ...investment,
-        user_email: investment.investor?.auth_users?.email,
-        user_name: investment.investor?.full_name
+        user_name: investment.profiles?.full_name || null,
+        user_email: investment.profiles?.auth_users?.email || null
       }))
     },
   })

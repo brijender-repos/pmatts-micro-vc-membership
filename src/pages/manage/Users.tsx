@@ -5,6 +5,15 @@ import { UsersTable } from "@/components/manage/users/UsersTable"
 import { UsersHeader } from "@/components/manage/users/UsersHeader"
 import { UsersPagination } from "@/components/manage/users/UsersPagination"
 
+interface UserData {
+  id: string;
+  full_name: string | null;
+  email: string | null;
+  phone: string | null;
+  is_active: boolean | null;
+  admin_role: boolean | null;
+}
+
 export default function Users() {
   const [page, setPage] = useState(1)
   const [searchTerm, setSearchTerm] = useState("")
@@ -19,7 +28,9 @@ export default function Users() {
         .from("profiles")
         .select(`
           *,
-          auth_users:auth.users(email)
+          user:user_id (
+            email
+          )
         `, { count: "exact" })
         .range((page - 1) * itemsPerPage, page * itemsPerPage - 1)
         .order(sortBy, { ascending: sortOrder === "asc" })
@@ -34,9 +45,9 @@ export default function Users() {
 
       if (error) throw error
 
-      const users = data.map(profile => ({
+      const users = data.map((profile): UserData => ({
         ...profile,
-        email: profile.auth_users?.email
+        email: profile.user?.email
       }))
 
       return {
