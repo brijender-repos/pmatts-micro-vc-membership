@@ -2,11 +2,7 @@ import { UseFormReturn } from "react-hook-form";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-
-export interface ProfileFormValues {
-  full_name: string;
-  phone: string;
-}
+import { ProfileFormValues } from "./types";
 
 interface ProfileFormProps {
   form: UseFormReturn<ProfileFormValues>;
@@ -59,13 +55,17 @@ export function ProfileForm({ form, isEditing, onSubmit, onCancel }: ProfileForm
 
         {isEditing && (
           <div className="flex space-x-2">
-            <Button type="submit">
-              Save Changes
+            <Button 
+              type="submit" 
+              disabled={form.formState.isSubmitting}
+            >
+              {form.formState.isSubmitting ? "Saving..." : "Save Changes"}
             </Button>
             <Button 
               type="button" 
               variant="outline"
               onClick={onCancel}
+              disabled={form.formState.isSubmitting}
             >
               Cancel
             </Button>

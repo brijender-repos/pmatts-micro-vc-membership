@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { ProfileFormValues } from "./ProfileForm";
+import { ProfileFormValues, Profile } from "./types";
 
 export function useProfile() {
   const { toast } = useToast();
@@ -28,14 +28,14 @@ export function useProfile() {
 
       setEmail(user.email || "");
 
-      const { data: profile, error: profileError } = await supabase
+      const { data: profile, error } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', user.id)
         .maybeSingle();
 
-      if (profileError) {
-        throw profileError;
+      if (error) {
+        throw error;
       }
 
       if (profile) {
@@ -64,7 +64,7 @@ export function useProfile() {
         throw new Error("No user found");
       }
 
-      const { error: updateError } = await supabase
+      const { error } = await supabase
         .from('profiles')
         .update({
           full_name: data.full_name,
@@ -73,8 +73,9 @@ export function useProfile() {
         })
         .eq('id', user.id);
 
-      if (updateError) {
-        throw updateError;
+      if (error) {
+        console.error('Profile update error:', error);
+        throw error;
       }
 
       setIsEditing(false);
@@ -84,11 +85,11 @@ export function useProfile() {
       });
       
       await loadProfile();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error updating profile:', error);
       toast({
         title: "Error",
-        description: "Failed to update profile. Please try again.",
+        description: error.message || "Failed to update profile. Please try again.",
         variant: "destructive",
       });
     }
@@ -96,7 +97,7 @@ export function useProfile() {
 
   const handleCancel = () => {
     setIsEditing(false);
-    loadProfile(); // Reset form to original values
+    loadProfile();
   };
 
   return {
