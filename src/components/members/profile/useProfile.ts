@@ -64,6 +64,7 @@ export function useProfile() {
         throw new Error("No user found");
       }
 
+      // Only update the profiles table
       const { error } = await supabase
         .from('profiles')
         .update({
