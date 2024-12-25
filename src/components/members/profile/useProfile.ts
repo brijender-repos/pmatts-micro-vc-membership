@@ -21,19 +21,19 @@ export function useProfile() {
   const loadProfile = async () => {
     try {
       setLoading(true);
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.user) {
         throw new Error("No user found");
       }
 
-      // Get email from auth user
-      setEmail(user.email || "");
+      // Get email from auth session
+      setEmail(session.user.email || "");
 
       // Get profile data from profiles table
       const { data: profile, error } = await supabase
         .from('profiles')
         .select('*')
-        .eq('id', user.id)
+        .eq('user_id', session.user.id)
         .maybeSingle();
 
       if (error) {
@@ -61,12 +61,12 @@ export function useProfile() {
 
   const handleSubmit = async (data: ProfileFormValues) => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.user) {
         throw new Error("No user found");
       }
 
-      // Only update the profiles table
+      // Only update the profiles table using user_id
       const { error } = await supabase
         .from('profiles')
         .update({
@@ -74,7 +74,7 @@ export function useProfile() {
           phone: data.phone,
           updated_at: new Date().toISOString(),
         })
-        .eq('id', user.id);
+        .eq('user_id', session.user.id);
 
       if (error) {
         console.error('Profile update error:', error);
