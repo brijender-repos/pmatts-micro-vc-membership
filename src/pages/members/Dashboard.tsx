@@ -4,9 +4,12 @@ import { ProjectTiles } from "@/components/members/portfolio/ProjectTiles";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
+import { RefreshCw } from "lucide-react";
+import { toast } from "sonner";
 
 const Dashboard = () => {
-  const { data: investments, isLoading } = useQuery({
+  const { data: investments, isLoading, refetch } = useQuery({
     queryKey: ["investments"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -19,6 +22,15 @@ const Dashboard = () => {
     },
   });
 
+  const handleRefresh = async () => {
+    try {
+      await refetch();
+      toast.success("Investment data refreshed");
+    } catch (error) {
+      toast.error("Failed to refresh investment data");
+    }
+  };
+
   return (
     <DashboardLayout>
       <div className="space-y-8">
@@ -28,7 +40,19 @@ const Dashboard = () => {
         </div>
 
         <div className="space-y-4">
-          <h2 className="text-2xl font-semibold">Project wise Investments</h2>
+          <div className="flex items-center justify-between">
+            <h2 className="text-2xl font-semibold">Project wise Investments</h2>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleRefresh}
+              disabled={isLoading}
+              className="gap-2"
+            >
+              <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
+              Refresh
+            </Button>
+          </div>
           {isLoading ? (
             <Skeleton className="h-[200px] w-full" />
           ) : (
