@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { UseFormReturn } from "react-hook-form";
 import { NomineeFormValues } from "./types";
+import { cn } from "@/lib/utils";
 
 interface NomineeFormProps {
   form: UseFormReturn<NomineeFormValues>;

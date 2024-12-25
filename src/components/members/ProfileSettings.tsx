@@ -29,40 +29,40 @@ export function ProfileSettings() {
   });
 
   useEffect(() => {
-    async function loadProfile() {
-      try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) return;
-
-        setEmail(user.email || "");
-
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', user.id)
-          .single();
-
-        if (profile) {
-          form.reset({
-            full_name: profile.full_name || "",
-            phone: profile.phone || "",
-          });
-          setAvatarUrl(profile.avatar_url);
-        }
-      } catch (error) {
-        console.error('Error loading profile:', error);
-        toast({
-          title: "Error",
-          description: "Failed to load profile data",
-          variant: "destructive",
-        });
-      } finally {
-        setLoading(false);
-      }
-    }
-
     loadProfile();
-  }, [form, toast]);
+  }, []);
+
+  const loadProfile = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      setEmail(user.email || "");
+
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+
+      if (profile) {
+        form.reset({
+          full_name: profile.full_name || "",
+          phone: profile.phone || "",
+        });
+        setAvatarUrl(profile.avatar_url);
+      }
+    } catch (error) {
+      console.error('Error loading profile:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load profile data",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   async function onSubmit(data: ProfileFormValues) {
     try {
@@ -85,6 +85,9 @@ export function ProfileSettings() {
         title: "Success",
         description: "Profile updated successfully",
       });
+      
+      // Reload profile data after successful update
+      await loadProfile();
     } catch (error) {
       console.error('Error updating profile:', error);
       toast({
