@@ -1,25 +1,22 @@
-import { useParams } from "react-router-dom"
-import { useQuery } from "@tanstack/react-query"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Card } from "@/components/ui/card"
-import { supabase } from "@/integrations/supabase/client"
-import { InvestmentHistory } from "@/components/members/portfolio/InvestmentHistory"
-import { InvestmentSummary } from "@/components/members/portfolio/InvestmentSummary"
-import { ProjectTiles } from "@/components/members/portfolio/ProjectTiles"
+import { useParams } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card } from "@/components/ui/card";
+import { supabase } from "@/integrations/supabase/client";
+import { InvestmentHistory } from "@/components/members/portfolio/InvestmentHistory";
+import { InvestmentSummary } from "@/components/members/portfolio/InvestmentSummary";
+import { ProjectTiles } from "@/components/members/portfolio/ProjectTiles";
 
 interface UserProfile {
   id: string;
   full_name: string | null;
-  email: string | null;
   phone: string | null;
   is_active: boolean | null;
-  user: {
-    email: string | null;
-  } | null;
+  email: string | null;
 }
 
 export default function UserDetails() {
-  const { userId } = useParams()
+  const { userId } = useParams();
 
   const { data: profile } = useQuery({
     queryKey: ["user-profile", userId],
@@ -28,21 +25,21 @@ export default function UserDetails() {
         .from("profiles")
         .select(`
           *,
-          user:user_id (
+          user:auth.users (
             email
           )
         `)
         .eq("id", userId)
-        .single()
+        .single();
 
-      if (error) throw error
-      
+      if (error) throw error;
+
       return {
         ...data,
-        email: data.user?.email
-      } as UserProfile
+        email: data.user?.email,
+      } as UserProfile;
     },
-  })
+  });
 
   const { data: investments } = useQuery({
     queryKey: ["user-investments", userId],
@@ -51,12 +48,12 @@ export default function UserDetails() {
         .from("investments")
         .select("*, projects(name, status)")
         .eq("user_id", userId)
-        .order("investment_date", { ascending: false })
+        .order("investment_date", { ascending: false });
 
-      if (error) throw error
-      return data
+      if (error) throw error;
+      return data;
     },
-  })
+  });
 
   return (
     <div className="space-y-6">
@@ -115,5 +112,5 @@ export default function UserDetails() {
         </TabsContent>
       </Tabs>
     </div>
-  )
+  );
 }

@@ -1,9 +1,9 @@
-import { useState } from "react"
-import { useQuery } from "@tanstack/react-query"
-import { supabase } from "@/integrations/supabase/client"
-import { UsersTable } from "@/components/manage/users/UsersTable"
-import { UsersHeader } from "@/components/manage/users/UsersHeader"
-import { UsersPagination } from "@/components/manage/users/UsersPagination"
+import { useQuery } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
+import { UsersTable } from "@/components/manage/users/UsersTable";
+import { UsersPagination } from "@/components/manage/users/UsersPagination";
+import { UsersHeader } from "@/components/manage/users/UsersHeader";
+import { supabase } from "@/integrations/supabase/client";
 
 interface UserData {
   id: string;
@@ -12,79 +12,64 @@ interface UserData {
   phone: string | null;
   is_active: boolean | null;
   created_at: string;
-  user: {
-    email: string | null;
-  } | null;
 }
 
 export default function Users() {
-  const [page, setPage] = useState(1)
-  const [searchTerm, setSearchTerm] = useState("")
-  const [sortBy, setSortBy] = useState("created_at")
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc")
-  const itemsPerPage = 10
+  const navigate = useNavigate();
+  const [page, setPage] = useState(1);
+  const pageSize = 10;
 
-  const { data, isLoading, refetch } = useQuery({
-    queryKey: ["users", page, searchTerm, sortBy, sortOrder],
+  const { data: usersData } = useQuery({
+    queryKey: ["users", page],
     queryFn: async () => {
-      let query = supabase
+      const start = (page - 1) * pageSize;
+      const end = start + pageSize - 1;
+
+      const { data, error, count } = await supabase
         .from("profiles")
-        .select(`
+        .select(
+          `
           *,
-          user:user_id (
+          user:auth.users (
             email
           )
-        `, { count: "exact" })
-        .range((page - 1) * itemsPerPage, page * itemsPerPage - 1)
-        .order(sortBy, { ascending: sortOrder === "asc" })
-
-      if (searchTerm) {
-        query = query.or(
-          `full_name.ilike.%${searchTerm}%,phone.ilike.%${searchTerm}%`
+        `,
+          { count: "exact" }
         )
-      }
+        .order("created_at", { ascending: false })
+        .range(start, end);
 
-      const { data, error, count } = await query
-
-      if (error) throw error
+      if (error) throw error;
 
       const users = data.map((profile): UserData => ({
         ...profile,
         email: profile.user?.email,
-        created_at: profile.created_at
-      }))
+        created_at: profile.created_at,
+      }));
 
       return {
         users,
-        total: count || 0,
-      }
+        totalPages: Math.ceil((count || 0) / pageSize),
+      };
     },
-  })
-
-  const totalPages = Math.ceil((data?.total || 0) / itemsPerPage)
+  });
 
   return (
     <div className="space-y-6">
-      <UsersHeader
-        searchTerm={searchTerm}
-        setSearchTerm={setSearchTerm}
-        sortBy={sortBy}
-        setSortBy={setSortBy}
-        sortOrder={sortOrder}
-        setSortOrder={setSortOrder}
-      />
-      <UsersTable
-        users={data?.users}
-        isLoading={isLoading}
-        refetch={refetch}
-      />
-      {totalPages > 1 && (
+      <UsersHeader />
+      <div className="border rounded-lg">
+        <UsersTable
+          users={usersData?.users || []}
+          onUserClick={(userId) => navigate(`/manage/users/${userId}`)}
+        />
+      </div>
+      {usersData?.totalPages && usersData.totalPages > 1 && (
         <UsersPagination
-          page={page}
-          setPage={setPage}
-          totalPages={totalPages}
+          currentPage={page}
+          totalPages={usersData.totalPages}
+          onPageChange={setPage}
         />
       )}
     </div>
-  )
+  );
 }
