@@ -133,32 +133,32 @@ export type Database = {
       }
       nominees: {
         Row: {
-          id: string;
-          user_id: string;
-          full_name: string;
-          date_of_birth: string;
-          relationship: 'Husband' | 'Wife' | 'Son' | 'Daughter' | 'Father' | 'Mother' | 'Other';
-          created_at: string;
-          updated_at: string;
-        };
+          created_at: string
+          date_of_birth: string
+          full_name: string
+          id: string
+          relationship: Database["public"]["Enums"]["nominee_relationship"]
+          updated_at: string
+          user_id: string
+        }
         Insert: {
-          id?: string;
-          user_id: string;
-          full_name: string;
-          date_of_birth: string;
-          relationship: 'Husband' | 'Wife' | 'Son' | 'Daughter' | 'Father' | 'Mother' | 'Other';
-          created_at?: string;
-          updated_at?: string;
-        };
+          created_at?: string
+          date_of_birth: string
+          full_name: string
+          id?: string
+          relationship: Database["public"]["Enums"]["nominee_relationship"]
+          updated_at?: string
+          user_id: string
+        }
         Update: {
-          id?: string;
-          user_id?: string;
-          full_name?: string;
-          date_of_birth?: string;
-          relationship?: 'Husband' | 'Wife' | 'Son' | 'Daughter' | 'Father' | 'Mother' | 'Other';
-          created_at?: string;
-          updated_at?: string;
-        };
+          created_at?: string
+          date_of_birth?: string
+          full_name?: string
+          id?: string
+          relationship?: Database["public"]["Enums"]["nominee_relationship"]
+          updated_at?: string
+          user_id?: string
+        }
         Relationships: []
       }
       profiles: {
@@ -281,7 +281,7 @@ export type Tables<
   TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
     ? keyof (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
         Database[PublicTableNameOrOptions["schema"]]["Views"])
-    : never,
+    : never = never,
 > = PublicTableNameOrOptions extends { schema: keyof Database }
   ? (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
       Database[PublicTableNameOrOptions["schema"]]["Views"])[TableName] extends {
@@ -293,10 +293,10 @@ export type Tables<
         PublicSchema["Views"])
     ? (PublicSchema["Tables"] &
         PublicSchema["Views"])[PublicTableNameOrOptions] extends {
-      Row: infer R
-    }
-    ? R
-    : never
+        Row: infer R
+      }
+      ? R
+      : never
     : never
 
 export type TablesInsert<
