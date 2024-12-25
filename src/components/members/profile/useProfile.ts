@@ -20,16 +20,23 @@ export function useProfile() {
 
   const loadProfile = async () => {
     try {
+      setLoading(true);
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      if (!user) {
+        throw new Error("No user found");
+      }
 
       setEmail(user.email || "");
 
-      const { data: profile } = await supabase
+      const { data: profile, error: profileError } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', user.id)
-        .single();
+        .maybeSingle();
+
+      if (profileError) {
+        throw profileError;
+      }
 
       if (profile) {
         form.reset({
@@ -42,7 +49,7 @@ export function useProfile() {
       console.error('Error loading profile:', error);
       toast({
         title: "Error",
-        description: "Failed to load profile data",
+        description: "Failed to load profile data. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -53,9 +60,11 @@ export function useProfile() {
   const handleSubmit = async (data: ProfileFormValues) => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      if (!user) {
+        throw new Error("No user found");
+      }
 
-      const { error } = await supabase
+      const { error: updateError } = await supabase
         .from('profiles')
         .update({
           full_name: data.full_name,
@@ -64,7 +73,9 @@ export function useProfile() {
         })
         .eq('id', user.id);
 
-      if (error) throw error;
+      if (updateError) {
+        throw updateError;
+      }
 
       setIsEditing(false);
       toast({
@@ -77,7 +88,7 @@ export function useProfile() {
       console.error('Error updating profile:', error);
       toast({
         title: "Error",
-        description: "Failed to update profile",
+        description: "Failed to update profile. Please try again.",
         variant: "destructive",
       });
     }
@@ -85,7 +96,7 @@ export function useProfile() {
 
   const handleCancel = () => {
     setIsEditing(false);
-    form.reset();
+    loadProfile(); // Reset form to original values
   };
 
   return {
