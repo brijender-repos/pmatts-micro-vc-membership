@@ -19,6 +19,7 @@ interface Investment {
   units?: number;
   equity_percentage?: number;
   investment_date: string;
+  transaction_status: string;
   projects: {
     name: string;
     status: string;
@@ -36,7 +37,10 @@ export function InvestmentHistory({ investments }: InvestmentHistoryProps) {
   const [sortField, setSortField] = useState<SortField>('investment_date');
   const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
 
-  const sortedInvestments = [...investments].sort((a, b) => {
+  // Filter only successful investments
+  const successfulInvestments = investments.filter(inv => inv.transaction_status === 'success');
+
+  const sortedInvestments = [...successfulInvestments].sort((a, b) => {
     const aValue = a[sortField];
     const bValue = b[sortField];
     const multiplier = sortOrder === 'asc' ? 1 : -1;

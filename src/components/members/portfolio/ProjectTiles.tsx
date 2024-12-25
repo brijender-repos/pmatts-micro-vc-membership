@@ -50,8 +50,13 @@ export function ProjectTiles({ investments }: ProjectTilesProps) {
     },
   });
 
-  // Calculate totals per project using latest data
-  const projectTotals = (latestInvestments || investments).reduce((acc, inv) => {
+  // Filter only successful investments before calculating totals
+  const successfulInvestments = (latestInvestments || investments).filter(
+    inv => inv.transaction_status === 'success'
+  );
+
+  // Calculate totals per project using latest successful investments
+  const projectTotals = successfulInvestments.reduce((acc, inv) => {
     if (!acc[inv.project_name]) {
       acc[inv.project_name] = {
         project_name: inv.project_name,

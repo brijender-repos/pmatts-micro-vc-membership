@@ -9,6 +9,7 @@ interface Investment {
   units?: number;
   equity_percentage?: number;
   investment_date: string;
+  transaction_status: string;
   projects: {
     name: string;
     status: string;
@@ -20,14 +21,17 @@ interface InvestmentSummaryProps {
 }
 
 export function InvestmentSummary({ investments }: InvestmentSummaryProps) {
-  const totalInvested = investments.reduce((total, inv) => {
+  // Filter only successful investments
+  const successfulInvestments = investments.filter(inv => inv.transaction_status === 'success');
+
+  const totalInvested = successfulInvestments.reduce((total, inv) => {
     if (inv.investment_type === 'investment' || inv.investment_type === 'follow_on') {
       return total + inv.amount;
     }
     return total;
   }, 0);
 
-  const totalReturns = investments.reduce((total, inv) => {
+  const totalReturns = successfulInvestments.reduce((total, inv) => {
     if (inv.investment_type === 'distribution' || inv.investment_type === 'dividend' || inv.investment_type === 'exit') {
       return total + inv.amount;
     }
@@ -35,7 +39,7 @@ export function InvestmentSummary({ investments }: InvestmentSummaryProps) {
   }, 0);
 
   const activeProjects = new Set(
-    investments
+    successfulInvestments
       .filter(inv => inv.projects.status === 'active')
       .map(inv => inv.project_name)
   ).size;
