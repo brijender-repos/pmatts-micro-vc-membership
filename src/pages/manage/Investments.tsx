@@ -36,8 +36,15 @@ export default function Investments() {
       const { data, error } = await supabase
         .from("investments")
         .select(`
-          *,
-          profiles!investments_user_id_profiles_fkey (
+          id,
+          project_name,
+          investment_type,
+          investment_date,
+          amount,
+          units,
+          user_id,
+          transaction_status,
+          profiles:profiles!investments_user_id_profiles_fkey (
             full_name,
             user:auth.users!profiles_user_id_fkey (
               email
@@ -47,7 +54,6 @@ export default function Investments() {
         .order("investment_date", { ascending: false });
 
       if (error) throw error;
-
       return data as InvestmentWithUser[];
     },
   });

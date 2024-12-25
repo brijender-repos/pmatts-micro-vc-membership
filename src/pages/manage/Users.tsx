@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
 import { UsersTable } from "@/components/manage/users/UsersTable";
 import { UsersPagination } from "@/components/manage/users/UsersPagination";
 import { UsersHeader } from "@/components/manage/users/UsersHeader";
@@ -16,7 +15,6 @@ interface UserData {
 }
 
 export default function Users() {
-  const navigate = useNavigate();
   const [page, setPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("created_at");

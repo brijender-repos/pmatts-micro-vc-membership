@@ -43,7 +43,7 @@ export default function UserDetails() {
         phone: data.phone,
         is_active: data.is_active,
         email: data.user?.email,
-      } as UserProfile;
+      } satisfies UserProfile;
     },
   });
 
