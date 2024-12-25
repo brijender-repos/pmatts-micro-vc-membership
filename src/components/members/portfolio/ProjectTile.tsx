@@ -17,9 +17,19 @@ export function ProjectTile({ title, status, investment }: ProjectTileProps) {
   const [showInvestmentDialog, setShowInvestmentDialog] = useState(false);
   const navigate = useNavigate();
   const isUpcoming = status === "upcoming";
+  const isMissingMatters = title === "Missing Matters";
   
   const handleProjectClick = () => {
     navigate(`/members/portfolio?project=${encodeURIComponent(title)}`);
+  };
+
+  const handleInvestClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (isMissingMatters) {
+      window.open('https://pmny.in/PAYUMN/yrJqKQpnMTBF', '_blank');
+    } else {
+      setShowInvestmentDialog(true);
+    }
   };
   
   return (
@@ -49,10 +59,7 @@ export function ProjectTile({ title, status, investment }: ProjectTileProps) {
             <Button 
               className="w-full h-8 text-xs"
               variant={investment.total_invested > 0 ? "outline" : "default"}
-              onClick={(e) => {
-                e.stopPropagation();
-                setShowInvestmentDialog(true);
-              }}
+              onClick={handleInvestClick}
             >
               <Plus className="mr-1 h-3 w-3" />
               {investment.total_invested > 0 ? 'Invest More' : 'Invest'}
@@ -61,11 +68,13 @@ export function ProjectTile({ title, status, investment }: ProjectTileProps) {
         </CardContent>
       </Card>
 
-      <InvestmentDialog
-        projectName={title}
-        open={showInvestmentDialog}
-        onOpenChange={setShowInvestmentDialog}
-      />
+      {!isMissingMatters && (
+        <InvestmentDialog
+          projectName={title}
+          open={showInvestmentDialog}
+          onOpenChange={setShowInvestmentDialog}
+        />
+      )}
     </>
   );
 }
