@@ -29,28 +29,22 @@ export default function Users() {
 
       const { data, error, count } = await supabase
         .from("profiles")
-        .select(
-          `
+        .select(`
           id,
           full_name,
           phone,
           is_active,
           created_at,
-          user:auth.users!profiles_user_id_fkey (
-            email
-          )
-        `,
-          { count: "exact" }
-        )
-        .order("created_at", { ascending: false })
+          email
+        `, { count: "exact" })
         .range(start, end);
 
       if (error) throw error;
 
-      const users = data.map((profile): UserData => ({
+      const users = (data || []).map((profile): UserData => ({
         id: profile.id,
         full_name: profile.full_name,
-        email: profile.user?.email || null,
+        email: profile.email,
         phone: profile.phone,
         is_active: profile.is_active,
         created_at: profile.created_at,

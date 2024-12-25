@@ -28,9 +28,7 @@ export default function UserDetails() {
           full_name,
           phone,
           is_active,
-          user:auth.users!profiles_user_id_fkey (
-            email
-          )
+          email
         `)
         .eq("id", userId)
         .single();
@@ -42,7 +40,7 @@ export default function UserDetails() {
         full_name: data.full_name,
         phone: data.phone,
         is_active: data.is_active,
-        email: data.user?.email,
+        email: data.email,
       } satisfies UserProfile;
     },
   });

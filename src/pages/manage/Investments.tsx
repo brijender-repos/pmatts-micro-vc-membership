@@ -23,9 +23,7 @@ interface InvestmentWithUser {
   transaction_status: string;
   profiles: {
     full_name: string | null;
-    user: {
-      email: string | null;
-    };
+    email: string | null;
   };
 }
 
@@ -44,17 +42,15 @@ export default function Investments() {
           units,
           user_id,
           transaction_status,
-          profiles:profiles!investments_user_id_profiles_fkey (
+          profiles (
             full_name,
-            user:auth.users!profiles_user_id_fkey (
-              email
-            )
+            email
           )
         `)
         .order("investment_date", { ascending: false });
 
       if (error) throw error;
-      return data as InvestmentWithUser[];
+      return (data || []) as InvestmentWithUser[];
     },
   });
 
@@ -90,7 +86,7 @@ export default function Investments() {
                   <div>
                     <p>{investment.profiles?.full_name || "N/A"}</p>
                     <p className="text-sm text-muted-foreground">
-                      {investment.profiles?.user?.email}
+                      {investment.profiles?.email}
                     </p>
                   </div>
                 </TableCell>
@@ -106,7 +102,7 @@ export default function Investments() {
                   <Badge
                     variant={
                       investment.transaction_status === "completed"
-                        ? "success"
+                        ? "default"
                         : investment.transaction_status === "failed"
                         ? "destructive"
                         : "secondary"
