@@ -37,9 +37,9 @@ export default function Investments() {
         .from("investments")
         .select(`
           *,
-          profiles (
+          profiles!investments_user_id_profiles_fkey (
             full_name,
-            user:auth.users (
+            user:auth.users!profiles_user_id_fkey (
               email
             )
           )
@@ -48,7 +48,7 @@ export default function Investments() {
 
       if (error) throw error;
 
-      return data as unknown as InvestmentWithUser[];
+      return data as InvestmentWithUser[];
     },
   });
 

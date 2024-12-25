@@ -24,8 +24,11 @@ export default function UserDetails() {
       const { data, error } = await supabase
         .from("profiles")
         .select(`
-          *,
-          user:auth.users (
+          id,
+          full_name,
+          phone,
+          is_active,
+          user:auth.users!profiles_user_id_fkey (
             email
           )
         `)
@@ -35,7 +38,10 @@ export default function UserDetails() {
       if (error) throw error;
 
       return {
-        ...data,
+        id: data.id,
+        full_name: data.full_name,
+        phone: data.phone,
+        is_active: data.is_active,
         email: data.user?.email,
       } as UserProfile;
     },

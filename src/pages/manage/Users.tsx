@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { UsersTable } from "@/components/manage/users/UsersTable";
@@ -17,6 +18,9 @@ interface UserData {
 export default function Users() {
   const navigate = useNavigate();
   const [page, setPage] = useState(1);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sortBy, setSortBy] = useState("created_at");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const pageSize = 10;
 
   const { data: usersData } = useQuery({
@@ -29,8 +33,12 @@ export default function Users() {
         .from("profiles")
         .select(
           `
-          *,
-          user:auth.users (
+          id,
+          full_name,
+          phone,
+          is_active,
+          created_at,
+          user:auth.users!profiles_user_id_fkey (
             email
           )
         `,
@@ -42,8 +50,11 @@ export default function Users() {
       if (error) throw error;
 
       const users = data.map((profile): UserData => ({
-        ...profile,
-        email: profile.user?.email,
+        id: profile.id,
+        full_name: profile.full_name,
+        email: profile.user?.email || null,
+        phone: profile.phone,
+        is_active: profile.is_active,
         created_at: profile.created_at,
       }));
 
@@ -56,18 +67,26 @@ export default function Users() {
 
   return (
     <div className="space-y-6">
-      <UsersHeader />
+      <UsersHeader
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        sortBy={sortBy}
+        setSortBy={setSortBy}
+        sortOrder={sortOrder}
+        setSortOrder={setSortOrder}
+      />
       <div className="border rounded-lg">
         <UsersTable
           users={usersData?.users || []}
-          onUserClick={(userId) => navigate(`/manage/users/${userId}`)}
+          isLoading={false}
+          refetch={() => {}}
         />
       </div>
       {usersData?.totalPages && usersData.totalPages > 1 && (
         <UsersPagination
-          currentPage={page}
+          page={page}
+          setPage={setPage}
           totalPages={usersData.totalPages}
-          onPageChange={setPage}
         />
       )}
     </div>
