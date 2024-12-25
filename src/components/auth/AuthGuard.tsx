@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 
@@ -9,6 +9,7 @@ interface AuthGuardProps {
 
 export const AuthGuard = ({ children }: AuthGuardProps) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { toast } = useToast();
 
   useEffect(() => {
@@ -21,6 +22,25 @@ export const AuthGuard = ({ children }: AuthGuardProps) => {
           variant: "destructive",
         });
         navigate("/auth/login");
+        return;
+      }
+
+      // Check if trying to access manage routes
+      if (location.pathname.startsWith('/manage')) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('admin_role')
+          .eq('id', session.user.id)
+          .single();
+
+        if (!profile?.admin_role) {
+          toast({
+            title: "Access Denied",
+            description: "You don't have permission to access this page",
+            variant: "destructive",
+          });
+          navigate("/");
+        }
       }
     };
 
@@ -35,7 +55,7 @@ export const AuthGuard = ({ children }: AuthGuardProps) => {
     });
 
     return () => subscription.unsubscribe();
-  }, [navigate, toast]);
+  }, [navigate, toast, location]);
 
   return <>{children}</>;
 };

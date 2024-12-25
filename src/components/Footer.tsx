@@ -1,8 +1,11 @@
 import { Link } from "react-router-dom";
 import { Mail, Phone } from "lucide-react";
 import { NewsletterSubscription } from "./NewsletterSubscription";
+import { useAdmin } from "@/hooks/use-admin";
 
 export const Footer = () => {
+  const { isAdmin } = useAdmin();
+
   return (
     <footer className="border-t bg-muted/50">
       <div className="container px-4 py-12 md:px-6">
@@ -26,7 +29,16 @@ export const Footer = () => {
                     Frequently Asked Questions
                   </Link>
                 </li>
-                {/* Future links can be added here */}
+                {isAdmin && (
+                  <li>
+                    <Link 
+                      to="/manage" 
+                      className="text-sm text-gray-500 hover:text-primary dark:text-gray-400 dark:hover:text-primary transition-colors"
+                    >
+                      Management Dashboard
+                    </Link>
+                  </li>
+                )}
               </ul>
             </nav>
           </div>
