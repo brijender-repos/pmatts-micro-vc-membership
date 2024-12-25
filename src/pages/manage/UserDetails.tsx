@@ -15,14 +15,17 @@ export default function UserDetails() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("profiles")
-        .select("*, auth.users!inner(email)")
+        .select(`
+          *,
+          auth_users:auth.users(email)
+        `)
         .eq("id", userId)
         .single()
 
       if (error) throw error
       return {
         ...data,
-        email: data.users?.email
+        email: data.auth_users?.email
       }
     },
   })

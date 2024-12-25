@@ -1,4 +1,4 @@
-import { Home, Settings, Users } from "lucide-react"
+import { Home, Settings, Users, LineChart } from "lucide-react"
 import { NavLink } from "react-router-dom"
 import {
   Sidebar,
@@ -22,6 +22,11 @@ const menuItems = [
     title: "Users",
     icon: Users,
     to: "/manage/users",
+  },
+  {
+    title: "Investments",
+    icon: LineChart,
+    to: "/manage/investments",
   },
   {
     title: "Settings",

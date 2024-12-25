@@ -17,13 +17,16 @@ export default function Users() {
     queryFn: async () => {
       let query = supabase
         .from("profiles")
-        .select("*, auth.users!inner(email)", { count: "exact" })
+        .select(`
+          *,
+          auth_users:auth.users(email)
+        `, { count: "exact" })
         .range((page - 1) * itemsPerPage, page * itemsPerPage - 1)
         .order(sortBy, { ascending: sortOrder === "asc" })
 
       if (searchTerm) {
         query = query.or(
-          `full_name.ilike.%${searchTerm}%,phone.ilike.%${searchTerm}%,auth.users.email.ilike.%${searchTerm}%`
+          `full_name.ilike.%${searchTerm}%,phone.ilike.%${searchTerm}%`
         )
       }
 
@@ -33,7 +36,7 @@ export default function Users() {
 
       const users = data.map(profile => ({
         ...profile,
-        email: profile.users?.email
+        email: profile.auth_users?.email
       }))
 
       return {

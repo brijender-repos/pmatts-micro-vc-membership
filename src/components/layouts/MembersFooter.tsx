@@ -1,7 +1,10 @@
 import { Link } from "react-router-dom";
 import { Mail, Phone } from "lucide-react";
+import { useAdmin } from "@/hooks/use-admin";
 
 export const MembersFooter = () => {
+  const { isAdmin } = useAdmin();
+
   return (
     <footer className="border-t bg-muted/50">
       <div className="container px-4 py-8 md:px-6">
@@ -19,6 +22,16 @@ export const MembersFooter = () => {
                     Frequently Asked Questions
                   </Link>
                 </li>
+                {isAdmin && (
+                  <li>
+                    <Link 
+                      to="/manage" 
+                      className="text-sm text-gray-500 hover:text-primary dark:text-gray-400 dark:hover:text-primary transition-colors"
+                    >
+                      Management Dashboard
+                    </Link>
+                  </li>
+                )}
               </ul>
             </nav>
           </div>

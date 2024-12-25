@@ -34,16 +34,16 @@ export default function Investments() {
         .select(`
           *,
           projects(name, status),
-          profiles!inner(
+          investor:profiles!inner(
             full_name,
-            auth.users!inner(email)
+            auth_users:auth.users(email)
           )
         `)
         .order(sortBy, { ascending: sortOrder === "asc" })
 
       if (searchTerm) {
         query = query.or(
-          `profiles.full_name.ilike.%${searchTerm}%,profiles.users.email.ilike.%${searchTerm}%,project_name.ilike.%${searchTerm}%`
+          `investor.full_name.ilike.%${searchTerm}%,investor.auth_users.email.ilike.%${searchTerm}%,project_name.ilike.%${searchTerm}%`
         )
       }
 
@@ -52,8 +52,8 @@ export default function Investments() {
 
       return data.map(investment => ({
         ...investment,
-        user_email: investment.profiles?.users?.email,
-        user_name: investment.profiles?.full_name
+        user_email: investment.investor?.auth_users?.email,
+        user_name: investment.investor?.full_name
       }))
     },
   })
