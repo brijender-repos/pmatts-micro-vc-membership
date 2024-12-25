@@ -3,6 +3,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ProfileSettings } from "@/components/members/ProfileSettings";
 import { NewsletterSettings } from "@/components/members/NewsletterSettings";
 import { KYCSettings } from "@/components/members/KYCSettings";
+import { NomineeSettings } from "@/components/members/NomineeSettings";
 import { Badge } from "@/components/ui/badge";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -100,6 +101,12 @@ const Settings = () => {
               >
                 <KYCTabTrigger />
               </TabsTrigger>
+              <TabsTrigger 
+                value="nominee"
+                className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none px-2 pb-4"
+              >
+                Nominee
+              </TabsTrigger>
             </TabsList>
           </div>
           <TabsContent value="profile" className="space-y-4">
@@ -110,6 +117,9 @@ const Settings = () => {
           </TabsContent>
           <TabsContent value="kyc" className="space-y-4">
             <KYCSettings onStatusChange={loadKYCStatus} />
+          </TabsContent>
+          <TabsContent value="nominee" className="space-y-4">
+            <NomineeSettings />
           </TabsContent>
         </Tabs>
       </div>
