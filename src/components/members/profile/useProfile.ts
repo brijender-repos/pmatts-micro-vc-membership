@@ -26,8 +26,10 @@ export function useProfile() {
         throw new Error("No user found");
       }
 
+      // Get email from auth user
       setEmail(user.email || "");
 
+      // Get profile data from profiles table
       const { data: profile, error } = await supabase
         .from('profiles')
         .select('*')
