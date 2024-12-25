@@ -31,11 +31,13 @@ export default function Users() {
 
       if (error) throw error
 
+      const users = data.map(profile => ({
+        ...profile,
+        email: profile.users?.email
+      }))
+
       return {
-        users: data.map(user => ({
-          ...user,
-          email: user.users?.email
-        })),
+        users,
         total: count || 0,
       }
     },

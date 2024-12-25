@@ -10,6 +10,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { supabase } from "@/integrations/supabase/client"
+import { Link } from "react-router-dom"
 
 interface User {
   id: string
@@ -96,8 +97,10 @@ export function UsersTable({ users, isLoading, refetch }: UsersTableProps) {
                   />
                 </TableCell>
                 <TableCell className="text-right">
-                  <Button variant="outline" size="sm">
-                    View Details
+                  <Button variant="outline" size="sm" asChild>
+                    <Link to={`/manage/users/${user.id}`}>
+                      View Details
+                    </Link>
                   </Button>
                 </TableCell>
               </TableRow>
