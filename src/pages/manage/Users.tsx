@@ -11,7 +11,10 @@ interface UserData {
   email: string | null;
   phone: string | null;
   is_active: boolean | null;
-  admin_role: boolean | null;
+  created_at: string;
+  user: {
+    email: string | null;
+  } | null;
 }
 
 export default function Users() {
@@ -47,7 +50,8 @@ export default function Users() {
 
       const users = data.map((profile): UserData => ({
         ...profile,
-        email: profile.user?.email
+        email: profile.user?.email,
+        created_at: profile.created_at
       }))
 
       return {

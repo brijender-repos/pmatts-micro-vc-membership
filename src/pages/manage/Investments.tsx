@@ -29,8 +29,13 @@ interface InvestmentWithUser {
   amount: number;
   units: number | null;
   user_id: string;
-  user_name: string | null;
-  user_email: string | null;
+  transaction_status: string;
+  profiles: {
+    full_name: string | null;
+    user: {
+      email: string | null;
+    } | null;
+  } | null;
 }
 
 export default function Investments() {
@@ -45,9 +50,9 @@ export default function Investments() {
         .from("investments")
         .select(`
           *,
-          profiles!inner (
+          profiles (
             full_name,
-            auth_users:user_id (
+            user:user_id (
               email
             )
           )
@@ -56,11 +61,7 @@ export default function Investments() {
 
       if (error) throw error
 
-      return (data || []).map((investment): InvestmentWithUser => ({
-        ...investment,
-        user_name: investment.profiles?.full_name || null,
-        user_email: investment.profiles?.auth_users?.email || null
-      }))
+      return data as InvestmentWithUser[]
     },
   })
 
@@ -141,9 +142,9 @@ export default function Investments() {
                   </TableCell>
                   <TableCell>
                     <div>
-                      <p>{investment.user_name || "N/A"}</p>
+                      <p>{investment.profiles?.full_name || "N/A"}</p>
                       <p className="text-sm text-muted-foreground">
-                        {investment.user_email}
+                        {investment.profiles?.user?.email}
                       </p>
                     </div>
                   </TableCell>

@@ -13,6 +13,9 @@ interface UserProfile {
   email: string | null;
   phone: string | null;
   is_active: boolean | null;
+  user: {
+    email: string | null;
+  } | null;
 }
 
 export default function UserDetails() {
