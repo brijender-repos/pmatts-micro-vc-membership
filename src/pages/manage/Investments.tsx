@@ -50,7 +50,7 @@ export default function Investments() {
         .order("investment_date", { ascending: false });
 
       if (error) throw error;
-      return (data || []) as InvestmentWithUser[];
+      return data as InvestmentWithUser[];
     },
   });
 

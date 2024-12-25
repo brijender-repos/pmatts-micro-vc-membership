@@ -32,10 +32,10 @@ export default function Users() {
         .select(`
           id,
           full_name,
+          email,
           phone,
           is_active,
-          created_at,
-          email
+          created_at
         `, { count: "exact" })
         .range(start, end);
 

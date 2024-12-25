@@ -173,6 +173,7 @@ export type Database = {
           admin_role: boolean | null
           avatar_url: string | null
           created_at: string
+          email: string | null
           full_name: string | null
           id: string
           is_active: boolean | null
@@ -184,6 +185,7 @@ export type Database = {
           admin_role?: boolean | null
           avatar_url?: string | null
           created_at?: string
+          email?: string | null
           full_name?: string | null
           id: string
           is_active?: boolean | null
@@ -195,6 +197,7 @@ export type Database = {
           admin_role?: boolean | null
           avatar_url?: string | null
           created_at?: string
+          email?: string | null
           full_name?: string | null
           id?: string
           is_active?: boolean | null

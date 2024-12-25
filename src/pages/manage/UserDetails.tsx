@@ -31,17 +31,10 @@ export default function UserDetails() {
           email
         `)
         .eq("id", userId)
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
-
-      return {
-        id: data.id,
-        full_name: data.full_name,
-        phone: data.phone,
-        is_active: data.is_active,
-        email: data.email,
-      } satisfies UserProfile;
+      return data as UserProfile;
     },
   });
 
