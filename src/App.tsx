@@ -18,6 +18,7 @@ import { ManageLayout } from "./components/layouts/ManageLayout";
 import ManageIndex from "./pages/manage/Index";
 import Users from "./pages/manage/Users";
 import UserDetails from "./pages/manage/UserDetails";
+import Investments from "./pages/manage/Investments";
 
 const queryClient = new QueryClient();
 
@@ -57,6 +58,7 @@ const App = () => (
             <Route index element={<ManageIndex />} />
             <Route path="users" element={<Users />} />
             <Route path="users/:userId" element={<UserDetails />} />
+            <Route path="investments" element={<Investments />} />
           </Route>
         </Routes>
       </BrowserRouter>
