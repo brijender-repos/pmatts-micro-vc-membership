@@ -5,15 +5,17 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { UseFormReturn } from "react-hook-form";
 import { NomineeFormValues } from "./types";
 import { cn } from "@/lib/utils";
+import { Eye } from "lucide-react";
 
 interface NomineeFormProps {
   form: UseFormReturn<NomineeFormValues>;
   isEditing: boolean;
   onSubmit: (data: NomineeFormValues) => Promise<void>;
   onCancel: () => void;
+  aadharDocumentUrl?: string | null;
 }
 
-export function NomineeForm({ form, isEditing, onSubmit, onCancel }: NomineeFormProps) {
+export function NomineeForm({ form, isEditing, onSubmit, onCancel, aadharDocumentUrl }: NomineeFormProps) {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -85,6 +87,105 @@ export function NomineeForm({ form, isEditing, onSubmit, onCancel }: NomineeForm
             </FormItem>
           )}
         />
+
+        <FormField
+          control={form.control}
+          name="phone"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Phone Number</FormLabel>
+              <FormControl>
+                <Input 
+                  placeholder="Enter nominee's phone number" 
+                  {...field} 
+                  readOnly={!isEditing}
+                  className={!isEditing ? "bg-muted" : ""}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Email</FormLabel>
+              <FormControl>
+                <Input 
+                  type="email"
+                  placeholder="Enter nominee's email" 
+                  {...field} 
+                  readOnly={!isEditing}
+                  className={!isEditing ? "bg-muted" : ""}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="aadhar_number"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Aadhar Number</FormLabel>
+              <FormControl>
+                <Input 
+                  placeholder="Enter nominee's Aadhar number" 
+                  {...field} 
+                  readOnly={!isEditing}
+                  className={!isEditing ? "bg-muted" : ""}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {isEditing && (
+          <FormField
+            control={form.control}
+            name="aadhar_document"
+            render={({ field: { value, onChange, ...field } }) => (
+              <FormItem>
+                <FormLabel>Aadhar Document</FormLabel>
+                <FormControl>
+                  <Input 
+                    type="file"
+                    accept="image/*,.pdf"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        onChange(file);
+                      }
+                    }}
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
+
+        {aadharDocumentUrl && (
+          <div className="flex items-center gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => window.open(aadharDocumentUrl, '_blank')}
+              className="flex items-center gap-2"
+            >
+              <Eye className="h-4 w-4" />
+              Preview Aadhar Document
+            </Button>
+          </div>
+        )}
 
         {isEditing && (
           <div className="flex space-x-2">

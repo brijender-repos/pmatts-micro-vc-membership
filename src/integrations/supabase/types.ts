@@ -140,28 +140,40 @@ export type Database = {
       }
       nominees: {
         Row: {
+          aadhar_document_url: string | null
+          aadhar_number: string | null
           created_at: string
           date_of_birth: string
+          email: string | null
           full_name: string
           id: string
+          phone: string | null
           relationship: Database["public"]["Enums"]["nominee_relationship"]
           updated_at: string
           user_id: string
         }
         Insert: {
+          aadhar_document_url?: string | null
+          aadhar_number?: string | null
           created_at?: string
           date_of_birth: string
+          email?: string | null
           full_name: string
           id?: string
+          phone?: string | null
           relationship: Database["public"]["Enums"]["nominee_relationship"]
           updated_at?: string
           user_id: string
         }
         Update: {
+          aadhar_document_url?: string | null
+          aadhar_number?: string | null
           created_at?: string
           date_of_birth?: string
+          email?: string | null
           full_name?: string
           id?: string
+          phone?: string | null
           relationship?: Database["public"]["Enums"]["nominee_relationship"]
           updated_at?: string
           user_id?: string

@@ -6,18 +6,21 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { NomineeForm } from "./nominee/NomineeForm";
 import { NomineeFormValues } from "./nominee/types";
-import { cn } from "@/lib/utils";
 
 export function NomineeSettings() {
   const { toast } = useToast();
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
+  const [aadharDocumentUrl, setAadharDocumentUrl] = useState<string | null>(null);
 
   const form = useForm<NomineeFormValues>({
     defaultValues: {
       full_name: "",
       date_of_birth: "",
       relationship: "Other",
+      phone: "",
+      email: "",
+      aadhar_number: "",
     },
   });
 
@@ -41,7 +44,11 @@ export function NomineeSettings() {
           full_name: nominee.full_name,
           date_of_birth: nominee.date_of_birth,
           relationship: nominee.relationship,
+          phone: nominee.phone || "",
+          email: nominee.email || "",
+          aadhar_number: nominee.aadhar_number || "",
         });
+        setAadharDocumentUrl(nominee.aadhar_document_url);
       }
     } catch (error) {
       console.error('Error loading nominee details:', error);
@@ -60,21 +67,47 @@ export function NomineeSettings() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
+      let aadharDocumentUrl = null;
+
+      // Upload Aadhar document if provided
+      if (data.aadhar_document) {
+        const fileExt = data.aadhar_document.name.split('.').pop();
+        const filePath = `${user.id}/${crypto.randomUUID()}.${fileExt}`;
+
+        const { error: uploadError, data: uploadData } = await supabase.storage
+          .from('kyc_documents')
+          .upload(filePath, data.aadhar_document);
+
+        if (uploadError) throw uploadError;
+
+        const { data: { publicUrl } } = supabase.storage
+          .from('kyc_documents')
+          .getPublicUrl(filePath);
+
+        aadharDocumentUrl = publicUrl;
+      }
+
       const { data: existingNominee } = await supabase
         .from('nominees')
         .select('id')
         .eq('user_id', user.id)
         .single();
 
+      const nomineeData = {
+        full_name: data.full_name,
+        date_of_birth: data.date_of_birth,
+        relationship: data.relationship,
+        phone: data.phone,
+        email: data.email,
+        aadhar_number: data.aadhar_number,
+        ...(aadharDocumentUrl && { aadhar_document_url: aadharDocumentUrl }),
+        updated_at: new Date().toISOString(),
+      };
+
       if (existingNominee) {
         const { error } = await supabase
           .from('nominees')
-          .update({
-            full_name: data.full_name,
-            date_of_birth: data.date_of_birth,
-            relationship: data.relationship,
-            updated_at: new Date().toISOString(),
-          })
+          .update(nomineeData)
           .eq('id', existingNominee.id);
 
         if (error) throw error;
@@ -83,15 +116,14 @@ export function NomineeSettings() {
           .from('nominees')
           .insert({
             user_id: user.id,
-            full_name: data.full_name,
-            date_of_birth: data.date_of_birth,
-            relationship: data.relationship,
+            ...nomineeData,
           });
 
         if (error) throw error;
       }
 
       setIsEditing(false);
+      loadNomineeDetails();
       toast({
         title: "Success",
         description: "Nominee details updated successfully",
@@ -136,6 +168,7 @@ export function NomineeSettings() {
             setIsEditing(false);
             form.reset();
           }}
+          aadharDocumentUrl={aadharDocumentUrl}
         />
       </CardContent>
     </Card>
