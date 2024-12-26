@@ -1,69 +1,86 @@
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Index from "./pages/Index";
-import { ProjectPage } from "./components/ProjectPage";
-import FAQs from "./pages/FAQs";
-import Dashboard from "./pages/members/Dashboard";
-import Settings from "./pages/members/Settings";
-import Portfolio from "./pages/members/Portfolio";
-import Login from "./pages/auth/Login";
-import Callback from "./pages/auth/Callback";
-import PaymentSuccess from "./pages/payment/Success";
-import PaymentFailure from "./pages/payment/Failure";
-import { AuthGuard } from "./components/auth/AuthGuard";
-import { ManageLayout } from "./components/layouts/ManageLayout";
-import ManageIndex from "./pages/manage/Index";
-import Users from "./pages/manage/Users";
-import UserDetails from "./pages/manage/UserDetails";
-import Investments from "./pages/manage/Investments";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Index from "@/pages/Index";
+import Login from "@/pages/auth/Login";
+import Callback from "@/pages/auth/Callback";
+import Dashboard from "@/pages/members/Dashboard";
+import Portfolio from "@/pages/members/Portfolio";
+import Settings from "@/pages/members/Settings";
+import Success from "@/pages/payment/Success";
+import Failure from "@/pages/payment/Failure";
+import FAQs from "@/pages/FAQs";
+import ManageIndex from "@/pages/manage/Index";
+import Users from "@/pages/manage/Users";
+import UserDetails from "@/pages/manage/UserDetails";
+import Investments from "@/pages/manage/Investments";
+import { AuthGuard } from "@/components/auth/AuthGuard";
+import { ManageLayout } from "@/components/layouts/ManageLayout";
+import { Toaster } from "@/components/ui/sonner";
 
-const queryClient = new QueryClient();
-
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          {/* Public routes */}
-          <Route path="/" element={<Index />} />
-          <Route path="/projects/:slug" element={<ProjectPage />} />
-          <Route path="/faqs" element={<FAQs />} />
-          <Route path="/auth/login" element={<Login />} />
-          <Route path="/auth/callback" element={<Callback />} />
-          <Route path="/payment/success" element={<PaymentSuccess />} />
-          <Route path="/payment/failure" element={<PaymentFailure />} />
-          
-          {/* Protected routes */}
-          <Route path="/members/*" element={
+function App() {
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<Index />} />
+        <Route path="/auth/login" element={<Login />} />
+        <Route path="/auth/callback" element={<Callback />} />
+        <Route path="/faqs" element={<FAQs />} />
+        <Route
+          path="/members/dashboard"
+          element={
             <AuthGuard>
-              <Routes>
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/settings" element={<Settings />} />
-                <Route path="/portfolio" element={<Portfolio />} />
-              </Routes>
+              <Dashboard />
             </AuthGuard>
-          } />
-
-          {/* Management routes */}
-          <Route path="/manage" element={
+          }
+        />
+        <Route
+          path="/members/portfolio"
+          element={
+            <AuthGuard>
+              <Portfolio />
+            </AuthGuard>
+          }
+        />
+        <Route
+          path="/members/settings"
+          element={
+            <AuthGuard>
+              <Settings />
+            </AuthGuard>
+          }
+        />
+        <Route
+          path="/payment/success"
+          element={
+            <AuthGuard>
+              <Success />
+            </AuthGuard>
+          }
+        />
+        <Route
+          path="/payment/failure"
+          element={
+            <AuthGuard>
+              <Failure />
+            </AuthGuard>
+          }
+        />
+        <Route
+          path="/manage"
+          element={
             <AuthGuard>
               <ManageLayout />
             </AuthGuard>
-          }>
-            <Route index element={<ManageIndex />} />
-            <Route path="users" element={<Users />} />
-            <Route path="users/:userId" element={<UserDetails />} />
-            <Route path="investments" element={<Investments />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+          }
+        >
+          <Route index element={<ManageIndex />} />
+          <Route path="users" element={<Users />} />
+          <Route path="users/:id" element={<UserDetails />} />
+          <Route path="investments" element={<Investments />} />
+        </Route>
+      </Routes>
+      <Toaster />
+    </Router>
+  );
+}
 
 export default App;
