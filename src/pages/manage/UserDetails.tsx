@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
@@ -7,18 +7,29 @@ import { AdminUserPortfolio } from "@/components/admin/users/AdminUserPortfolio"
 import { AdminUserKYC } from "@/components/admin/users/AdminUserKYC";
 import { AdminUserNominee } from "@/components/admin/users/AdminUserNominee";
 import { AdminUserNewsletter } from "@/components/admin/users/AdminUserNewsletter";
-import { User, Briefcase, Shield, Users, Mail } from "lucide-react";
+import { User, Briefcase, Shield, Users, Mail, ChevronLeft } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
 
 export default function UserDetails() {
-  const { userId } = useParams();
+  const { userId } = useParams<{ userId: string }>();
 
-  // Return early if no userId is provided
+  // Return early with a better UI if no userId is provided
   if (!userId) {
     return (
-      <Alert variant="destructive">
-        <AlertDescription>No user ID provided</AlertDescription>
-      </Alert>
+      <div className="space-y-6">
+        <div className="flex items-center gap-2">
+          <Button variant="ghost" size="sm" asChild>
+            <Link to="/manage/users">
+              <ChevronLeft className="h-4 w-4" />
+              Back to Users
+            </Link>
+          </Button>
+        </div>
+        <Alert variant="destructive">
+          <AlertDescription>No user ID provided</AlertDescription>
+        </Alert>
+      </div>
     );
   }
 
@@ -101,16 +112,38 @@ export default function UserDetails() {
 
   // Handle profile loading and error states
   if (isProfileLoading) {
-    return <div className="p-6">Loading user details...</div>;
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center gap-2">
+          <Button variant="ghost" size="sm" asChild>
+            <Link to="/manage/users">
+              <ChevronLeft className="h-4 w-4" />
+              Back to Users
+            </Link>
+          </Button>
+        </div>
+        <div className="p-6">Loading user details...</div>
+      </div>
+    );
   }
 
   if (profileError || !profile) {
     return (
-      <Alert variant="destructive">
-        <AlertDescription>
-          {profileError ? "Error loading user details" : "User not found"}
-        </AlertDescription>
-      </Alert>
+      <div className="space-y-6">
+        <div className="flex items-center gap-2">
+          <Button variant="ghost" size="sm" asChild>
+            <Link to="/manage/users">
+              <ChevronLeft className="h-4 w-4" />
+              Back to Users
+            </Link>
+          </Button>
+        </div>
+        <Alert variant="destructive">
+          <AlertDescription>
+            {profileError ? "Error loading user details" : "User not found"}
+          </AlertDescription>
+        </Alert>
+      </div>
     );
   }
 
@@ -204,4 +237,3 @@ export default function UserDetails() {
       </Tabs>
     </div>
   );
-}
