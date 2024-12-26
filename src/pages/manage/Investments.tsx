@@ -13,6 +13,8 @@ import {
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import type { InvestmentWithUser } from "@/types/investment";
+import { Download } from "lucide-react";
+import * as XLSX from "xlsx";
 
 export default function Investments() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -100,13 +102,55 @@ export default function Investments() {
 
   const totalPages = investments ? Math.ceil(investments.length / pageSize) : 0;
 
+  const downloadExcel = () => {
+    if (!investments?.length) {
+      toast.error("No data available to download");
+      return;
+    }
+
+    const worksheet = XLSX.utils.json_to_sheet(
+      investments.map((investment) => ({
+        "Date": new Date(investment.investment_date).toLocaleDateString(),
+        "Investor Name": investment.profiles?.full_name || "N/A",
+        "Email": investment.profiles?.email || "N/A",
+        "Phone": investment.profiles?.phone || "N/A",
+        "Project": investment.project_name,
+        "Type": investment.investment_type.replace("_", " "),
+        "Amount": investment.amount,
+        "Units": investment.units || "N/A",
+        "Status": investment.transaction_status,
+      }))
+    );
+
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Investments");
+
+    // Generate filename with current date
+    const date = new Date().toISOString().split('T')[0];
+    const filename = `investments_${date}.xlsx`;
+
+    XLSX.writeFile(workbook, filename);
+    toast.success("Excel file downloaded successfully");
+  };
+
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">Investments</h1>
-        <p className="text-muted-foreground">
-          View and manage all investments made by users
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Investments</h1>
+          <p className="text-muted-foreground">
+            View and manage all investments made by users
+          </p>
+        </div>
+        <Button
+          onClick={downloadExcel}
+          variant="outline"
+          className="flex items-center gap-2"
+          disabled={!investments?.length}
+        >
+          <Download className="h-4 w-4" />
+          Download Excel
+        </Button>
       </div>
 
       <InvestmentsFilters
