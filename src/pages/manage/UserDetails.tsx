@@ -115,7 +115,7 @@ export default function UserDetails() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-w-5xl mx-auto">
       <div className="space-y-1">
         <h1 className="text-2xl font-bold tracking-tight">User Details</h1>
         {profile && (
@@ -126,8 +126,8 @@ export default function UserDetails() {
         )}
       </div>
 
-      <Tabs defaultValue="profile" className="space-y-4">
-        <TabsList>
+      <Tabs defaultValue="profile" className="w-full">
+        <TabsList className="w-full justify-start">
           <TabsTrigger value="profile" className="flex items-center gap-2">
             <UserRound className="h-4 w-4" />
             Profile
@@ -150,39 +150,41 @@ export default function UserDetails() {
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="profile">
-          {profile && (
-            <UserProfileTab
-              profile={profile}
-              isEditingPhone={isEditingPhone}
-              phoneNumber={phoneNumber}
-              setPhoneNumber={setPhoneNumber}
-              setIsEditingPhone={setIsEditingPhone}
-              handlePhoneUpdate={handlePhoneUpdate}
-            />
-          )}
-        </TabsContent>
+        <div className="mt-4">
+          <TabsContent value="profile">
+            {profile && (
+              <UserProfileTab
+                profile={profile}
+                isEditingPhone={isEditingPhone}
+                phoneNumber={phoneNumber}
+                setPhoneNumber={setPhoneNumber}
+                setIsEditingPhone={setIsEditingPhone}
+                handlePhoneUpdate={handlePhoneUpdate}
+              />
+            )}
+          </TabsContent>
 
-        <TabsContent value="portfolio">
-          {investments && <UserPortfolioTab investments={investments} />}
-        </TabsContent>
+          <TabsContent value="portfolio">
+            {investments && <UserPortfolioTab investments={investments} />}
+          </TabsContent>
 
-        <TabsContent value="kyc">
-          <UserKYCTab kycDetails={kycDetails} />
-        </TabsContent>
+          <TabsContent value="kyc">
+            <UserKYCTab kycDetails={kycDetails} />
+          </TabsContent>
 
-        <TabsContent value="nominee">
-          <UserNomineeTab nominee={nominee} />
-        </TabsContent>
+          <TabsContent value="nominee">
+            <UserNomineeTab nominee={nominee} />
+          </TabsContent>
 
-        <TabsContent value="newsletter">
-          {profile && (
-            <UserNewsletterTab
-              profile={profile}
-              newsletterSubscription={newsletterSubscription}
-            />
-          )}
-        </TabsContent>
+          <TabsContent value="newsletter">
+            {profile && (
+              <UserNewsletterTab
+                profile={profile}
+                newsletterSubscription={newsletterSubscription}
+              />
+            )}
+          </TabsContent>
+        </div>
       </Tabs>
     </div>
   );
