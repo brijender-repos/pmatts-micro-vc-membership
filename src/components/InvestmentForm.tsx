@@ -19,6 +19,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { UNIT_PRICE, MAX_UNITS } from "@/types/payment";
 import { paymentLogger } from "@/utils/paymentLogger";
 import { PaymentDebugPanel } from "./payment/PaymentDebugPanel";
+import { TransactionProofUpload } from "./manage/investments/TransactionProofUpload";
 
 const formSchema = z.object({
   units: z.number()
@@ -166,6 +167,8 @@ export function InvestmentForm({ projectName, onSuccess, onError }: InvestmentFo
               </FormItem>
             )}
           />
+
+          <TransactionProofUpload investmentId={projectName} onUploadComplete={() => {}} />
 
           <Button type="submit" disabled={isSubmitting}>
             {isSubmitting ? "Processing..." : "Invest Now"}
