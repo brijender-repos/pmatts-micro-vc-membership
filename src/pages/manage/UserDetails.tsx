@@ -8,11 +8,21 @@ import { AdminUserKYC } from "@/components/admin/users/AdminUserKYC";
 import { AdminUserNominee } from "@/components/admin/users/AdminUserNominee";
 import { AdminUserNewsletter } from "@/components/admin/users/AdminUserNewsletter";
 import { User, Briefcase, Shield, Users, Mail } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export default function UserDetails() {
   const { userId } = useParams();
 
-  const { data: profile, refetch: refetchProfile } = useQuery({
+  // Return early if no userId is provided
+  if (!userId) {
+    return (
+      <Alert variant="destructive">
+        <AlertDescription>No user ID provided</AlertDescription>
+      </Alert>
+    );
+  }
+
+  const { data: profile, error: profileError, refetch: refetchProfile, isLoading: isProfileLoading } = useQuery({
     queryKey: ["admin-user-profile", userId],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -22,11 +32,12 @@ export default function UserDetails() {
         .maybeSingle();
 
       if (error) throw error;
+      if (!data) throw new Error("User not found");
       return data;
     },
   });
 
-  const { data: investments } = useQuery({
+  const { data: investments, isLoading: isInvestmentsLoading } = useQuery({
     queryKey: ["admin-user-investments", userId],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -36,11 +47,12 @@ export default function UserDetails() {
         .order("investment_date", { ascending: false });
 
       if (error) throw error;
-      return data;
+      return data || [];
     },
+    enabled: !!userId,
   });
 
-  const { data: kycDetails } = useQuery({
+  const { data: kycDetails, isLoading: isKycLoading } = useQuery({
     queryKey: ["admin-user-kyc", userId],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -52,9 +64,10 @@ export default function UserDetails() {
       if (error) throw error;
       return data;
     },
+    enabled: !!userId,
   });
 
-  const { data: nominee } = useQuery({
+  const { data: nominee, isLoading: isNomineeLoading } = useQuery({
     queryKey: ["admin-user-nominee", userId],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -66,9 +79,10 @@ export default function UserDetails() {
       if (error) throw error;
       return data;
     },
+    enabled: !!userId,
   });
 
-  const { data: newsletterSubscription } = useQuery({
+  const { data: newsletterSubscription, isLoading: isNewsletterLoading } = useQuery({
     queryKey: ["admin-user-newsletter", userId],
     queryFn: async () => {
       if (!profile?.email) return null;
@@ -85,8 +99,19 @@ export default function UserDetails() {
     enabled: !!profile?.email,
   });
 
-  if (!profile) {
-    return <div>Loading...</div>;
+  // Handle profile loading and error states
+  if (isProfileLoading) {
+    return <div className="p-6">Loading user details...</div>;
+  }
+
+  if (profileError || !profile) {
+    return (
+      <Alert variant="destructive">
+        <AlertDescription>
+          {profileError ? "Error loading user details" : "User not found"}
+        </AlertDescription>
+      </Alert>
+    );
   }
 
   return (
@@ -125,35 +150,55 @@ export default function UserDetails() {
 
         <div className="mt-4">
           <TabsContent value="profile">
-            <AdminUserProfile
-              profile={profile}
-              onProfileUpdate={refetchProfile}
-            />
+            {isProfileLoading ? (
+              <div>Loading profile...</div>
+            ) : (
+              <AdminUserProfile
+                profile={profile}
+                onProfileUpdate={refetchProfile}
+              />
+            )}
           </TabsContent>
 
           <TabsContent value="portfolio">
-            <AdminUserPortfolio
-              investments={investments || []}
-            />
+            {isInvestmentsLoading ? (
+              <div>Loading investments...</div>
+            ) : (
+              <AdminUserPortfolio
+                investments={investments || []}
+              />
+            )}
           </TabsContent>
 
           <TabsContent value="kyc">
-            <AdminUserKYC
-              kycDetails={kycDetails}
-            />
+            {isKycLoading ? (
+              <div>Loading KYC details...</div>
+            ) : (
+              <AdminUserKYC
+                kycDetails={kycDetails}
+              />
+            )}
           </TabsContent>
 
           <TabsContent value="nominee">
-            <AdminUserNominee
-              nominee={nominee}
-            />
+            {isNomineeLoading ? (
+              <div>Loading nominee details...</div>
+            ) : (
+              <AdminUserNominee
+                nominee={nominee}
+              />
+            )}
           </TabsContent>
 
           <TabsContent value="newsletter">
-            <AdminUserNewsletter
-              email={profile.email}
-              isSubscribed={!!newsletterSubscription}
-            />
+            {isNewsletterLoading ? (
+              <div>Loading newsletter status...</div>
+            ) : (
+              <AdminUserNewsletter
+                email={profile.email}
+                isSubscribed={!!newsletterSubscription}
+              />
+            )}
           </TabsContent>
         </div>
       </Tabs>
