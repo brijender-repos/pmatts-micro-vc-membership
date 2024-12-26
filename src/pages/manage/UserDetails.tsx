@@ -1,12 +1,9 @@
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AdminUserHeader } from "@/components/admin/users/AdminUserHeader";
 import { AdminUserTabs } from "@/components/admin/users/AdminUserTabs";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
-import { ChevronLeft } from "lucide-react";
 
 export default function UserDetails() {
   const { userId } = useParams<{ userId: string }>();
@@ -15,14 +12,7 @@ export default function UserDetails() {
   if (!userId) {
     return (
       <div className="space-y-6">
-        <div className="flex items-center gap-2">
-          <Button variant="ghost" size="sm" asChild>
-            <Link to="/manage/users">
-              <ChevronLeft className="h-4 w-4" />
-              Back to Users
-            </Link>
-          </Button>
-        </div>
+        <AdminUserHeader fullName={null} email={null} />
         <Alert variant="destructive">
           <AlertDescription>No user ID provided</AlertDescription>
         </Alert>
@@ -111,14 +101,7 @@ export default function UserDetails() {
   if (isProfileLoading) {
     return (
       <div className="space-y-6">
-        <div className="flex items-center gap-2">
-          <Button variant="ghost" size="sm" asChild>
-            <Link to="/manage/users">
-              <ChevronLeft className="h-4 w-4" />
-              Back to Users
-            </Link>
-          </Button>
-        </div>
+        <AdminUserHeader fullName={null} email={null} />
         <div className="p-6">Loading user details...</div>
       </div>
     );
@@ -127,14 +110,7 @@ export default function UserDetails() {
   if (profileError || !profile) {
     return (
       <div className="space-y-6">
-        <div className="flex items-center gap-2">
-          <Button variant="ghost" size="sm" asChild>
-            <Link to="/manage/users">
-              <ChevronLeft className="h-4 w-4" />
-              Back to Users
-            </Link>
-          </Button>
-        </div>
+        <AdminUserHeader fullName={null} email={null} />
         <Alert variant="destructive">
           <AlertDescription>
             {profileError ? "Error loading user details" : "User not found"}
