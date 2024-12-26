@@ -2,13 +2,11 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { ProfileFormValues, Profile } from "./types";
-import { paymentLogger } from "@/utils/paymentLogger";
+import { ProfileFormValues } from "./types";
 
 export function useProfile() {
   const { toast } = useToast();
   const [loading, setLoading] = useState(true);
-  const [isEditing, setIsEditing] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [email, setEmail] = useState<string>("");
 
@@ -31,11 +29,9 @@ export function useProfile() {
         throw new Error("No user found");
       }
 
-      // Get email from session only
       setEmail(session.user.email || "");
       console.log("[Profile] Email set from session:", session.user.email);
 
-      // Get profile data from profiles table only
       const { data: profile, error } = await supabase
         .from('profiles')
         .select('full_name, phone, avatar_url')
@@ -73,85 +69,11 @@ export function useProfile() {
     }
   };
 
-  const handleSubmit = async (data: ProfileFormValues) => {
-    try {
-      console.log("[Profile Update] Starting profile update with data:", data);
-      
-      const { data: { session } } = await supabase.auth.getSession();
-      console.log("[Profile Update] Session retrieved:", session?.user.id);
-      
-      if (!session?.user) {
-        throw new Error("No user found");
-      }
-
-      // Log the exact update operation we're about to perform
-      console.log("[Profile Update] Preparing update for profiles table:", {
-        full_name: data.full_name,
-        phone: data.phone,
-        updated_at: new Date().toISOString(),
-        id: session.user.id
-      });
-
-      // Update profiles table only
-      const { error } = await supabase
-        .from('profiles')
-        .update({
-          full_name: data.full_name,
-          phone: data.phone,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', session.user.id);
-
-      if (error) {
-        console.error('[Profile Update] Profile update error:', error);
-        throw error;
-      }
-
-      setIsEditing(false);
-      toast({
-        title: "Success",
-        description: "Profile updated successfully",
-      });
-      
-      // Log successful update
-      paymentLogger.log('profile_update_success', {
-        user_id: session.user.id,
-        updated_fields: ['full_name', 'phone'],
-        timestamp: new Date().toISOString()
-      });
-
-      console.log("[Profile Update] Reloading profile after update");
-      await loadProfile();
-    } catch (error: any) {
-      console.error('[Profile Update] Error updating profile:', error);
-      paymentLogger.log('profile_update_error', {
-        error: error.message,
-        timestamp: new Date().toISOString()
-      });
-      
-      toast({
-        title: "Error",
-        description: error.message || "Failed to update profile. Please try again.",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const handleCancel = () => {
-    console.log("[Profile] Cancelling edit mode");
-    setIsEditing(false);
-    loadProfile();
-  };
-
   return {
     loading,
-    isEditing,
-    setIsEditing,
     avatarUrl,
     email,
     form,
     loadProfile,
-    handleSubmit,
-    handleCancel,
   };
 }

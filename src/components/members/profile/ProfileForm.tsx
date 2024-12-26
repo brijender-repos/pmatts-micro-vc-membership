@@ -1,20 +1,16 @@
 import { UseFormReturn } from "react-hook-form";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { ProfileFormValues } from "./types";
 
 interface ProfileFormProps {
   form: UseFormReturn<ProfileFormValues>;
-  isEditing: boolean;
-  onSubmit: (data: ProfileFormValues) => Promise<void>;
-  onCancel: () => void;
 }
 
-export function ProfileForm({ form, isEditing, onSubmit, onCancel }: ProfileFormProps) {
+export function ProfileForm({ form }: ProfileFormProps) {
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+      <form className="space-y-4">
         <FormField
           control={form.control}
           name="full_name"
@@ -25,11 +21,10 @@ export function ProfileForm({ form, isEditing, onSubmit, onCancel }: ProfileForm
                 <Input 
                   placeholder="Enter your full name" 
                   {...field} 
-                  readOnly={!isEditing}
-                  className={!isEditing ? "bg-muted" : ""}
+                  readOnly
+                  className="bg-muted"
                 />
               </FormControl>
-              <FormMessage />
             </FormItem>
           )}
         />
@@ -44,33 +39,13 @@ export function ProfileForm({ form, isEditing, onSubmit, onCancel }: ProfileForm
                 <Input 
                   placeholder="Enter your phone number" 
                   {...field} 
-                  readOnly={!isEditing}
-                  className={!isEditing ? "bg-muted" : ""}
+                  readOnly
+                  className="bg-muted"
                 />
               </FormControl>
-              <FormMessage />
             </FormItem>
           )}
         />
-
-        {isEditing && (
-          <div className="flex space-x-2">
-            <Button 
-              type="submit" 
-              disabled={form.formState.isSubmitting}
-            >
-              {form.formState.isSubmitting ? "Saving..." : "Save Changes"}
-            </Button>
-            <Button 
-              type="button" 
-              variant="outline"
-              onClick={onCancel}
-              disabled={form.formState.isSubmitting}
-            >
-              Cancel
-            </Button>
-          </div>
-        )}
       </form>
     </Form>
   );
