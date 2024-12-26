@@ -40,6 +40,10 @@ export default {
           DEFAULT: "#F3F4F6",
           foreground: "#6B7280",
         },
+        popover: {
+          DEFAULT: "hsl(var(--background))",
+          foreground: "hsl(var(--foreground))",
+        },
       },
       keyframes: {
         "accordion-down": {
@@ -59,6 +63,9 @@ export default {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "fade-in": "fade-in 0.5s ease-out",
+      },
+      zIndex: {
+        'dropdown': '1000',
       },
     },
   },

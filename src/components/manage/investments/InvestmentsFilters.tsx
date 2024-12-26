@@ -42,7 +42,7 @@ export function InvestmentsFilters({
           <SelectTrigger className="w-[200px]">
             <SelectValue placeholder="Filter by project" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="select-content">
             <SelectItem value="all">All Projects</SelectItem>
             {projects?.map((project) => (
               <SelectItem key={project.name} value={project.name}>
@@ -59,7 +59,7 @@ export function InvestmentsFilters({
         <SelectTrigger className="w-[180px]">
           <SelectValue placeholder="Records per page" />
         </SelectTrigger>
-        <SelectContent>
+        <SelectContent className="select-content">
           <SelectItem value="10">10 per page</SelectItem>
           <SelectItem value="25">25 per page</SelectItem>
           <SelectItem value="50">50 per page</SelectItem>
