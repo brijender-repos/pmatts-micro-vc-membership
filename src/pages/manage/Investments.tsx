@@ -1,43 +1,18 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { format } from "date-fns";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
-import { formatCurrency } from "@/lib/utils";
-import { ArrowUpDown } from "lucide-react";
-
-interface InvestmentWithUser {
-  id: string;
-  project_name: string;
-  investment_type: "investment" | "follow_on" | "distribution" | "exit" | "dividend";
-  investment_date: string;
-  amount: number;
-  units: number | null;
-  user_id: string;
-  transaction_status: string;
-  profiles: {
-    full_name: string | null;
-    email: string | null;
-    phone: string | null;
-  };
-}
+import { InvestmentsTable } from "@/components/manage/investments/InvestmentsTable";
+import { InvestmentsFilters } from "@/components/manage/investments/InvestmentsFilters";
+import { ManageInvestment } from "@/components/manage/investments/ManageInvestment";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { toast } from "sonner";
+import type { InvestmentWithUser } from "@/types/investment";
 
 export default function Investments() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -46,6 +21,7 @@ export default function Investments() {
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [pageSize, setPageSize] = useState<number>(100);
   const [currentPage, setCurrentPage] = useState(1);
+  const [selectedInvestmentId, setSelectedInvestmentId] = useState<string | null>(null);
 
   const { data: projects } = useQuery({
     queryKey: ["projects"],
@@ -54,7 +30,10 @@ export default function Investments() {
         .from("projects")
         .select("name")
         .order("name");
-      if (error) throw error;
+      if (error) {
+        toast.error("Failed to load projects");
+        throw error;
+      }
       return data;
     },
   });
@@ -95,7 +74,12 @@ export default function Investments() {
       }
 
       const { data, error } = await query;
-      if (error) throw error;
+      
+      if (error) {
+        toast.error("Failed to load investments");
+        throw error;
+      }
+      
       return data as InvestmentWithUser[];
     },
   });
@@ -125,135 +109,25 @@ export default function Investments() {
         </p>
       </div>
 
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div className="flex flex-1 gap-4">
-          <Input
-            placeholder="Search by investor name, email, or phone..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="max-w-sm"
-          />
-          <Select value={selectedProject} onValueChange={setSelectedProject}>
-            <SelectTrigger className="w-[200px]">
-              <SelectValue placeholder="Filter by project" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="">All Projects</SelectItem>
-              {projects?.map((project) => (
-                <SelectItem key={project.name} value={project.name}>
-                  {project.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        <Select
-          value={pageSize.toString()}
-          onValueChange={(value) => {
-            setPageSize(Number(value));
-            setCurrentPage(1);
-          }}
-        >
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Records per page" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="100">100 per page</SelectItem>
-            <SelectItem value="500">500 per page</SelectItem>
-            <SelectItem value="999999">Show all</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
+      <InvestmentsFilters
+        searchTerm={searchTerm}
+        onSearchChange={setSearchTerm}
+        selectedProject={selectedProject}
+        onProjectChange={setSelectedProject}
+        projects={projects}
+        pageSize={pageSize}
+        onPageSizeChange={(value) => {
+          setPageSize(value);
+          setCurrentPage(1);
+        }}
+      />
 
-      <div className="border rounded-lg">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>
-                <Button
-                  variant="ghost"
-                  onClick={() => toggleSort("investment_date")}
-                  className="flex items-center gap-2"
-                >
-                  Date
-                  <ArrowUpDown className="h-4 w-4" />
-                </Button>
-              </TableHead>
-              <TableHead>
-                <Button
-                  variant="ghost"
-                  onClick={() => toggleSort("full_name")}
-                  className="flex items-center gap-2"
-                >
-                  Investor
-                  <ArrowUpDown className="h-4 w-4" />
-                </Button>
-              </TableHead>
-              <TableHead>Project</TableHead>
-              <TableHead>Type</TableHead>
-              <TableHead>Amount</TableHead>
-              <TableHead>Units</TableHead>
-              <TableHead>Status</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {isLoading ? (
-              <TableRow>
-                <TableCell colSpan={7} className="text-center">
-                  Loading...
-                </TableCell>
-              </TableRow>
-            ) : paginatedInvestments?.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={7} className="text-center">
-                  No investments found
-                </TableCell>
-              </TableRow>
-            ) : (
-              paginatedInvestments?.map((investment) => (
-                <TableRow key={investment.id}>
-                  <TableCell>
-                    {format(new Date(investment.investment_date), "PP")}
-                  </TableCell>
-                  <TableCell>
-                    <div>
-                      <p>{investment.profiles?.full_name || "N/A"}</p>
-                      <p className="text-sm text-muted-foreground">
-                        {investment.profiles?.email}
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        {investment.profiles?.phone || "No phone"}
-                      </p>
-                    </div>
-                  </TableCell>
-                  <TableCell>{investment.project_name}</TableCell>
-                  <TableCell>
-                    <Badge variant="outline" className="capitalize">
-                      {investment.investment_type.replace("_", " ")}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>{formatCurrency(investment.amount)}</TableCell>
-                  <TableCell>{investment.units || "N/A"}</TableCell>
-                  <TableCell>
-                    <Badge
-                      variant={
-                        investment.transaction_status === "completed"
-                          ? "default"
-                          : investment.transaction_status === "failed"
-                          ? "destructive"
-                          : "secondary"
-                      }
-                      className="capitalize"
-                    >
-                      {investment.transaction_status}
-                    </Badge>
-                  </TableCell>
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </div>
+      <InvestmentsTable
+        investments={paginatedInvestments}
+        isLoading={isLoading}
+        toggleSort={toggleSort}
+        onManageInvestment={setSelectedInvestmentId}
+      />
 
       {totalPages > 1 && (
         <div className="flex items-center justify-between">
@@ -276,6 +150,17 @@ export default function Investments() {
           </Button>
         </div>
       )}
+
+      <Dialog open={!!selectedInvestmentId} onOpenChange={() => setSelectedInvestmentId(null)}>
+        <DialogContent className="max-w-3xl">
+          <DialogHeader>
+            <DialogTitle>Manage Investment</DialogTitle>
+          </DialogHeader>
+          {selectedInvestmentId && (
+            <ManageInvestment investmentId={selectedInvestmentId} />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
