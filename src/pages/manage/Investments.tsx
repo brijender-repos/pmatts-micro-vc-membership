@@ -103,13 +103,9 @@ export default function Investments() {
   const totalPages = investments ? Math.ceil(investments.length / pageSize) : 0;
 
   const downloadExcel = () => {
-    if (!investments?.length) {
-      toast.error("No data available to download");
-      return;
-    }
-
+    // Create empty worksheet with headers even if no data
     const worksheet = XLSX.utils.json_to_sheet(
-      investments.map((investment) => ({
+      investments?.length ? investments.map((investment) => ({
         "Date": new Date(investment.investment_date).toLocaleDateString(),
         "Investor Name": investment.profiles?.full_name || "N/A",
         "Email": investment.profiles?.email || "N/A",
@@ -119,7 +115,20 @@ export default function Investments() {
         "Amount": investment.amount,
         "Units": investment.units || "N/A",
         "Status": investment.transaction_status,
-      }))
+      })) : [],
+      {
+        header: [
+          "Date",
+          "Investor Name",
+          "Email",
+          "Phone",
+          "Project",
+          "Type",
+          "Amount",
+          "Units",
+          "Status"
+        ]
+      }
     );
 
     const workbook = XLSX.utils.book_new();
@@ -146,7 +155,6 @@ export default function Investments() {
           onClick={downloadExcel}
           variant="outline"
           className="flex items-center gap-2"
-          disabled={!investments?.length}
         >
           <Download className="h-4 w-4" />
           Download Excel
