@@ -39,7 +39,7 @@ export function useProfile() {
       const { data: profile, error } = await supabase
         .from('profiles')
         .select('full_name, phone, avatar_url')
-        .eq('user_id', session.user.id)
+        .eq('id', session.user.id)
         .maybeSingle();
 
       console.log("[Profile] Profile data retrieved:", profile);
@@ -89,24 +89,18 @@ export function useProfile() {
         full_name: data.full_name,
         phone: data.phone,
         updated_at: new Date().toISOString(),
-        user_id: session.user.id
+        id: session.user.id
       });
 
-      // Explicitly define which profile fields we update
-      const profileUpdate = {
-        full_name: data.full_name,
-        phone: data.phone,
-        updated_at: new Date().toISOString(),
-      };
-
-      // Update profiles table only, using user_id
-      const { error, data: updatedProfile } = await supabase
+      // Update profiles table only
+      const { error } = await supabase
         .from('profiles')
-        .update(profileUpdate)
-        .eq('user_id', session.user.id)
-        .select();
-
-      console.log("[Profile Update] Update response:", { error, updatedProfile });
+        .update({
+          full_name: data.full_name,
+          phone: data.phone,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', session.user.id);
 
       if (error) {
         console.error('[Profile Update] Profile update error:', error);
@@ -122,7 +116,7 @@ export function useProfile() {
       // Log successful update
       paymentLogger.log('profile_update_success', {
         user_id: session.user.id,
-        updated_fields: Object.keys(profileUpdate),
+        updated_fields: ['full_name', 'phone'],
         timestamp: new Date().toISOString()
       });
 
