@@ -115,7 +115,7 @@ export default function UserDetails() {
   };
 
   return (
-    <div className="space-y-6 max-w-5xl mx-auto">
+    <div className="space-y-6">
       <div className="space-y-1">
         <h1 className="text-2xl font-bold tracking-tight">User Details</h1>
         {profile && (
