@@ -35,12 +35,15 @@ export function InvestmentsFilters({
           onChange={(e) => onSearchChange(e.target.value)}
           className="max-w-sm"
         />
-        <Select value={selectedProject} onValueChange={onProjectChange}>
+        <Select 
+          value={selectedProject || "all"} 
+          onValueChange={onProjectChange}
+        >
           <SelectTrigger className="w-[200px]">
             <SelectValue placeholder="Filter by project" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">All Projects</SelectItem>
+            <SelectItem value="all">All Projects</SelectItem>
             {projects?.map((project) => (
               <SelectItem key={project.name} value={project.name}>
                 {project.name}
@@ -57,9 +60,10 @@ export function InvestmentsFilters({
           <SelectValue placeholder="Records per page" />
         </SelectTrigger>
         <SelectContent>
+          <SelectItem value="10">10 per page</SelectItem>
+          <SelectItem value="25">25 per page</SelectItem>
+          <SelectItem value="50">50 per page</SelectItem>
           <SelectItem value="100">100 per page</SelectItem>
-          <SelectItem value="500">500 per page</SelectItem>
-          <SelectItem value="999999">Show all</SelectItem>
         </SelectContent>
       </Select>
     </div>

@@ -16,10 +16,10 @@ import type { InvestmentWithUser } from "@/types/investment";
 
 export default function Investments() {
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedProject, setSelectedProject] = useState<string>("");
+  const [selectedProject, setSelectedProject] = useState("all");
   const [sortField, setSortField] = useState<"investment_date" | "full_name">("investment_date");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
-  const [pageSize, setPageSize] = useState<number>(100);
+  const [pageSize, setPageSize] = useState<number>(25);
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedInvestmentId, setSelectedInvestmentId] = useState<string | null>(null);
 
@@ -59,7 +59,7 @@ export default function Investments() {
           )
         `);
 
-      if (selectedProject) {
+      if (selectedProject !== "all") {
         query = query.eq("project_name", selectedProject);
       }
 
