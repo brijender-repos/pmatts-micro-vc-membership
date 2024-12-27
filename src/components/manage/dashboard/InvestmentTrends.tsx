@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ChartContainer, ChartTooltip } from "@/components/ui/chart";
+import { ChartContainer } from "@/components/ui/chart";
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip } from "recharts";
 import { supabase } from "@/integrations/supabase/client";
 import { startOfMonth, endOfMonth, format, subMonths } from "date-fns";
@@ -53,7 +53,8 @@ export function InvestmentTrends() {
 
   const chartConfig = {
     amount: {
-      color: "#2563eb",
+      color: "#6366F1", // Using primary color from tailwind config
+      label: "Investment Amount",
     },
   };
 
@@ -73,14 +74,31 @@ export function InvestmentTrends() {
         </Select>
       </CardHeader>
       <CardContent>
-        <div className="h-[300px]">
+        <div className="h-[400px] w-full">
           <ChartContainer config={chartConfig}>
-            <BarChart data={trendsData || []}>
-              <XAxis dataKey="period" />
-              <YAxis />
-              <Tooltip />
-              <Bar dataKey="amount" fill="#2563eb" name="Investment Amount" />
-            </BarChart>
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={trendsData || []} margin={{ top: 20, right: 30, left: 20, bottom: 60 }}>
+                <XAxis 
+                  dataKey="period" 
+                  angle={-45}
+                  textAnchor="end"
+                  height={60}
+                  interval={0}
+                  tick={{ fontSize: 12 }}
+                />
+                <YAxis 
+                  width={50}
+                  tick={{ fontSize: 12 }}
+                />
+                <Tooltip />
+                <Bar 
+                  dataKey="amount" 
+                  fill={chartConfig.amount.color}
+                  name={chartConfig.amount.label}
+                  radius={[4, 4, 0, 0]}
+                />
+              </BarChart>
+            </ResponsiveContainer>
           </ChartContainer>
         </div>
       </CardContent>

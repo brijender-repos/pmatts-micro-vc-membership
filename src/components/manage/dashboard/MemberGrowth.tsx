@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ChartContainer } from "@/components/ui/chart";
-import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, Tooltip } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip } from "recharts";
 import { supabase } from "@/integrations/supabase/client";
 import { startOfMonth, endOfMonth, format, subMonths } from "date-fns";
 
@@ -51,7 +51,8 @@ export function MemberGrowth() {
 
   const chartConfig = {
     count: {
-      color: "#2563eb",
+      color: "#6366F1", // Using primary color from tailwind config
+      label: "New Members",
     },
   };
 
@@ -71,14 +72,31 @@ export function MemberGrowth() {
         </Select>
       </CardHeader>
       <CardContent>
-        <div className="h-[300px]">
+        <div className="h-[400px] w-full">
           <ChartContainer config={chartConfig}>
-            <LineChart data={growthData || []}>
-              <XAxis dataKey="period" />
-              <YAxis />
-              <Tooltip />
-              <Line type="monotone" dataKey="count" stroke="#2563eb" name="New Members" />
-            </LineChart>
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={growthData || []} margin={{ top: 20, right: 30, left: 20, bottom: 60 }}>
+                <XAxis 
+                  dataKey="period" 
+                  angle={-45}
+                  textAnchor="end"
+                  height={60}
+                  interval={0}
+                  tick={{ fontSize: 12 }}
+                />
+                <YAxis 
+                  width={50}
+                  tick={{ fontSize: 12 }}
+                />
+                <Tooltip />
+                <Bar 
+                  dataKey="count" 
+                  fill={chartConfig.count.color}
+                  name={chartConfig.count.label}
+                  radius={[4, 4, 0, 0]}
+                />
+              </BarChart>
+            </ResponsiveContainer>
           </ChartContainer>
         </div>
       </CardContent>
