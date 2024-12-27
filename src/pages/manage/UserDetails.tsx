@@ -28,7 +28,7 @@ export default function UserDetails() {
           is_active,
           email
         `)
-        .eq("id", userId)
+        .eq("user_id", userId)  // Changed from 'id' to 'user_id'
         .maybeSingle();
 
       if (error) throw error;
