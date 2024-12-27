@@ -99,7 +99,7 @@ export function MemberGrowth() {
         </Select>
       </CardHeader>
       <CardContent>
-        <div className="h-[300px] w-full">
+        <div className="h-[250px] w-full"> {/* Reduced height from 300px to 250px */}
           <ChartContainer config={chartConfig}>
             <ResponsiveContainer width="100%" height="100%">
               <BarChart 
@@ -118,6 +118,7 @@ export function MemberGrowth() {
                   width={50}
                   tick={{ fontSize: 12 }}
                   domain={[25, 'auto']} // Set minimum value to 25
+                  allowDataOverflow={true} // Ensures the domain minimum is respected
                 />
                 <Tooltip />
                 <Bar 
