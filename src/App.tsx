@@ -3,6 +3,7 @@ import { ManageLayout } from "@/components/layouts/ManageLayout";
 import { AuthGuard } from "@/components/auth/AuthGuard";
 import { Suspense, lazy } from "react";
 import { Loader2 } from "lucide-react";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 
 // Lazy load components
 const Users = lazy(() => import("@/pages/manage/Users"));
