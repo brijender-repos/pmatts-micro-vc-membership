@@ -16,13 +16,11 @@ export function MemberGrowth() {
     queryKey: ["member-growth", timeFrame],
     queryFn: async () => {
       const endDate = new Date();
-      let startDate;
-      
-      if (timeFrame === "monthly") {
-        startDate = subMonths(endDate, 2); // Last 3 months including current
-      } else if (timeFrame === "quarterly") {
+      let startDate = subMonths(endDate, 2); // Always fetch at least 3 months
+
+      if (timeFrame === "quarterly") {
         startDate = subMonths(endDate, 9); // Last 4 quarters
-      } else {
+      } else if (timeFrame === "yearly") {
         startDate = subMonths(endDate, 12); // Last 12 months
       }
 
@@ -52,6 +50,27 @@ export function MemberGrowth() {
         acc[key].count += 1;
         return acc;
       }, {} as Record<string, { period: string; count: number }>);
+
+      // Ensure we have at least 3 months of data points for monthly view
+      if (timeFrame === "monthly") {
+        const months = [];
+        for (let i = 2; i >= 0; i--) {
+          const date = subMonths(endDate, i);
+          const key = format(date, "MMM yyyy");
+          if (!groupedData?.[key]) {
+            groupedData[key] = { period: key, count: 0 };
+          }
+          months.push(key);
+        }
+        // Sort the data by date
+        return Object.values(groupedData)
+          .filter(item => months.includes(item.period))
+          .sort((a, b) => {
+            const dateA = new Date(a.period);
+            const dateB = new Date(b.period);
+            return dateA.getTime() - dateB.getTime();
+          });
+      }
 
       return Object.values(groupedData || {});
     },
@@ -83,7 +102,10 @@ export function MemberGrowth() {
         <div className="h-[300px] w-full">
           <ChartContainer config={chartConfig}>
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={growthData || []} margin={{ top: 20, right: 30, left: 20, bottom: 40 }}>
+              <BarChart 
+                data={growthData || []} 
+                margin={{ top: 20, right: 30, left: 20, bottom: 40 }}
+              >
                 <XAxis 
                   dataKey="period" 
                   angle={-45}
