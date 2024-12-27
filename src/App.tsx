@@ -4,8 +4,8 @@ import Users from "@/pages/manage/Users";
 import ManageUserDetails from "@/pages/manage/ManageUserDetails";
 import Investments from "@/pages/manage/Investments";
 import Home from "@/pages/Index";
-import { About } from "@/pages/About";
-import { Contact } from "@/pages/Contact";
+import About from "@/pages/About";
+import Contact from "@/pages/Contact";
 import ManageIndex from "@/pages/manage/Index";
 
 function App() {

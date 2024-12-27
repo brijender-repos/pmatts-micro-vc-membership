@@ -1,8 +1,13 @@
-export function About() {
+import { AboutSection } from "@/components/AboutSection";
+import { Footer } from "@/components/Footer";
+
+export default function About() {
   return (
-    <div className="container mx-auto py-8">
-      <h1 className="text-3xl font-bold mb-6">About Us</h1>
-      <p>About page content will be implemented here.</p>
+    <div className="min-h-screen flex flex-col">
+      <main className="flex-grow">
+        <AboutSection />
+      </main>
+      <Footer />
     </div>
   );
 }
