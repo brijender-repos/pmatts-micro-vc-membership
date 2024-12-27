@@ -10,7 +10,7 @@ import { CommunitySection } from "@/components/CommunitySection";
 import { ProjectsSection } from "@/components/ProjectsSection";
 import { Footer } from "@/components/Footer";
 
-const Index = () => {
+const Home = () => {
   return (
     <div className="min-h-screen bg-background">
       <Hero />
@@ -23,4 +23,4 @@ const Index = () => {
   );
 };
 
-export default Index;
+export default Home;
