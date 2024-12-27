@@ -1,4 +1,3 @@
-import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ProfileSettings } from "@/components/members/ProfileSettings";
 import { NewsletterSettings } from "@/components/members/NewsletterSettings";
@@ -71,59 +70,57 @@ const Settings = () => {
   };
 
   return (
-    <DashboardLayout>
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold">Settings</h1>
-          <p className="text-muted-foreground">
-            Manage your account settings and preferences.
-          </p>
-        </div>
-
-        <Tabs defaultValue="profile" className="space-y-4">
-          <div className="border-b">
-            <TabsList className="w-full justify-start h-12 bg-transparent p-0 space-x-8">
-              <TabsTrigger 
-                value="profile"
-                className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none px-2 pb-4"
-              >
-                Profile
-              </TabsTrigger>
-              <TabsTrigger 
-                value="notifications"
-                className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none px-2 pb-4"
-              >
-                Newsletter
-              </TabsTrigger>
-              <TabsTrigger 
-                value="kyc"
-                className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none px-2 pb-4"
-              >
-                <KYCTabTrigger />
-              </TabsTrigger>
-              <TabsTrigger 
-                value="nominee"
-                className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none px-2 pb-4"
-              >
-                Nominee
-              </TabsTrigger>
-            </TabsList>
-          </div>
-          <TabsContent value="profile" className="space-y-4">
-            <ProfileSettings />
-          </TabsContent>
-          <TabsContent value="notifications" className="space-y-4">
-            <NewsletterSettings />
-          </TabsContent>
-          <TabsContent value="kyc" className="space-y-4">
-            <KYCSettings onStatusChange={loadKYCStatus} />
-          </TabsContent>
-          <TabsContent value="nominee" className="space-y-4">
-            <NomineeSettings />
-          </TabsContent>
-        </Tabs>
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-3xl font-bold">Settings</h1>
+        <p className="text-muted-foreground">
+          Manage your account settings and preferences.
+        </p>
       </div>
-    </DashboardLayout>
+
+      <Tabs defaultValue="profile" className="space-y-4">
+        <div className="border-b">
+          <TabsList className="w-full justify-start h-12 bg-transparent p-0 space-x-8">
+            <TabsTrigger 
+              value="profile"
+              className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none px-2 pb-4"
+            >
+              Profile
+            </TabsTrigger>
+            <TabsTrigger 
+              value="notifications"
+              className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none px-2 pb-4"
+            >
+              Newsletter
+            </TabsTrigger>
+            <TabsTrigger 
+              value="kyc"
+              className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none px-2 pb-4"
+            >
+              <KYCTabTrigger />
+            </TabsTrigger>
+            <TabsTrigger 
+              value="nominee"
+              className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none px-2 pb-4"
+            >
+              Nominee
+            </TabsTrigger>
+          </TabsList>
+        </div>
+        <TabsContent value="profile" className="space-y-4">
+          <ProfileSettings />
+        </TabsContent>
+        <TabsContent value="notifications" className="space-y-4">
+          <NewsletterSettings />
+        </TabsContent>
+        <TabsContent value="kyc" className="space-y-4">
+          <KYCSettings onStatusChange={loadKYCStatus} />
+        </TabsContent>
+        <TabsContent value="nominee" className="space-y-4">
+          <NomineeSettings />
+        </TabsContent>
+      </Tabs>
+    </div>
   );
 };
 
