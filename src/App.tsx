@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from "react-router-dom";
 import { ManageLayout } from "@/components/layouts/ManageLayout";
 import { AuthGuard } from "@/components/auth/AuthGuard";
 import { Suspense, lazy } from "react";
