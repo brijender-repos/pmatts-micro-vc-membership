@@ -16,25 +16,15 @@ export const Hero = () => {
   };
 
   const handleMembersAccess = async () => {
-    try {
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (session) {
-        navigate('/members/dashboard');
-      } else {
-        toast({
-          title: "Authentication Required",
-          description: "Please sign in to access the members area",
-        });
-        navigate('/auth/login');
-      }
-    } catch (error) {
-      console.error('Authentication error:', error);
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session) {
+      navigate('/members/dashboard');
+    } else {
       toast({
-        title: "Error",
-        description: "Failed to check authentication status",
-        variant: "destructive",
+        title: "Authentication Required",
+        description: "Please sign in to access the members area",
       });
+      navigate('/auth/login');
     }
   };
 

@@ -11,7 +11,7 @@ export function ManageLayout() {
         <ManageSidebar />
         <div className="flex-1 flex flex-col min-h-screen">
           <ManageHeader />
-          <main className="flex-1 p-6">
+          <main className="flex-1 container py-6">
             <Outlet />
           </main>
           <ManageFooter />

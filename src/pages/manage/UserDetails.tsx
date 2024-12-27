@@ -1,73 +1,58 @@
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AdminUserHeader } from "@/components/admin/users/AdminUserHeader";
-import { AdminUserTabs } from "@/components/admin/users/AdminUserTabs";
+import { useState } from "react";
+import { toast } from "sonner";
+import { Mail, Phone, Shield, UserRound } from "lucide-react";
+import { UserProfileTab } from "@/components/manage/users/UserProfileTab";
+import { UserPortfolioTab } from "@/components/manage/users/UserPortfolioTab";
+import { UserKYCTab } from "@/components/manage/users/UserKYCTab";
+import { UserNomineeTab } from "@/components/manage/users/UserNomineeTab";
+import { UserNewsletterTab } from "@/components/manage/users/UserNewsletterTab";
 
 export default function UserDetails() {
-  const params = useParams();
-  const userId = params.userId;
+  const { userId } = useParams();
+  const [isEditingPhone, setIsEditingPhone] = useState(false);
+  const [phoneNumber, setPhoneNumber] = useState("");
 
-  // Return early with a better UI if no userId is provided
-  if (!userId) {
-    return (
-      <div className="space-y-6">
-        <AdminUserHeader fullName={null} email={null} />
-        <Alert variant="destructive">
-          <AlertDescription>No user ID provided</AlertDescription>
-        </Alert>
-      </div>
-    );
-  }
-
-  const { data: profile, error: profileError, refetch: refetchProfile, isLoading: isProfileLoading } = useQuery({
-    queryKey: ["admin-user-profile", userId],
+  const { data: profile, refetch: refetchProfile } = useQuery({
+    queryKey: ["user-profile", userId],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("profiles")
-        .select("*")
+        .select(`
+          id,
+          full_name,
+          phone,
+          is_active,
+          email
+        `)
         .eq("id", userId)
         .maybeSingle();
 
       if (error) throw error;
-      if (!data) throw new Error("User not found");
+      if (data?.phone) setPhoneNumber(data.phone);
       return data;
     },
   });
 
-  const { data: investments, isLoading: isInvestmentsLoading } = useQuery({
-    queryKey: ["admin-user-investments", userId],
+  const { data: investments } = useQuery({
+    queryKey: ["user-investments", userId],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("investments")
-        .select("*")
+        .select("*, projects(name, status)")
         .eq("user_id", userId)
         .order("investment_date", { ascending: false });
 
       if (error) throw error;
-      return data || [];
-    },
-    enabled: !!userId,
-  });
-
-  const { data: kycDetails, isLoading: isKycLoading } = useQuery({
-    queryKey: ["admin-user-kyc", userId],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("kyc_details")
-        .select("*")
-        .eq("user_id", userId)
-        .maybeSingle();
-
-      if (error) throw error;
       return data;
     },
-    enabled: !!userId,
   });
 
-  const { data: nominee, isLoading: isNomineeLoading } = useQuery({
-    queryKey: ["admin-user-nominee", userId],
+  const { data: nominee } = useQuery({
+    queryKey: ["user-nominee", userId],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("nominees")
@@ -78,11 +63,24 @@ export default function UserDetails() {
       if (error) throw error;
       return data;
     },
-    enabled: !!userId,
   });
 
-  const { data: newsletterSubscription, isLoading: isNewsletterLoading } = useQuery({
-    queryKey: ["admin-user-newsletter", userId],
+  const { data: kycDetails } = useQuery({
+    queryKey: ["user-kyc", userId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("kyc_details")
+        .select("*")
+        .eq("user_id", userId)
+        .maybeSingle();
+
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const { data: newsletterSubscription } = useQuery({
+    queryKey: ["user-newsletter", userId],
     queryFn: async () => {
       if (!profile?.email) return null;
       
@@ -98,48 +96,94 @@ export default function UserDetails() {
     enabled: !!profile?.email,
   });
 
-  // Handle profile loading and error states
-  if (isProfileLoading) {
-    return (
-      <div className="space-y-6">
-        <AdminUserHeader fullName={null} email={null} />
-        <div className="p-6">Loading user details...</div>
-      </div>
-    );
-  }
+  const handlePhoneUpdate = async () => {
+    try {
+      const { error } = await supabase
+        .from("profiles")
+        .update({ phone: phoneNumber })
+        .eq("id", userId);
 
-  if (profileError || !profile) {
-    return (
-      <div className="space-y-6">
-        <AdminUserHeader fullName={null} email={null} />
-        <Alert variant="destructive">
-          <AlertDescription>
-            {profileError ? "Error loading user details" : "User not found"}
-          </AlertDescription>
-        </Alert>
-      </div>
-    );
-  }
+      if (error) throw error;
+
+      toast.success("Phone number updated successfully");
+      setIsEditingPhone(false);
+      refetchProfile();
+    } catch (error) {
+      console.error("Error updating phone:", error);
+      toast.error("Failed to update phone number");
+    }
+  };
 
   return (
     <div className="space-y-6">
-      <AdminUserHeader
-        fullName={profile.full_name}
-        email={profile.email}
-      />
-      <AdminUserTabs
-        profile={profile}
-        investments={investments || []}
-        kycDetails={kycDetails}
-        nominee={nominee}
-        isProfileLoading={isProfileLoading}
-        isInvestmentsLoading={isInvestmentsLoading}
-        isKycLoading={isKycLoading}
-        isNomineeLoading={isNomineeLoading}
-        isNewsletterLoading={isNewsletterLoading}
-        onProfileUpdate={refetchProfile}
-        newsletterSubscription={newsletterSubscription}
-      />
+      <div className="space-y-1">
+        <h1 className="text-2xl font-bold tracking-tight">User Details</h1>
+        {profile && (
+          <div className="flex flex-col space-y-1">
+            <p className="text-lg font-medium">{profile.full_name}</p>
+            <p className="text-sm text-muted-foreground">{profile.email}</p>
+          </div>
+        )}
+      </div>
+
+      <Tabs defaultValue="profile" className="space-y-4">
+        <TabsList>
+          <TabsTrigger value="profile" className="flex items-center gap-2">
+            <UserRound className="h-4 w-4" />
+            Profile
+          </TabsTrigger>
+          <TabsTrigger value="portfolio" className="flex items-center gap-2">
+            <Mail className="h-4 w-4" />
+            Portfolio
+          </TabsTrigger>
+          <TabsTrigger value="kyc" className="flex items-center gap-2">
+            <Shield className="h-4 w-4" />
+            KYC Status
+          </TabsTrigger>
+          <TabsTrigger value="nominee" className="flex items-center gap-2">
+            <UserRound className="h-4 w-4" />
+            Nominee
+          </TabsTrigger>
+          <TabsTrigger value="newsletter" className="flex items-center gap-2">
+            <Mail className="h-4 w-4" />
+            Newsletter
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="profile">
+          {profile && (
+            <UserProfileTab
+              profile={profile}
+              isEditingPhone={isEditingPhone}
+              phoneNumber={phoneNumber}
+              setPhoneNumber={setPhoneNumber}
+              setIsEditingPhone={setIsEditingPhone}
+              handlePhoneUpdate={handlePhoneUpdate}
+            />
+          )}
+        </TabsContent>
+
+        <TabsContent value="portfolio">
+          {investments && <UserPortfolioTab investments={investments} />}
+        </TabsContent>
+
+        <TabsContent value="kyc">
+          <UserKYCTab kycDetails={kycDetails} />
+        </TabsContent>
+
+        <TabsContent value="nominee">
+          <UserNomineeTab nominee={nominee} />
+        </TabsContent>
+
+        <TabsContent value="newsletter">
+          {profile && (
+            <UserNewsletterTab
+              profile={profile}
+              newsletterSubscription={newsletterSubscription}
+            />
+          )}
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

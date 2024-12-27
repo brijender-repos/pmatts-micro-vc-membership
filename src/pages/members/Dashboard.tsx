@@ -1,3 +1,4 @@
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { NewsSection } from "@/components/NewsSection";
 import { ProjectTiles } from "@/components/members/portfolio/ProjectTiles";
 import { useQuery } from "@tanstack/react-query";
@@ -31,38 +32,40 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="space-y-8">
-      <div className="space-y-4">
-        <h1 className="text-3xl font-bold">Dashboard</h1>
-        <p className="text-muted-foreground">Welcome to your dashboard</p>
-      </div>
-
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-semibold">Project wise Investments</h2>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleRefresh}
-            disabled={isLoading}
-            className="gap-2"
-          >
-            <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
-            Refresh
-          </Button>
+    <DashboardLayout>
+      <div className="space-y-8">
+        <div className="space-y-4">
+          <h1 className="text-3xl font-bold">Dashboard</h1>
+          <p className="text-muted-foreground">Welcome to your dashboard</p>
         </div>
-        {isLoading ? (
-          <Skeleton className="h-[200px] w-full" />
-        ) : (
-          <ProjectTiles investments={investments || []} />
-        )}
+
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-2xl font-semibold">Project wise Investments</h2>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleRefresh}
+              disabled={isLoading}
+              className="gap-2"
+            >
+              <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
+              Refresh
+            </Button>
+          </div>
+          {isLoading ? (
+            <Skeleton className="h-[200px] w-full" />
+          ) : (
+            <ProjectTiles investments={investments || []} />
+          )}
+        </div>
+        
+        <div className="space-y-4">
+          <h2 className="text-2xl font-semibold">Latest Updates</h2>
+          <NewsSection />
+        </div>
       </div>
-      
-      <div className="space-y-4">
-        <h2 className="text-2xl font-semibold">Latest Updates</h2>
-        <NewsSection />
-      </div>
-    </div>
+    </DashboardLayout>
   );
 };
 

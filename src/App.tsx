@@ -1,59 +1,91 @@
-import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from "react-router-dom";
-import { ManageLayout } from "@/components/layouts/ManageLayout";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import Index from "@/pages/Index";
+import Login from "@/pages/auth/Login";
+import Callback from "@/pages/auth/Callback";
+import Dashboard from "@/pages/members/Dashboard";
+import Portfolio from "@/pages/members/Portfolio";
+import Settings from "@/pages/members/Settings";
+import Success from "@/pages/payment/Success";
+import Failure from "@/pages/payment/Failure";
+import FAQs from "@/pages/FAQs";
+import ManageIndex from "@/pages/manage/Index";
+import Users from "@/pages/manage/Users";
+import UserDetails from "@/pages/manage/UserDetails";
+import Investments from "@/pages/manage/Investments";
 import { AuthGuard } from "@/components/auth/AuthGuard";
-import { Suspense, lazy } from "react";
-import { Loader2 } from "lucide-react";
-import { DashboardLayout } from "@/components/layouts/DashboardLayout";
+import { ManageLayout } from "@/components/layouts/ManageLayout";
+import { Toaster } from "@/components/ui/sonner";
 
-// Lazy load components
-const Users = lazy(() => import("@/pages/manage/Users"));
-const ManageUserDetails = lazy(() => import("@/pages/manage/ManageUserDetails"));
-const Investments = lazy(() => import("@/pages/manage/Investments"));
-const Home = lazy(() => import("@/pages/Index"));
-const About = lazy(() => import("@/pages/About"));
-const Contact = lazy(() => import("@/pages/Contact"));
-const ManageIndex = lazy(() => import("@/pages/manage/Index"));
-const Dashboard = lazy(() => import("@/pages/members/Dashboard"));
-const Settings = lazy(() => import("@/pages/members/Settings"));
-const Portfolio = lazy(() => import("@/pages/members/Portfolio"));
-
-// Loading component
-const LoadingSpinner = () => (
-  <div className="flex h-screen w-full items-center justify-center">
-    <Loader2 className="h-8 w-8 animate-spin" />
-  </div>
-);
+// Create a client
+const queryClient = new QueryClient();
 
 function App() {
   return (
-    <Router>
-      <Suspense fallback={<LoadingSpinner />}>
+    <QueryClientProvider client={queryClient}>
+      <Router>
         <Routes>
-          {/* Public routes */}
-          <Route path="/" element={<Home />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/contact" element={<Contact />} />
-
-          {/* Protected member routes */}
-          <Route element={<AuthGuard><DashboardLayout /></AuthGuard>}>
-            <Route path="/members/dashboard" element={<Dashboard />} />
-            <Route path="/members/settings" element={<Settings />} />
-            <Route path="/members/portfolio" element={<Portfolio />} />
-          </Route>
-
-          {/* Protected admin routes */}
-          <Route path="manage" element={<AuthGuard><ManageLayout /></AuthGuard>}>
+          <Route path="/" element={<Index />} />
+          <Route path="/auth/login" element={<Login />} />
+          <Route path="/auth/callback" element={<Callback />} />
+          <Route path="/faqs" element={<FAQs />} />
+          <Route
+            path="/members/dashboard"
+            element={
+              <AuthGuard>
+                <Dashboard />
+              </AuthGuard>
+            }
+          />
+          <Route
+            path="/members/portfolio"
+            element={
+              <AuthGuard>
+                <Portfolio />
+              </AuthGuard>
+            }
+          />
+          <Route
+            path="/members/settings"
+            element={
+              <AuthGuard>
+                <Settings />
+              </AuthGuard>
+            }
+          />
+          <Route
+            path="/payment/success"
+            element={
+              <AuthGuard>
+                <Success />
+              </AuthGuard>
+            }
+          />
+          <Route
+            path="/payment/failure"
+            element={
+              <AuthGuard>
+                <Failure />
+              </AuthGuard>
+            }
+          />
+          <Route
+            path="/manage"
+            element={
+              <AuthGuard>
+                <ManageLayout />
+              </AuthGuard>
+            }
+          >
             <Route index element={<ManageIndex />} />
             <Route path="users" element={<Users />} />
-            <Route path="users/:userId" element={<ManageUserDetails />} />
+            <Route path="users/:id" element={<UserDetails />} />
             <Route path="investments" element={<Investments />} />
           </Route>
-
-          {/* Catch all route */}
-          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
-      </Suspense>
-    </Router>
+        <Toaster />
+      </Router>
+    </QueryClientProvider>
   );
 }
 
