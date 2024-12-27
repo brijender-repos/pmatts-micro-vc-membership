@@ -12,7 +12,7 @@ import { UserNomineeTab } from "@/components/manage/users/UserNomineeTab";
 import { UserNewsletterTab } from "@/components/manage/users/UserNewsletterTab";
 
 export default function UserDetails() {
-  const { id: userId } = useParams();  // Changed from userId to id to match the route parameter
+  const { id: userId } = useParams();
   const [isEditingPhone, setIsEditingPhone] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState("");
 
@@ -35,7 +35,7 @@ export default function UserDetails() {
       if (data?.phone) setPhoneNumber(data.phone);
       return data;
     },
-    enabled: !!userId,  // Only run the query if userId exists
+    enabled: !!userId,
   });
 
   const { data: investments } = useQuery({
@@ -50,7 +50,7 @@ export default function UserDetails() {
       if (error) throw error;
       return data;
     },
-    enabled: !!userId,  // Only run the query if userId exists
+    enabled: !!userId,
   });
 
   const { data: nominee } = useQuery({
@@ -65,7 +65,7 @@ export default function UserDetails() {
       if (error) throw error;
       return data;
     },
-    enabled: !!userId,  // Only run the query if userId exists
+    enabled: !!userId,
   });
 
   const { data: kycDetails } = useQuery({
@@ -80,7 +80,7 @@ export default function UserDetails() {
       if (error) throw error;
       return data;
     },
-    enabled: !!userId,  // Only run the query if userId exists
+    enabled: !!userId,
   });
 
   const { data: newsletterSubscription } = useQuery({
@@ -131,28 +131,55 @@ export default function UserDetails() {
       </div>
 
       <Tabs defaultValue="profile" className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="profile" className="flex items-center gap-2">
-            <UserRound className="h-4 w-4" />
-            Profile
-          </TabsTrigger>
-          <TabsTrigger value="portfolio" className="flex items-center gap-2">
-            <Mail className="h-4 w-4" />
-            Portfolio
-          </TabsTrigger>
-          <TabsTrigger value="kyc" className="flex items-center gap-2">
-            <Shield className="h-4 w-4" />
-            KYC Status
-          </TabsTrigger>
-          <TabsTrigger value="nominee" className="flex items-center gap-2">
-            <UserRound className="h-4 w-4" />
-            Nominee
-          </TabsTrigger>
-          <TabsTrigger value="newsletter" className="flex items-center gap-2">
-            <Mail className="h-4 w-4" />
-            Newsletter
-          </TabsTrigger>
-        </TabsList>
+        <div className="border-b">
+          <TabsList className="w-full justify-start h-12 bg-transparent p-0 space-x-8">
+            <TabsTrigger 
+              value="profile"
+              className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none px-2 pb-4"
+            >
+              <div className="flex items-center gap-2">
+                <UserRound className="h-4 w-4" />
+                Profile
+              </div>
+            </TabsTrigger>
+            <TabsTrigger 
+              value="portfolio"
+              className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none px-2 pb-4"
+            >
+              <div className="flex items-center gap-2">
+                <Mail className="h-4 w-4" />
+                Portfolio
+              </div>
+            </TabsTrigger>
+            <TabsTrigger 
+              value="kyc"
+              className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none px-2 pb-4"
+            >
+              <div className="flex items-center gap-2">
+                <Shield className="h-4 w-4" />
+                KYC
+              </div>
+            </TabsTrigger>
+            <TabsTrigger 
+              value="nominee"
+              className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none px-2 pb-4"
+            >
+              <div className="flex items-center gap-2">
+                <UserRound className="h-4 w-4" />
+                Nominee
+              </div>
+            </TabsTrigger>
+            <TabsTrigger 
+              value="newsletter"
+              className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none px-2 pb-4"
+            >
+              <div className="flex items-center gap-2">
+                <Mail className="h-4 w-4" />
+                Newsletter
+              </div>
+            </TabsTrigger>
+          </TabsList>
+        </div>
 
         <TabsContent value="profile">
           {profile && (
