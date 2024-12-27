@@ -49,6 +49,12 @@ export function MemberGrowth() {
     },
   });
 
+  const chartConfig = {
+    count: {
+      color: "#2563eb",
+    },
+  };
+
   return (
     <Card className="col-span-3">
       <CardHeader className="flex flex-row items-center justify-between">
@@ -66,7 +72,7 @@ export function MemberGrowth() {
       </CardHeader>
       <CardContent>
         <div className="h-[300px]">
-          <ChartContainer>
+          <ChartContainer config={chartConfig}>
             <LineChart data={growthData || []}>
               <XAxis dataKey="period" />
               <YAxis />

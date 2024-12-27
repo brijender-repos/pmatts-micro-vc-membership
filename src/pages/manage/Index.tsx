@@ -1,3 +1,4 @@
+import { Card } from "@/components/ui/card";
 import { DashboardStats } from "@/components/manage/dashboard/DashboardStats";
 import { TopInvestors } from "@/components/manage/dashboard/TopInvestors";
 import { InvestmentTrends } from "@/components/manage/dashboard/InvestmentTrends";

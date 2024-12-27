@@ -51,6 +51,12 @@ export function InvestmentTrends() {
     },
   });
 
+  const chartConfig = {
+    amount: {
+      color: "#2563eb",
+    },
+  };
+
   return (
     <Card className="col-span-3">
       <CardHeader className="flex flex-row items-center justify-between">
@@ -68,7 +74,7 @@ export function InvestmentTrends() {
       </CardHeader>
       <CardContent>
         <div className="h-[300px]">
-          <ChartContainer>
+          <ChartContainer config={chartConfig}>
             <BarChart data={trendsData || []}>
               <XAxis dataKey="period" />
               <YAxis />
