@@ -16,7 +16,15 @@ export function MemberGrowth() {
     queryKey: ["member-growth", timeFrame],
     queryFn: async () => {
       const endDate = new Date();
-      const startDate = subMonths(endDate, 12); // Last 12 months
+      let startDate;
+      
+      if (timeFrame === "monthly") {
+        startDate = subMonths(endDate, 2); // Last 3 months including current
+      } else if (timeFrame === "quarterly") {
+        startDate = subMonths(endDate, 9); // Last 4 quarters
+      } else {
+        startDate = subMonths(endDate, 12); // Last 12 months
+      }
 
       const { data: members } = await supabase
         .from("profiles")
@@ -72,15 +80,15 @@ export function MemberGrowth() {
         </Select>
       </CardHeader>
       <CardContent>
-        <div className="h-[400px] w-full">
+        <div className="h-[300px] w-full">
           <ChartContainer config={chartConfig}>
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={growthData || []} margin={{ top: 20, right: 30, left: 20, bottom: 60 }}>
+              <BarChart data={growthData || []} margin={{ top: 20, right: 30, left: 20, bottom: 40 }}>
                 <XAxis 
                   dataKey="period" 
                   angle={-45}
                   textAnchor="end"
-                  height={60}
+                  height={40}
                   interval={0}
                   tick={{ fontSize: 12 }}
                 />
