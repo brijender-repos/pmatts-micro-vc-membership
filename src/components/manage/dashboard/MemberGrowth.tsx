@@ -95,6 +95,7 @@ export function MemberGrowth() {
                 <YAxis 
                   width={50}
                   tick={{ fontSize: 12 }}
+                  domain={[25, 'auto']} // Set minimum value to 25
                 />
                 <Tooltip />
                 <Bar 
