@@ -4,12 +4,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
 import { useState } from "react";
 import { toast } from "sonner";
-import { Mail, Phone, Shield, UserRound } from "lucide-react";
+import { Mail, UserRound } from "lucide-react";
 import { UserProfileTab } from "@/components/manage/users/UserProfileTab";
 import { UserPortfolioTab } from "@/components/manage/users/UserPortfolioTab";
 import { UserKYCTab } from "@/components/manage/users/UserKYCTab";
 import { UserNomineeTab } from "@/components/manage/users/UserNomineeTab";
 import { UserNewsletterTab } from "@/components/manage/users/UserNewsletterTab";
+import { KYCTabTrigger } from "@/components/manage/users/KYCTabTrigger";
 
 export default function UserDetails() {
   const { id: userId } = useParams();
@@ -155,10 +156,7 @@ export default function UserDetails() {
               value="kyc"
               className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none px-2 pb-4"
             >
-              <div className="flex items-center gap-2">
-                <Shield className="h-4 w-4" />
-                KYC
-              </div>
+              <KYCTabTrigger kycStatus={kycDetails?.status} />
             </TabsTrigger>
             <TabsTrigger 
               value="nominee"
