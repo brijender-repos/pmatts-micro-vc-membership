@@ -17,8 +17,15 @@ import { AuthGuard } from "@/components/auth/AuthGuard";
 import { ManageLayout } from "@/components/layouts/ManageLayout";
 import { Toaster } from "@/components/ui/sonner";
 
-// Create a client
-const queryClient = new QueryClient();
+// Create a client with default options
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 function App() {
   return (
