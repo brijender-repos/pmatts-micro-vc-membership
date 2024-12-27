@@ -12,7 +12,7 @@ import { UserNomineeTab } from "@/components/manage/users/UserNomineeTab";
 import { UserNewsletterTab } from "@/components/manage/users/UserNewsletterTab";
 
 export default function UserDetails() {
-  const { userId } = useParams();
+  const { id: userId } = useParams();  // Changed from userId to id to match the route parameter
   const [isEditingPhone, setIsEditingPhone] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState("");
 
@@ -28,13 +28,14 @@ export default function UserDetails() {
           is_active,
           email
         `)
-        .eq("user_id", userId)  // Changed from 'id' to 'user_id'
+        .eq("user_id", userId)
         .maybeSingle();
 
       if (error) throw error;
       if (data?.phone) setPhoneNumber(data.phone);
       return data;
     },
+    enabled: !!userId,  // Only run the query if userId exists
   });
 
   const { data: investments } = useQuery({
@@ -49,6 +50,7 @@ export default function UserDetails() {
       if (error) throw error;
       return data;
     },
+    enabled: !!userId,  // Only run the query if userId exists
   });
 
   const { data: nominee } = useQuery({
@@ -63,6 +65,7 @@ export default function UserDetails() {
       if (error) throw error;
       return data;
     },
+    enabled: !!userId,  // Only run the query if userId exists
   });
 
   const { data: kycDetails } = useQuery({
@@ -77,6 +80,7 @@ export default function UserDetails() {
       if (error) throw error;
       return data;
     },
+    enabled: !!userId,  // Only run the query if userId exists
   });
 
   const { data: newsletterSubscription } = useQuery({
@@ -101,7 +105,7 @@ export default function UserDetails() {
       const { error } = await supabase
         .from("profiles")
         .update({ phone: phoneNumber })
-        .eq("id", userId);
+        .eq("user_id", userId);
 
       if (error) throw error;
 
