@@ -98,39 +98,37 @@ export function MemberGrowth() {
           </SelectContent>
         </Select>
       </CardHeader>
-      <CardContent>
-        <div className="h-[250px] w-full"> {/* Reduced height from 300px to 250px */}
-          <ChartContainer config={chartConfig}>
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart 
-                data={growthData || []} 
-                margin={{ top: 20, right: 30, left: 20, bottom: 40 }}
-              >
-                <XAxis 
-                  dataKey="period" 
-                  angle={-45}
-                  textAnchor="end"
-                  height={40}
-                  interval={0}
-                  tick={{ fontSize: 12 }}
-                />
-                <YAxis 
-                  width={50}
-                  tick={{ fontSize: 12 }}
-                  domain={[25, 'auto']} // Set minimum value to 25
-                  allowDataOverflow={true} // Ensures the domain minimum is respected
-                />
-                <Tooltip />
-                <Bar 
-                  dataKey="count" 
-                  fill={chartConfig.count.color}
-                  name={chartConfig.count.label}
-                  radius={[4, 4, 0, 0]}
-                />
-              </BarChart>
-            </ResponsiveContainer>
-          </ChartContainer>
-        </div>
+      <CardContent className="h-[250px]">
+        <ChartContainer config={chartConfig}>
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart 
+              data={growthData || []} 
+              margin={{ top: 20, right: 30, left: 20, bottom: 40 }}
+            >
+              <XAxis 
+                dataKey="period" 
+                angle={-45}
+                textAnchor="end"
+                height={40}
+                interval={0}
+                tick={{ fontSize: 12 }}
+              />
+              <YAxis 
+                width={50}
+                tick={{ fontSize: 12 }}
+                domain={[25, 'auto']}
+                allowDataOverflow={true}
+              />
+              <Tooltip />
+              <Bar 
+                dataKey="count" 
+                fill={chartConfig.count.color}
+                name={chartConfig.count.label}
+                radius={[4, 4, 0, 0]}
+              />
+            </BarChart>
+          </ResponsiveContainer>
+        </ChartContainer>
       </CardContent>
     </Card>
   );
