@@ -6,7 +6,8 @@ import { AdminUserHeader } from "@/components/admin/users/AdminUserHeader";
 import { AdminUserTabs } from "@/components/admin/users/AdminUserTabs";
 
 export default function UserDetails() {
-  const { userId } = useParams<{ userId: string }>();
+  const params = useParams();
+  const userId = params.userId;
 
   // Return early with a better UI if no userId is provided
   if (!userId) {
