@@ -38,23 +38,23 @@ export default function AddInvestment() {
     );
   }
 
-  if (error) {
-    console.error("Error in component:", error);
-    return (
-      <div className="container mx-auto py-6">
-        <div className="bg-destructive/15 text-destructive p-4 rounded-md">
-          Error loading user details: {error.message}
-        </div>
-      </div>
-    );
-  }
-
   if (isLoading) {
     return (
       <div className="container mx-auto py-6">
         <div className="animate-pulse">
           <div className="h-8 bg-muted rounded w-1/3 mb-4"></div>
           <div className="h-[400px] bg-muted rounded"></div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    console.error("Error in component:", error);
+    return (
+      <div className="container mx-auto py-6">
+        <div className="bg-destructive/15 text-destructive p-4 rounded-md">
+          Error loading user details: {error.message}
         </div>
       </div>
     );
