@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/table"
 import { supabase } from "@/integrations/supabase/client"
 import { Link } from "react-router-dom"
+import { Plus } from "lucide-react"
 
 interface User {
   id: string
@@ -96,10 +97,16 @@ export function UsersTable({ users, isLoading, refetch }: UsersTableProps) {
                     }
                   />
                 </TableCell>
-                <TableCell className="text-right">
+                <TableCell className="text-right space-x-2">
                   <Button variant="outline" size="sm" asChild>
                     <Link to={`/manage/users/${user.id}`}>
                       View Details
+                    </Link>
+                  </Button>
+                  <Button variant="outline" size="sm" asChild>
+                    <Link to={`/manage/users/${user.id}/add-investment`}>
+                      <Plus className="h-4 w-4 mr-1" />
+                      Add Investment
                     </Link>
                   </Button>
                 </TableCell>
