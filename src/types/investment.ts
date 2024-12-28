@@ -9,7 +9,7 @@ export interface InvestmentWithUser {
   notes: string | null;
   user_id: string;
   transaction_status: string;
-  payment_mode: "Bank Transfer" | "UPI" | "Credit Card" | "Debit Card" | "Cash" | "Others" | null;
+  payment_mode: PaymentMode | null;
   transaction_id: string | null;
   transaction_notes: string | null;
   created_at: string;
