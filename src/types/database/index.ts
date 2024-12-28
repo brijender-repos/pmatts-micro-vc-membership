@@ -8,6 +8,9 @@ export * from "./profiles";
 export * from "./projects";
 export * from "./transaction-proofs";
 
+import type { Database as DatabaseTypes } from "@/integrations/supabase/types";
+export type Database = DatabaseTypes;
+
 // Helper types
 export type Tables<
   PublicTableNameOrOptions extends
