@@ -18,6 +18,7 @@ export type Database = {
           investment_date: string
           investment_type: Database["public"]["Enums"]["investment_type"]
           notes: string | null
+          payment_mode: string | null
           project_name: string
           transaction_id: string | null
           transaction_status: string
@@ -33,6 +34,7 @@ export type Database = {
           investment_date?: string
           investment_type: Database["public"]["Enums"]["investment_type"]
           notes?: string | null
+          payment_mode?: string | null
           project_name: string
           transaction_id?: string | null
           transaction_status?: string
@@ -48,6 +50,7 @@ export type Database = {
           investment_date?: string
           investment_type?: Database["public"]["Enums"]["investment_type"]
           notes?: string | null
+          payment_mode?: string | null
           project_name?: string
           transaction_id?: string | null
           transaction_status?: string
