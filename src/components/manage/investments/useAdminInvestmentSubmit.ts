@@ -4,14 +4,14 @@ import { FormFields } from "./AdminInvestmentFormFields";
 
 interface UseAdminInvestmentSubmitProps {
   userId: string;
-  projectName: string;
+  investmentId?: string;
   onSuccess?: () => void;
   onError?: (error: Error) => void;
 }
 
 export function useAdminInvestmentSubmit({
   userId,
-  projectName,
+  investmentId,
   onSuccess,
   onError,
 }: UseAdminInvestmentSubmitProps) {
@@ -32,27 +32,41 @@ export function useAdminInvestmentSubmit({
         throw new Error("Admin privileges required");
       }
 
-      const { data, error } = await supabase
-        .from('investments')
-        .insert([
-          {
-            user_id: userId,
-            project_name: projectName,
-            units: values.units,
-            amount: values.units * UNIT_PRICE,
-            investment_type: 'investment',
-            notes: values.notes,
-            payment_mode: values.payment_mode,
-            transaction_notes: values.transaction_notes,
-          }
-        ])
-        .select()
-        .single();
+      const investmentData = {
+        user_id: userId,
+        project_name: values.project_name,
+        units: values.units,
+        amount: values.units * UNIT_PRICE,
+        investment_type: 'investment',
+        notes: values.notes,
+        payment_mode: values.payment_mode,
+        transaction_notes: values.transaction_notes,
+      };
 
-      if (error) throw error;
+      let result;
+      if (investmentId) {
+        const { data, error } = await supabase
+          .from('investments')
+          .update(investmentData)
+          .eq('id', investmentId)
+          .select()
+          .single();
+
+        if (error) throw error;
+        result = data;
+      } else {
+        const { data, error } = await supabase
+          .from('investments')
+          .insert([investmentData])
+          .select()
+          .single();
+
+        if (error) throw error;
+        result = data;
+      }
 
       onSuccess?.();
-      return data;
+      return result;
     } catch (error) {
       console.error('Investment submission error:', error);
       onError?.(error instanceof Error ? error : new Error("Investment failed"));

@@ -2,9 +2,11 @@ import { useParams } from "react-router-dom";
 import { AdminInvestmentForm } from "@/components/manage/investments/AdminInvestmentForm";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { Card } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function AddInvestment() {
-  const { userId } = useParams<{ userId: string }>();
+  const { userId, investmentId } = useParams<{ userId: string; investmentId?: string }>();
   console.log("Retrieved userId from params:", userId);
 
   const { data: profile, isLoading, error } = useQuery({
@@ -13,7 +15,7 @@ export default function AddInvestment() {
       console.log("Fetching profile for userId:", userId);
       const { data, error } = await supabase
         .from("profiles")
-        .select("id, full_name, email")
+        .select("id, full_name, email, phone")
         .eq("id", userId)
         .maybeSingle();
 
@@ -40,11 +42,15 @@ export default function AddInvestment() {
 
   if (isLoading) {
     return (
-      <div className="container mx-auto py-6">
-        <div className="animate-pulse">
-          <div className="h-8 bg-muted rounded w-1/3 mb-4"></div>
-          <div className="h-[400px] bg-muted rounded"></div>
-        </div>
+      <div className="container mx-auto py-6 space-y-6">
+        <Card className="p-6 space-y-4">
+          <Skeleton className="h-8 w-1/3" />
+          <div className="grid grid-cols-3 gap-4">
+            <Skeleton className="h-6" />
+            <Skeleton className="h-6" />
+            <Skeleton className="h-6" />
+          </div>
+        </Card>
       </div>
     );
   }
@@ -62,12 +68,27 @@ export default function AddInvestment() {
 
   return (
     <div className="container mx-auto py-6 space-y-6">
-      <h1 className="text-2xl font-bold">
-        Add Investment for {profile?.full_name || "User"}
-      </h1>
+      <Card className="p-6">
+        <div className="space-y-4">
+          <h2 className="text-2xl font-bold">
+            {investmentId ? "Update" : "Add"} Investment for {profile?.full_name || "User"}
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+            <div>
+              <span className="text-muted-foreground">Email:</span>
+              <p>{profile?.email || "N/A"}</p>
+            </div>
+            <div>
+              <span className="text-muted-foreground">Phone:</span>
+              <p>{profile?.phone || "N/A"}</p>
+            </div>
+          </div>
+        </div>
+      </Card>
+      
       <AdminInvestmentForm 
-        userId={userId} 
-        projectName="Missing Matters"
+        userId={userId}
+        investmentId={investmentId}
         onSuccess={() => {
           window.location.href = `/manage/users/${userId}`;
         }}

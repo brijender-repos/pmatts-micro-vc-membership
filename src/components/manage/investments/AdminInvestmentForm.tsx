@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useToast } from "@/components/ui/use-toast";
@@ -7,36 +7,84 @@ import { Form } from "@/components/ui/form";
 import { TransactionProofUpload } from "./TransactionProofUpload";
 import { AdminInvestmentFormFields, formSchema, type FormFields } from "./AdminInvestmentFormFields";
 import { useAdminInvestmentSubmit } from "./useAdminInvestmentSubmit";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { Card } from "@/components/ui/card";
 
 interface AdminInvestmentFormProps {
   userId: string;
-  projectName: string;
+  investmentId?: string;
   onSuccess?: () => void;
   onError?: (error: Error) => void;
 }
 
 export function AdminInvestmentForm({ 
   userId, 
-  projectName, 
+  investmentId,
   onSuccess, 
   onError 
 }: AdminInvestmentFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
+  const [uploadedFiles, setUploadedFiles] = useState<string[]>([]);
+  
+  const { data: existingInvestment } = useQuery({
+    queryKey: ["investment", investmentId],
+    queryFn: async () => {
+      if (!investmentId) return null;
+      const { data, error } = await supabase
+        .from("investments")
+        .select("*")
+        .eq("id", investmentId)
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!investmentId,
+  });
+
+  const { data: existingProofs } = useQuery({
+    queryKey: ["proofs", investmentId],
+    queryFn: async () => {
+      if (!investmentId) return [];
+      const { data, error } = await supabase
+        .from("transaction_proofs")
+        .select("*")
+        .eq("investment_id", investmentId);
+
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!investmentId,
+  });
   
   const form = useForm<FormFields>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      units: 1,
-      notes: "",
-      payment_mode: "Bank Transfer",
-      transaction_notes: "",
+      project_name: existingInvestment?.project_name || "",
+      units: existingInvestment?.units || 1,
+      notes: existingInvestment?.notes || "",
+      payment_mode: existingInvestment?.payment_mode || "Bank Transfer",
+      transaction_notes: existingInvestment?.transaction_notes || "",
     },
   });
 
+  useEffect(() => {
+    if (existingInvestment) {
+      form.reset({
+        project_name: existingInvestment.project_name,
+        units: existingInvestment.units,
+        notes: existingInvestment.notes,
+        payment_mode: existingInvestment.payment_mode,
+        transaction_notes: existingInvestment.transaction_notes,
+      });
+    }
+  }, [existingInvestment, form]);
+
   const { handleSubmit: submitInvestment } = useAdminInvestmentSubmit({
     userId,
-    projectName,
+    investmentId,
     onSuccess,
     onError,
   });
@@ -46,8 +94,8 @@ export function AdminInvestmentForm({
       setIsSubmitting(true);
       await submitInvestment(values);
       toast({
-        title: "Investment Added",
-        description: "Investment details have been saved successfully",
+        title: `Investment ${investmentId ? 'Updated' : 'Added'}`,
+        description: `Investment details have been ${investmentId ? 'updated' : 'saved'} successfully`,
       });
     } catch (error) {
       toast({
@@ -61,19 +109,24 @@ export function AdminInvestmentForm({
   };
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <AdminInvestmentFormFields form={form} />
-        
-        <TransactionProofUpload 
-          investmentId={userId} 
-          onUploadComplete={() => {}} 
-        />
+    <Card className="p-6">
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <AdminInvestmentFormFields form={form} />
+          
+          <TransactionProofUpload 
+            investmentId={investmentId || userId} 
+            onUploadComplete={(fileUrl) => {
+              setUploadedFiles(prev => [...prev, fileUrl]);
+            }}
+            existingFiles={existingProofs}
+          />
 
-        <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? "Processing..." : "Add Investment"}
-        </Button>
-      </form>
-    </Form>
+          <Button type="submit" disabled={isSubmitting}>
+            {isSubmitting ? "Processing..." : investmentId ? "Update Investment" : "Add Investment"}
+          </Button>
+        </form>
+      </Form>
+    </Card>
   );
 }

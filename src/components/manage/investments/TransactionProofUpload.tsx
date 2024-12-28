@@ -2,15 +2,22 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { FileText, X } from "lucide-react";
 
 interface TransactionProofUploadProps {
   investmentId: string;
-  onUploadComplete: () => void;
+  onUploadComplete: (fileUrl: string) => void;
+  existingFiles?: Array<{
+    id: string;
+    file_url: string;
+    file_name: string;
+  }>;
 }
 
 export function TransactionProofUpload({ 
   investmentId, 
-  onUploadComplete 
+  onUploadComplete,
+  existingFiles = []
 }: TransactionProofUploadProps) {
   const [isUploading, setIsUploading] = useState(false);
   const { toast } = useToast();
@@ -31,22 +38,29 @@ export function TransactionProofUpload({
 
         if (uploadError) throw uploadError;
 
+        const { data: urlData } = await supabase.storage
+          .from('transaction_proofs')
+          .createSignedUrl(filePath, 60 * 60 * 24 * 7); // 7 days expiry
+
+        if (!urlData?.signedUrl) throw new Error('Failed to generate file URL');
+
         const { error: dbError } = await supabase
           .from('transaction_proofs')
           .insert({
             investment_id: investmentId,
-            file_url: filePath,
+            file_url: urlData.signedUrl,
             file_name: file.name,
           });
 
         if (dbError) throw dbError;
+
+        onUploadComplete(urlData.signedUrl);
       }
 
       toast({
         title: "Success",
         description: "Transaction proof(s) uploaded successfully",
       });
-      onUploadComplete();
     } catch (error) {
       console.error('Upload error:', error);
       toast({
@@ -60,27 +74,53 @@ export function TransactionProofUpload({
   };
 
   return (
-    <div className="space-y-2">
-      <label htmlFor="transaction-proof" className="block text-sm font-medium">
-        Transaction Proof (Optional)
-      </label>
-      <input
-        id="transaction-proof"
-        type="file"
-        multiple
-        accept="image/*,.pdf"
-        onChange={handleFileUpload}
-        disabled={isUploading}
-        className="hidden"
-      />
-      <Button
-        type="button"
-        variant="outline"
-        onClick={() => document.getElementById('transaction-proof')?.click()}
-        disabled={isUploading}
-      >
-        {isUploading ? "Uploading..." : "Upload Proof"}
-      </Button>
+    <div className="space-y-4">
+      <div>
+        <label className="block text-sm font-medium mb-2">
+          Transaction Proof
+        </label>
+        <input
+          id="transaction-proof"
+          type="file"
+          multiple
+          accept="image/*,.pdf"
+          onChange={handleFileUpload}
+          disabled={isUploading}
+          className="hidden"
+        />
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => document.getElementById('transaction-proof')?.click()}
+          disabled={isUploading}
+        >
+          {isUploading ? "Uploading..." : "Upload Proof"}
+        </Button>
+      </div>
+
+      {existingFiles && existingFiles.length > 0 && (
+        <div className="space-y-2">
+          <label className="block text-sm font-medium">Uploaded Files</label>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+            {existingFiles.map((file) => (
+              <div
+                key={file.id}
+                className="flex items-center gap-2 p-2 border rounded-md bg-muted"
+              >
+                <FileText className="h-4 w-4" />
+                <a
+                  href={file.file_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm text-blue-600 hover:underline flex-1 truncate"
+                >
+                  {file.file_name}
+                </a>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
