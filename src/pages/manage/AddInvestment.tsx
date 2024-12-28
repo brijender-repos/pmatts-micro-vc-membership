@@ -5,27 +5,35 @@ import { supabase } from "@/integrations/supabase/client";
 
 export default function AddInvestment() {
   const { userId } = useParams<{ userId: string }>();
+  console.log("Retrieved userId from params:", userId); // Added debug log
 
   const { data: profile } = useQuery({
     queryKey: ["user-profile", userId],
     queryFn: async () => {
+      console.log("Fetching profile for userId:", userId); // Added debug log
       const { data, error } = await supabase
         .from("profiles")
         .select("*")
         .eq("user_id", userId)
         .maybeSingle();
 
-      if (error) throw error;
+      if (error) {
+        console.error("Profile fetch error:", error); // Added debug log
+        throw error;
+      }
+      console.log("Retrieved profile:", data); // Added debug log
       return data;
     },
     enabled: !!userId,
   });
 
   if (!userId) {
+    console.log("No userId provided"); // Added debug log
     return <div>User ID is required</div>;
   }
 
   if (!profile) {
+    console.log("No profile found"); // Added debug log
     return <div>Loading user details...</div>;
   }
 
