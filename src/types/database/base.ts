@@ -6,12 +6,14 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[];
 
+// Base interfaces for all tables
 export interface BaseRow {
   id: string;
   created_at: string;
   updated_at: string;
 }
 
+// Enums
 export interface DatabaseEnums {
   investment_type: "investment" | "follow_on" | "distribution" | "exit" | "dividend";
   kyc_status: "not_started" | "aadhar_submitted" | "pan_submitted" | "verification_pending" | "verified" | "rejected";
@@ -19,6 +21,7 @@ export interface DatabaseEnums {
   project_status: "active" | "completed" | "upcoming";
 }
 
+// Relationships
 export interface InvestmentRelationships {
   foreignKeyName: string;
   columns: string[];
