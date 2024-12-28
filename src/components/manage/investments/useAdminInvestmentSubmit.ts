@@ -40,7 +40,6 @@ export function useAdminInvestmentSubmit({
         investment_type: "investment" as const,
         notes: values.notes,
         payment_mode: values.payment_mode,
-        transaction_notes: values.transaction_notes,
       };
 
       let result;
