@@ -104,7 +104,7 @@ export default function Investments() {
 
   const downloadExcel = () => {
     if (!investments?.length) {
-      toast.error("No data available to download");
+      toast.error("No investments data available");
       return;
     }
 
@@ -118,14 +118,19 @@ export default function Investments() {
         "Type": investment.investment_type.replace("_", " "),
         "Amount": investment.amount,
         "Units": investment.units || "N/A",
+        "Equity %": investment.equity_percentage || "N/A",
         "Status": investment.transaction_status,
+        "Payment Mode": investment.payment_mode || "N/A",
+        "Transaction ID": investment.transaction_id || "N/A",
+        "Notes": investment.notes || "N/A",
+        "Created At": new Date(investment.created_at).toLocaleDateString(),
+        "Updated At": new Date(investment.updated_at).toLocaleDateString(),
       }))
     );
 
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Investments");
 
-    // Generate filename with current date
     const date = new Date().toISOString().split('T')[0];
     const filename = `investments_${date}.xlsx`;
 
@@ -146,7 +151,6 @@ export default function Investments() {
           onClick={downloadExcel}
           variant="outline"
           className="flex items-center gap-2"
-          disabled={!investments?.length}
         >
           <Download className="h-4 w-4" />
           Download Excel
