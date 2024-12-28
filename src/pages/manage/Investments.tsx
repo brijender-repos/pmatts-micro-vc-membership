@@ -14,7 +14,7 @@ import {
 import { toast } from "sonner";
 import type { InvestmentWithUser } from "@/types/investment";
 import { Download } from "lucide-react";
-import * as XLSX from "xlsx";
+import ExcelJS from 'exceljs';
 
 export default function Investments() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -102,39 +102,73 @@ export default function Investments() {
 
   const totalPages = investments ? Math.ceil(investments.length / pageSize) : 0;
 
-  const downloadExcel = () => {
+  const downloadExcel = async () => {
     if (!investments?.length) {
       toast.error("No investments data available");
       return;
     }
 
-    const worksheet = XLSX.utils.json_to_sheet(
-      investments.map((investment) => ({
-        "Date": new Date(investment.investment_date).toLocaleDateString(),
-        "Investor Name": investment.profiles?.full_name || "N/A",
-        "Email": investment.profiles?.email || "N/A",
-        "Phone": investment.profiles?.phone || "N/A",
-        "Project": investment.project_name,
-        "Type": investment.investment_type.replace("_", " "),
-        "Amount": investment.amount,
-        "Units": investment.units || "N/A",
-        "Equity %": investment.equity_percentage || "N/A",
-        "Status": investment.transaction_status,
-        "Payment Mode": investment.payment_mode || "N/A",
-        "Transaction ID": investment.transaction_id || "N/A",
-        "Notes": investment.notes || "N/A",
-        "Created At": new Date(investment.created_at).toLocaleDateString(),
-        "Updated At": new Date(investment.updated_at).toLocaleDateString(),
-      }))
-    );
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Investments');
 
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Investments");
+    // Define columns
+    worksheet.columns = [
+      { header: 'Date', key: 'date', width: 15 },
+      { header: 'Investor Name', key: 'investor_name', width: 20 },
+      { header: 'Email', key: 'email', width: 25 },
+      { header: 'Phone', key: 'phone', width: 15 },
+      { header: 'Project', key: 'project', width: 20 },
+      { header: 'Type', key: 'type', width: 15 },
+      { header: 'Amount', key: 'amount', width: 15 },
+      { header: 'Units', key: 'units', width: 10 },
+      { header: 'Equity %', key: 'equity', width: 10 },
+      { header: 'Status', key: 'status', width: 15 },
+      { header: 'Payment Mode', key: 'payment_mode', width: 15 },
+      { header: 'Transaction ID', key: 'transaction_id', width: 20 },
+      { header: 'Notes', key: 'notes', width: 30 },
+      { header: 'Created At', key: 'created_at', width: 15 },
+      { header: 'Updated At', key: 'updated_at', width: 15 },
+    ];
 
+    // Add data rows
+    investments.forEach(investment => {
+      worksheet.addRow({
+        date: new Date(investment.investment_date).toLocaleDateString(),
+        investor_name: investment.profiles?.full_name || 'N/A',
+        email: investment.profiles?.email || 'N/A',
+        phone: investment.profiles?.phone || 'N/A',
+        project: investment.project_name,
+        type: investment.investment_type.replace('_', ' '),
+        amount: investment.amount,
+        units: investment.units || 'N/A',
+        equity: investment.equity_percentage || 'N/A',
+        status: investment.transaction_status,
+        payment_mode: investment.payment_mode || 'N/A',
+        transaction_id: investment.transaction_id || 'N/A',
+        notes: investment.notes || 'N/A',
+        created_at: new Date(investment.created_at).toLocaleDateString(),
+        updated_at: new Date(investment.updated_at).toLocaleDateString(),
+      });
+    });
+
+    // Style the header row
+    worksheet.getRow(1).font = { bold: true };
+    worksheet.getRow(1).fill = {
+      type: 'pattern',
+      pattern: 'solid',
+      fgColor: { argb: 'FFE0E0E0' }
+    };
+
+    // Generate the file
     const date = new Date().toISOString().split('T')[0];
-    const filename = `investments_${date}.xlsx`;
-
-    XLSX.writeFile(workbook, filename);
+    const buffer = await workbook.xlsx.writeBuffer();
+    const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `investments_${date}.xlsx`;
+    link.click();
+    window.URL.revokeObjectURL(url);
     toast.success("Excel file downloaded successfully");
   };
 
