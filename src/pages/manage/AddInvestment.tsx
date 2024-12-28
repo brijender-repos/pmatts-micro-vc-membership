@@ -12,7 +12,7 @@ export default function AddInvestment() {
       const { data, error } = await supabase
         .from("profiles")
         .select("*")
-        .eq("id", userId)
+        .eq("user_id", userId)
         .maybeSingle();
 
       if (error) throw error;
