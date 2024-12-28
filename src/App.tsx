@@ -22,6 +22,7 @@ const AddInvestment = lazy(() => import("@/pages/manage/AddInvestment"))
 const Investments = lazy(() => import("@/pages/manage/Investments"))
 const PaymentSuccess = lazy(() => import("@/pages/payment/Success"))
 const PaymentFailure = lazy(() => import("@/pages/payment/Failure"))
+const ProjectPage = lazy(() => import("@/pages/projects/[slug]"))
 
 const queryClient = new QueryClient()
 
@@ -29,6 +30,10 @@ const router = createBrowserRouter([
   {
     path: "/",
     element: <Index />,
+  },
+  {
+    path: "/projects/:slug",
+    element: <ProjectPage />,
   },
   {
     path: "/auth/login",
@@ -42,7 +47,7 @@ const router = createBrowserRouter([
     path: "/members",
     element: (
       <AuthGuard>
-        <Outlet />
+        <DashboardLayout />
       </AuthGuard>
     ),
     children: [
@@ -77,11 +82,11 @@ const router = createBrowserRouter([
         element: <Users />,
       },
       {
-        path: "users/:userId", // Changed from :id to :userId
+        path: "users/:userId",
         element: <UserDetails />,
       },
       {
-        path: "users/:userId/add-investment", // Changed from :id to :userId
+        path: "users/:userId/add-investment",
         element: <AddInvestment />,
       },
       {
