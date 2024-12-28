@@ -42,9 +42,7 @@ const router = createBrowserRouter([
     path: "/members",
     element: (
       <AuthGuard>
-        <DashboardLayout>
-          <Outlet />
-        </DashboardLayout>
+        <Outlet />
       </AuthGuard>
     ),
     children: [
