@@ -96,10 +96,15 @@ export function UsersTable({ users, isLoading, refetch }: UsersTableProps) {
                     }
                   />
                 </TableCell>
-                <TableCell className="text-right">
+                <TableCell className="text-right space-x-2">
                   <Button variant="outline" size="sm" asChild>
                     <Link to={`/manage/users/${user.id}`}>
                       View Details
+                    </Link>
+                  </Button>
+                  <Button variant="outline" size="sm" asChild>
+                    <Link to={`/manage/users/${user.id}/add-investment`}>
+                      Add Investment
                     </Link>
                   </Button>
                 </TableCell>
