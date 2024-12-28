@@ -10,7 +10,7 @@ import { useUserDetails } from "@/hooks/use-user-details";
 import { usePhoneUpdate } from "@/hooks/use-phone-update";
 
 export default function UserDetails() {
-  const { id: userId } = useParams();
+  const { userId } = useParams(); // Changed from id to userId to match the route parameter
   console.log("UserDetails - userId from params:", userId);
   
   const {

@@ -77,11 +77,11 @@ const router = createBrowserRouter([
         element: <Users />,
       },
       {
-        path: "users/:userId",
+        path: "users/:userId", // Changed from :id to :userId
         element: <UserDetails />,
       },
       {
-        path: "users/:userId/add-investment",
+        path: "users/:userId/add-investment", // Changed from :id to :userId
         element: <AddInvestment />,
       },
       {

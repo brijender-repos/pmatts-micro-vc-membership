@@ -74,7 +74,7 @@ export function useUserDetails(userId: string | undefined) {
   });
 
   const { data: newsletterSubscription } = useQuery({
-    queryKey: ["user-newsletter", userId],
+    queryKey: ["user-newsletter", profile?.email],
     queryFn: async () => {
       if (!profile?.email) return null;
       
