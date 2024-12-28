@@ -12,7 +12,6 @@ export interface InvestmentRow extends BaseRow {
   transaction_id: string | null;
   transaction_status: string;
   payment_mode: string | null;
-  transaction_notes: string | null;
 }
 
 export type InvestmentInsert = Omit<InvestmentRow, "id" | "created_at" | "updated_at">;

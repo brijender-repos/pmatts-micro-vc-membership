@@ -24,7 +24,6 @@ export const formSchema = z.object({
     .max(MAX_UNITS, `Maximum ${MAX_UNITS} units allowed`),
   notes: z.string().optional(),
   payment_mode: z.enum(PaymentModes),
-  transaction_notes: z.string().optional(),
   investment_type: z.enum(["investment", "follow_on", "distribution", "exit", "dividend"]).default("investment"),
 });
 
@@ -137,30 +136,13 @@ export function AdminInvestmentFormFields({ form }: AdminInvestmentFormFieldsPro
 
       <FormField
         control={form.control}
-        name="transaction_notes"
+        name="notes"
         render={({ field }) => (
           <FormItem>
             <FormLabel>Transaction Details</FormLabel>
             <FormControl>
               <Textarea 
                 placeholder="Enter transaction/transfer details"
-                {...field} 
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-
-      <FormField
-        control={form.control}
-        name="notes"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Additional Notes</FormLabel>
-            <FormControl>
-              <Textarea 
-                placeholder="Any additional notes"
                 {...field} 
               />
             </FormControl>

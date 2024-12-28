@@ -67,7 +67,6 @@ export function AdminInvestmentForm({
       units: existingInvestment?.units || 1,
       notes: existingInvestment?.notes || "",
       payment_mode: (existingInvestment?.payment_mode as PaymentMode) || "Bank Transfer",
-      transaction_notes: existingInvestment?.transaction_notes || "",
       investment_type: existingInvestment?.investment_type || "investment",
     },
   });
@@ -79,7 +78,6 @@ export function AdminInvestmentForm({
         units: existingInvestment.units,
         notes: existingInvestment.notes,
         payment_mode: existingInvestment.payment_mode as PaymentMode,
-        transaction_notes: existingInvestment.transaction_notes,
         investment_type: existingInvestment.investment_type,
       });
     }
