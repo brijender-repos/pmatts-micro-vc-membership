@@ -5,6 +5,7 @@ export function useUserDetails(userId: string | undefined) {
   const { data: profile, refetch: refetchProfile } = useQuery({
     queryKey: ["user-profile", userId],
     queryFn: async () => {
+      console.log("Fetching profile for user ID:", userId);
       const { data, error } = await supabase
         .from("profiles")
         .select(`
@@ -17,7 +18,11 @@ export function useUserDetails(userId: string | undefined) {
         .eq("user_id", userId)
         .maybeSingle();
 
-      if (error) throw error;
+      if (error) {
+        console.error("Profile fetch error:", error);
+        throw error;
+      }
+      console.log("Profile data fetched:", data);
       return data;
     },
     enabled: !!userId,

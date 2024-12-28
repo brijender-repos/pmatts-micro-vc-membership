@@ -11,6 +11,8 @@ import { usePhoneUpdate } from "@/hooks/use-phone-update";
 
 export default function UserDetails() {
   const { id: userId } = useParams();
+  console.log("UserDetails - userId from params:", userId);
+  
   const {
     profile,
     refetchProfile,
@@ -20,6 +22,8 @@ export default function UserDetails() {
     newsletterSubscription,
   } = useUserDetails(userId);
 
+  console.log("UserDetails - profile data:", profile);
+
   const {
     isEditingPhone,
     setIsEditingPhone,
@@ -28,32 +32,40 @@ export default function UserDetails() {
     handlePhoneUpdate,
   } = usePhoneUpdate(userId, refetchProfile);
 
+  if (!profile) {
+    console.log("UserDetails - No profile data available");
+    return (
+      <div className="space-y-6">
+        <div className="space-y-1">
+          <h1 className="text-2xl font-bold tracking-tight">User Details</h1>
+          <p className="text-muted-foreground">Loading user details...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <div className="space-y-1">
         <h1 className="text-2xl font-bold tracking-tight">User Details</h1>
-        {profile && (
-          <div className="flex flex-col space-y-1">
-            <p className="text-lg font-medium">{profile.full_name}</p>
-            <p className="text-sm text-muted-foreground">{profile.email}</p>
-          </div>
-        )}
+        <div className="flex flex-col space-y-1">
+          <p className="text-lg font-medium">{profile.full_name}</p>
+          <p className="text-sm text-muted-foreground">{profile.email}</p>
+        </div>
       </div>
 
       <Tabs defaultValue="profile" className="space-y-4">
         <UserDetailsTabs kycStatus={kycDetails?.status} />
 
         <TabsContent value="profile">
-          {profile && (
-            <UserProfileTab
-              profile={profile}
-              isEditingPhone={isEditingPhone}
-              phoneNumber={phoneNumber}
-              setPhoneNumber={setPhoneNumber}
-              setIsEditingPhone={setIsEditingPhone}
-              handlePhoneUpdate={handlePhoneUpdate}
-            />
-          )}
+          <UserProfileTab
+            profile={profile}
+            isEditingPhone={isEditingPhone}
+            phoneNumber={phoneNumber}
+            setPhoneNumber={setPhoneNumber}
+            setIsEditingPhone={setIsEditingPhone}
+            handlePhoneUpdate={handlePhoneUpdate}
+          />
         </TabsContent>
 
         <TabsContent value="portfolio">
@@ -69,12 +81,10 @@ export default function UserDetails() {
         </TabsContent>
 
         <TabsContent value="newsletter">
-          {profile && (
-            <UserNewsletterTab
-              profile={profile}
-              newsletterSubscription={newsletterSubscription}
-            />
-          )}
+          <UserNewsletterTab
+            profile={profile}
+            newsletterSubscription={newsletterSubscription}
+          />
         </TabsContent>
       </Tabs>
     </div>

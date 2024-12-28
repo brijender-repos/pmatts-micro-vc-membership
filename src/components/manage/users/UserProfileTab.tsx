@@ -25,7 +25,10 @@ export function UserProfileTab({
   setIsEditingPhone,
   handlePhoneUpdate,
 }: UserProfileTabProps) {
+  console.log("UserProfileTab - Received profile:", profile);
+
   if (!profile) {
+    console.log("UserProfileTab - No profile data");
     return (
       <Card className="p-6">
         <p className="text-muted-foreground">No profile data available</p>
