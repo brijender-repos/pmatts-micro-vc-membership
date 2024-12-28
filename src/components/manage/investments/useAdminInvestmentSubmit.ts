@@ -37,7 +37,7 @@ export function useAdminInvestmentSubmit({
         project_name: values.project_name,
         units: values.units,
         amount: values.units * UNIT_PRICE,
-        investment_type: 'investment',
+        investment_type: "investment" as const,
         notes: values.notes,
         payment_mode: values.payment_mode,
         transaction_notes: values.transaction_notes,

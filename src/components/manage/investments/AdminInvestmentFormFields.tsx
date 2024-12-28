@@ -25,6 +25,7 @@ export const formSchema = z.object({
   notes: z.string().optional(),
   payment_mode: z.enum(PaymentModes),
   transaction_notes: z.string().optional(),
+  investment_type: z.enum(["investment", "follow_on", "distribution", "exit", "dividend"]).default("investment"),
 });
 
 export type FormFields = z.infer<typeof formSchema>;

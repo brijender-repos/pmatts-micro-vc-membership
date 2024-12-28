@@ -14,6 +14,13 @@ interface TransactionProofUploadProps {
   }>;
 }
 
+const ALLOWED_FILE_TYPES = [
+  'image/jpeg',
+  'image/png',
+  'image/bmp',
+  'application/pdf'
+];
+
 export function TransactionProofUpload({ 
   investmentId, 
   onUploadComplete,
@@ -25,6 +32,18 @@ export function TransactionProofUpload({
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (!files || files.length === 0) return;
+
+    // Validate file types
+    for (const file of files) {
+      if (!ALLOWED_FILE_TYPES.includes(file.type)) {
+        toast({
+          title: "Invalid file type",
+          description: "Only images (JPG, PNG, BMP) and PDF files are allowed",
+          variant: "destructive",
+        });
+        return;
+      }
+    }
 
     setIsUploading(true);
     try {
@@ -83,7 +102,7 @@ export function TransactionProofUpload({
           id="transaction-proof"
           type="file"
           multiple
-          accept="image/*,.pdf"
+          accept=".jpg,.jpeg,.png,.bmp,.pdf"
           onChange={handleFileUpload}
           disabled={isUploading}
           className="hidden"
@@ -101,11 +120,11 @@ export function TransactionProofUpload({
       {existingFiles && existingFiles.length > 0 && (
         <div className="space-y-2">
           <label className="block text-sm font-medium">Uploaded Files</label>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+          <div className="grid grid-cols-1 gap-2">
             {existingFiles.map((file) => (
               <div
                 key={file.id}
-                className="flex items-center gap-2 p-2 border rounded-md bg-muted"
+                className="flex items-center gap-2 p-2 border rounded-md bg-muted hover:bg-muted/80 transition-colors"
               >
                 <FileText className="h-4 w-4" />
                 <a
