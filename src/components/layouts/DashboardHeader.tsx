@@ -8,8 +8,12 @@ export const DashboardHeader = () => {
     <header className="border-b bg-background">
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
-          <Link to="/" className="text-xl font-bold">
-            Pmatts
+          <Link to="/" className="flex items-center">
+            <img 
+              src="/lovable-uploads/f0782915-4628-443f-ad03-77a16409fa92.png" 
+              alt="Pmatts Logo" 
+              className="h-8 w-auto"
+            />
           </Link>
           <nav className="flex items-center gap-4">
             <Button variant="ghost" asChild>

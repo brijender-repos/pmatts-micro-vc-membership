@@ -9,6 +9,13 @@ export function ManageHeader() {
     <header className="border-b bg-background">
       <div className="container flex h-14 items-center gap-4">
         <SidebarTrigger />
+        <Link to="/" className="flex items-center">
+          <img 
+            src="/lovable-uploads/f0782915-4628-443f-ad03-77a16409fa92.png" 
+            alt="Pmatts Logo" 
+            className="h-8 w-auto"
+          />
+        </Link>
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="sm" asChild>
             <Link to="/" className="flex items-center gap-2">
