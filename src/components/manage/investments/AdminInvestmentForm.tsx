@@ -5,7 +5,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { TransactionProofUpload } from "./TransactionProofUpload";
-import { AdminInvestmentFormFields, formSchema } from "./AdminInvestmentFormFields";
+import { AdminInvestmentFormFields, formSchema, type FormFields } from "./AdminInvestmentFormFields";
 import { useAdminInvestmentSubmit } from "./useAdminInvestmentSubmit";
 
 interface AdminInvestmentFormProps {
@@ -23,7 +23,8 @@ export function AdminInvestmentForm({
 }: AdminInvestmentFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
-  const form = useForm({
+  
+  const form = useForm<FormFields>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       units: 1,
@@ -40,7 +41,7 @@ export function AdminInvestmentForm({
     onError,
   });
 
-  const onSubmit = async (values: any) => {
+  const onSubmit = async (values: FormFields) => {
     try {
       setIsSubmitting(true);
       await submitInvestment(values);

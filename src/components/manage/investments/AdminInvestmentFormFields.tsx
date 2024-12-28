@@ -6,19 +6,21 @@ import { UNIT_PRICE, MAX_UNITS } from "@/types/payment";
 import { UseFormReturn } from "react-hook-form";
 import * as z from "zod";
 
+const PaymentModes = [
+  "Bank Transfer",
+  "UPI",
+  "Credit Card",
+  "Debit Card",
+  "Cash",
+  "Others"
+] as const;
+
 const formSchema = z.object({
   units: z.number()
     .min(1, "Minimum 1 unit required")
     .max(MAX_UNITS, `Maximum ${MAX_UNITS} units allowed`),
   notes: z.string().optional(),
-  payment_mode: z.enum([
-    "Bank Transfer",
-    "UPI",
-    "Credit Card",
-    "Debit Card",
-    "Cash",
-    "Others"
-  ]),
+  payment_mode: z.enum(PaymentModes),
   transaction_notes: z.string().optional(),
 });
 
@@ -68,12 +70,11 @@ export function AdminInvestmentFormFields({ form }: AdminInvestmentFormFieldsPro
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
-                <SelectItem value="Bank Transfer">Bank Transfer</SelectItem>
-                <SelectItem value="UPI">UPI</SelectItem>
-                <SelectItem value="Credit Card">Credit Card</SelectItem>
-                <SelectItem value="Debit Card">Debit Card</SelectItem>
-                <SelectItem value="Cash">Cash</SelectItem>
-                <SelectItem value="Others">Others</SelectItem>
+                {PaymentModes.map((mode) => (
+                  <SelectItem key={mode} value={mode}>
+                    {mode}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
             <FormMessage />

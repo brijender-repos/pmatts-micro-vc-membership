@@ -39,6 +39,7 @@ export default function AddInvestment() {
   }
 
   if (error) {
+    console.error("Error in component:", error);
     return (
       <div className="container mx-auto py-6">
         <div className="bg-destructive/15 text-destructive p-4 rounded-md">
