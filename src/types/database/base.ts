@@ -6,49 +6,78 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[];
 
+export interface BaseRow {
+  id: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface DatabaseEnums {
+  investment_type: "investment" | "follow_on" | "distribution" | "exit" | "dividend";
+  kyc_status: "not_started" | "aadhar_submitted" | "pan_submitted" | "verification_pending" | "verified" | "rejected";
+  nominee_relationship: "Husband" | "Wife" | "Son" | "Daughter" | "Father" | "Mother" | "Other";
+  project_status: "active" | "completed" | "upcoming";
+}
+
+export interface InvestmentRelationships {
+  foreignKeyName: string;
+  columns: string[];
+  isOneToOne: boolean;
+  referencedRelation: string;
+  referencedColumns: string[];
+}
+
+export interface TransactionProofRelationships {
+  foreignKeyName: string;
+  columns: string[];
+  isOneToOne: boolean;
+  referencedRelation: string;
+  referencedColumns: string[];
+}
+
 export interface Database {
   public: {
     Tables: {
       investments: {
-        Row: InvestmentRow;
-        Insert: InvestmentInsert;
-        Update: InvestmentUpdate;
+        Row: import('./investments').InvestmentRow;
+        Insert: import('./investments').InvestmentInsert;
+        Update: import('./investments').InvestmentUpdate;
         Relationships: InvestmentRelationships[];
       };
       kyc_details: {
-        Row: KycDetailsRow;
-        Insert: KycDetailsInsert;
-        Update: KycDetailsUpdate;
+        Row: import('./kyc').KycDetailsRow;
+        Insert: import('./kyc').KycDetailsInsert;
+        Update: import('./kyc').KycDetailsUpdate;
         Relationships: [];
       };
       newsletter_subscriptions: {
-        Row: NewsletterSubscriptionRow;
-        Insert: NewsletterSubscriptionInsert;
-        Update: NewsletterSubscriptionUpdate;
+        Row: import('./newsletter').NewsletterSubscriptionRow;
+        Insert: import('./newsletter').NewsletterSubscriptionInsert;
+        Update: import('./newsletter').NewsletterSubscriptionUpdate;
         Relationships: [];
       };
       nominees: {
-        Row: NomineeRow;
-        Insert: NomineeInsert;
-        Update: NomineeUpdate;
+        Row: import('./nominees').NomineeRow;
+        Insert: import('./nominees').NomineeInsert;
+        Update: import('./nominees').NomineeUpdate;
         Relationships: [];
       };
       profiles: {
-        Row: ProfileRow;
-        Insert: ProfileInsert;
-        Update: ProfileUpdate;
+        Row: import('./profiles').ProfileRow;
+        Insert: import('./profiles').ProfileInsert;
+        Update: import('./profiles').ProfileUpdate;
         Relationships: [];
       };
       projects: {
-        Row: ProjectRow;
-        Insert: ProjectInsert;
-        Update: ProjectUpdate;
+        Row: import('./projects').ProjectRow;
+        Insert: import('./projects').ProjectInsert;
+        Update: import('./projects').ProjectUpdate;
         Relationships: [];
       };
       transaction_proofs: {
-        Row: TransactionProofRow;
-        Insert: TransactionProofInsert;
-        Update: TransactionProofUpdate;
+        Row: import('./transaction-proofs').TransactionProofRow;
+        Insert: import('./transaction-proofs').TransactionProofInsert;
+        Update: import('./transaction-proofs').TransactionProofUpdate;
         Relationships: TransactionProofRelationships[];
       };
     };
@@ -66,38 +95,6 @@ export interface Database {
       [_ in never]: never;
     };
   };
-}
-
-// Base interfaces for all tables
-interface BaseRow {
-  id: string;
-  created_at: string;
-  updated_at: string;
-}
-
-// Enums
-interface DatabaseEnums {
-  investment_type: "investment" | "follow_on" | "distribution" | "exit" | "dividend";
-  kyc_status: "not_started" | "aadhar_submitted" | "pan_submitted" | "verification_pending" | "verified" | "rejected";
-  nominee_relationship: "Husband" | "Wife" | "Son" | "Daughter" | "Father" | "Mother" | "Other";
-  project_status: "active" | "completed" | "upcoming";
-}
-
-// Relationships
-interface InvestmentRelationships {
-  foreignKeyName: string;
-  columns: string[];
-  isOneToOne: boolean;
-  referencedRelation: string;
-  referencedColumns: string[];
-}
-
-interface TransactionProofRelationships {
-  foreignKeyName: string;
-  columns: string[];
-  isOneToOne: boolean;
-  referencedRelation: string;
-  referencedColumns: string[];
 }
 
 // Re-export all types
