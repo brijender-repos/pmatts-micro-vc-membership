@@ -25,17 +25,25 @@ export function UserProfileTab({
   setIsEditingPhone,
   handlePhoneUpdate,
 }: UserProfileTabProps) {
+  if (!profile) {
+    return (
+      <Card className="p-6">
+        <p className="text-muted-foreground">No profile data available</p>
+      </Card>
+    );
+  }
+
   return (
     <Card className="p-6">
       <div className="space-y-4">
         <div className="grid grid-cols-2 gap-4">
           <div>
             <p className="text-sm font-medium text-muted-foreground">Name</p>
-            <p>{profile?.full_name || "N/A"}</p>
+            <p>{profile.full_name || "N/A"}</p>
           </div>
           <div>
             <p className="text-sm font-medium text-muted-foreground">Email</p>
-            <p>{profile?.email || "N/A"}</p>
+            <p>{profile.email || "N/A"}</p>
           </div>
           <div>
             <p className="text-sm font-medium text-muted-foreground">Phone</p>
@@ -53,7 +61,7 @@ export function UserProfileTab({
               </div>
             ) : (
               <div className="flex items-center gap-2">
-                <p>{profile?.phone || "N/A"}</p>
+                <p>{profile.phone || "N/A"}</p>
                 <Button
                   variant="outline"
                   size="sm"
@@ -66,7 +74,7 @@ export function UserProfileTab({
           </div>
           <div>
             <p className="text-sm font-medium text-muted-foreground">Status</p>
-            <p>{profile?.is_active ? "Active" : "Inactive"}</p>
+            <p>{profile.is_active ? "Active" : "Inactive"}</p>
           </div>
         </div>
       </div>
