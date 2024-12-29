@@ -19,7 +19,6 @@ export const useAdmin = () => {
             .single();
           
           console.log("User profile:", profile);
-          console.log("Admin role:", profile?.admin_role);
           console.log("Profile error:", error);
           
           if (error) {
