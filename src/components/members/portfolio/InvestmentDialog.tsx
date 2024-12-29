@@ -77,7 +77,7 @@ export function InvestmentDialog({ projectName, open, onOpenChange }: Investment
         .insert([{
           user_id: session.user.id,
           project_name: projectName,
-          investment_type: 'investment' as const,
+          investment_type: "Pre-Seed" as const, // Default to Pre-Seed for new investments
           amount: values.units * UNIT_PRICE,
           units: values.units,
           notes: values.notes,

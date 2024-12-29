@@ -65,7 +65,8 @@ export function ProjectTiles({ investments }: ProjectTilesProps) {
       };
     }
     
-    if (inv.investment_type === 'investment' || inv.investment_type === 'follow_on') {
+    // Update condition to check for investment types
+    if (["Pre-Seed", "Seed", "Post-Seed", "Revenue-Based", "Convertible-Notes/SAFEs", "Equity-Crowdfunding", "Syndicate", "SPVs", "Royality-based"].includes(inv.investment_type)) {
       acc[inv.project_name].total_invested += inv.amount;
       acc[inv.project_name].total_units += inv.units || 0;
     }

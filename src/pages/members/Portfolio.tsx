@@ -59,14 +59,14 @@ export default function Portfolio() {
   // Calculate summary values for the report
 
   const totalInvested = investments?.reduce((total, inv) => {
-    if (inv.investment_type === 'investment' || inv.investment_type === 'follow_on') {
+    if (["Pre-Seed", "Seed", "Post-Seed"].includes(inv.investment_type)) {
       return total + inv.amount;
     }
     return total;
   }, 0) || 0;
 
   const totalReturns = investments?.reduce((total, inv) => {
-    if (inv.investment_type === 'distribution' || inv.investment_type === 'dividend' || inv.investment_type === 'exit') {
+    if (["Revenue-Based", "Convertible-Notes/SAFEs", "Equity-Crowdfunding"].includes(inv.investment_type)) {
       return total + inv.amount;
     }
     return total;

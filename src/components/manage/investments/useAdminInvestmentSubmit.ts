@@ -1,6 +1,7 @@
 import { supabase } from "@/integrations/supabase/client";
 import { UNIT_PRICE } from "@/types/payment";
 import { FormFields } from "./AdminInvestmentFormFields";
+import { InvestmentType } from "@/types/investment";
 
 interface UseAdminInvestmentSubmitProps {
   userId: string;
@@ -37,7 +38,7 @@ export function useAdminInvestmentSubmit({
         project_name: values.project_name,
         units: values.units,
         amount: values.units * UNIT_PRICE,
-        investment_type: values.investment_type,
+        investment_type: values.investment_type as InvestmentType,
         notes: values.notes,
         payment_mode: values.payment_mode,
       };

@@ -18,7 +18,7 @@ const PaymentModes = [
   "Others"
 ] as const;
 
-const InvestmentTypes: InvestmentType[] = [
+const InvestmentTypes = [
   "Pre-Seed",
   "Seed",
   "Post-Seed",
@@ -28,7 +28,7 @@ const InvestmentTypes: InvestmentType[] = [
   "Syndicate",
   "SPVs",
   "Royality-based"
-];
+] as const;
 
 export const formSchema = z.object({
   project_name: z.string().min(1, "Project name is required"),
