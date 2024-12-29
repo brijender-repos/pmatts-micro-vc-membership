@@ -26,7 +26,7 @@ export type InvestmentType =
   | "Seed"
   | "Post-Seed"
   | "Revenue-Based"
-  | "Convertible-Notes/SAFEs"
+  | "Convertible-Notes or SAFEs"
   | "Equity-Crowdfunding"
   | "Syndicate"
   | "SPVs"

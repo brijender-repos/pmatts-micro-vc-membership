@@ -66,7 +66,7 @@ export default function Portfolio() {
   }, 0) || 0;
 
   const totalReturns = investments?.reduce((total, inv) => {
-    if (["Revenue-Based", "Convertible-Notes/SAFEs", "Equity-Crowdfunding"].includes(inv.investment_type)) {
+    if (["Revenue-Based", "Convertible-Notes or SAFEs", "Equity-Crowdfunding"].includes(inv.investment_type)) {
       return total + inv.amount;
     }
     return total;

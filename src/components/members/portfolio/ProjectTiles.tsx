@@ -66,11 +66,12 @@ export function ProjectTiles({ investments }: ProjectTilesProps) {
     }
     
     // Update condition to check for investment types
-    if (["Pre-Seed", "Seed", "Post-Seed", "Revenue-Based", "Convertible-Notes/SAFEs", "Equity-Crowdfunding", "Syndicate", "SPVs", "Royality-based"].includes(inv.investment_type)) {
+
+    if (["Pre-Seed", "Seed", "Post-Seed", "Revenue-Based", "Convertible-Notes or SAFEs", "Equity-Crowdfunding", "Syndicate", "SPVs", "Royality-based"].includes(inv.investment_type)) {
       acc[inv.project_name].total_invested += inv.amount;
       acc[inv.project_name].total_units += inv.units || 0;
     }
-    
+
     return acc;
   }, {} as Record<string, { project_name: string; total_invested: number; total_units: number; }>);
 
@@ -95,3 +96,4 @@ export function ProjectTiles({ investments }: ProjectTilesProps) {
     </div>
   );
 }
+

@@ -25,6 +25,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { UNIT_PRICE, MAX_UNITS } from "@/types/payment";
 import { supabase } from "@/integrations/supabase/client";
 import { paymentLogger } from "@/utils/paymentLogger";
+import { InvestmentType } from "@/types/investment";
 
 const formSchema = z.object({
   units: z.number()
@@ -77,7 +78,7 @@ export function InvestmentDialog({ projectName, open, onOpenChange }: Investment
         .insert([{
           user_id: session.user.id,
           project_name: projectName,
-          investment_type: "Pre-Seed" as const, // Default to Pre-Seed for new investments
+          investment_type: "Pre-Seed" as InvestmentType, // Default to Pre-Seed for new investments
           amount: values.units * UNIT_PRICE,
           units: values.units,
           notes: values.notes,
