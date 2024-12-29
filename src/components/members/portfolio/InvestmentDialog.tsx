@@ -77,7 +77,7 @@ export function InvestmentDialog({ projectName, open, onOpenChange }: Investment
         .insert([{
           user_id: session.user.id,
           project_name: projectName,
-          investment_type: 'investment',
+          investment_type: 'investment' as const,
           amount: values.units * UNIT_PRICE,
           units: values.units,
           notes: values.notes,

@@ -57,6 +57,7 @@ export default function Portfolio() {
   }
 
   // Calculate summary values for the report
+
   const totalInvested = investments?.reduce((total, inv) => {
     if (inv.investment_type === 'investment' || inv.investment_type === 'follow_on') {
       return total + inv.amount;
