@@ -12,11 +12,11 @@ export const useAdmin = () => {
         console.log("Current session:", session);
         
         if (session) {
-          // Use maybeSingle() instead of single() to handle the case where multiple rows might be returned
+          // Query using user_id instead of id
           const { data: profile, error } = await supabase
             .from('profiles')
             .select('admin_role')
-            .eq('id', session.user.id)
+            .eq('user_id', session.user.id)
             .maybeSingle();
           
           console.log("User profile:", profile);
