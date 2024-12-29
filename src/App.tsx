@@ -1,12 +1,11 @@
 import { lazy, Suspense } from "react"
-import { RouterProvider, createBrowserRouter } from "react-router-dom"
+import { RouterProvider, createBrowserRouter, Outlet } from "react-router-dom"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { Toaster } from "@/components/ui/toaster"
 import { Toaster as SonnerToaster } from "@/components/ui/sonner"
 import { AuthGuard } from "@/components/auth/AuthGuard"
 import { DashboardLayout } from "@/components/layouts/DashboardLayout"
 import { ManageLayout } from "@/components/layouts/ManageLayout"
-import { Outlet } from "react-router-dom"
 
 // Lazy load pages
 const Index = lazy(() => import("@/pages/Index"))
@@ -47,7 +46,9 @@ const router = createBrowserRouter([
     path: "/members",
     element: (
       <AuthGuard>
-        <DashboardLayout />
+        <DashboardLayout>
+          <Outlet />
+        </DashboardLayout>
       </AuthGuard>
     ),
     children: [
