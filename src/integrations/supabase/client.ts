@@ -1,16 +1,15 @@
 import { createClient } from '@supabase/supabase-js';
+import type { Database } from './types';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
   auth: {
     flowType: 'pkce',
     autoRefreshToken: true,
     detectSessionInUrl: true,
     persistSession: true,
     storage: window.localStorage,
-    // Update redirect URL based on environment
-    redirectTo: `${window.location.origin}/auth/callback`,
   },
 });
