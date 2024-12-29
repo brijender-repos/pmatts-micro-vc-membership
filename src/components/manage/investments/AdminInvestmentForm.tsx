@@ -67,7 +67,7 @@ export function AdminInvestmentForm({
       units: existingInvestment?.units || 1,
       notes: existingInvestment?.notes || "",
       payment_mode: (existingInvestment?.payment_mode as PaymentMode) || "Bank Transfer",
-      investment_type: existingInvestment?.investment_type || "investment",
+      investment_type: existingInvestment?.investment_type || "Pre-Seed", // Changed default from "investment" to "Pre-Seed"
     },
   });
 
