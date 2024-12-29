@@ -16,7 +16,7 @@ export const useAdmin = () => {
             .from('profiles')
             .select('admin_role')
             .eq('user_id', session.user.id)
-            .single();
+            .maybeSingle();
 
           if (error) {
             console.error("Error fetching profile:", error);
