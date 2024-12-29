@@ -6,8 +6,9 @@ import { Toaster as SonnerToaster } from "@/components/ui/sonner"
 import { AuthGuard } from "@/components/auth/AuthGuard"
 import { DashboardLayout } from "@/components/layouts/DashboardLayout"
 import { ManageLayout } from "@/components/layouts/ManageLayout"
+import { DashboardHeader } from "@/components/layouts/DashboardHeader"
+import { MembersFooter } from "@/components/layouts/MembersFooter"
 
-// Lazy load pages
 const Index = lazy(() => import("@/pages/Index"))
 const Login = lazy(() => import("@/pages/auth/Login"))
 const Callback = lazy(() => import("@/pages/auth/Callback"))
@@ -46,9 +47,13 @@ const router = createBrowserRouter([
     path: "/members",
     element: (
       <AuthGuard>
-        <DashboardLayout>
-          <Outlet />
-        </DashboardLayout>
+        <div className="min-h-screen flex flex-col">
+          <DashboardHeader />
+          <DashboardLayout>
+            <Outlet />
+          </DashboardLayout>
+          <MembersFooter />
+        </div>
       </AuthGuard>
     ),
     children: [
