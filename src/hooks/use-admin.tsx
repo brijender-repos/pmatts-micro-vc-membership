@@ -12,11 +12,12 @@ export const useAdmin = () => {
         console.log("Current session:", session);
         
         if (session) {
+          // Use maybeSingle() instead of single() to handle the case where multiple rows might be returned
           const { data: profile, error } = await supabase
             .from('profiles')
             .select('admin_role')
             .eq('id', session.user.id)
-            .single();
+            .maybeSingle();
           
           console.log("User profile:", profile);
           console.log("Profile error:", error);
@@ -25,8 +26,13 @@ export const useAdmin = () => {
             console.error("Error fetching profile:", error);
             setIsAdmin(false);
           } else {
+            // If profile exists and has admin_role set to true
             setIsAdmin(!!profile?.admin_role);
+            console.log("Admin status set to:", !!profile?.admin_role);
           }
+        } else {
+          console.log("No active session found");
+          setIsAdmin(false);
         }
       } catch (error) {
         console.error("Error in checkAdminStatus:", error);

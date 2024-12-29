@@ -24,7 +24,7 @@ export const MembersFooter = () => {
                     Frequently Asked Questions
                   </Link>
                 </li>
-                {isAdmin && (
+                {isAdmin && !loading && (
                   <li>
                     <Link 
                       to="/manage" 
