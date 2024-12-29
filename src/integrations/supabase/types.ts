@@ -304,11 +304,15 @@ export type Database = {
     }
     Enums: {
       investment_type:
-        | "investment"
-        | "follow_on"
-        | "distribution"
-        | "exit"
-        | "dividend"
+        | "Pre-Seed"
+        | "Seed"
+        | "Post-Seed"
+        | "Revenue-Based"
+        | "Convertible-Notes/SAFEs"
+        | "Equity-Crowdfunding"
+        | "Syndicate"
+        | "SPVs"
+        | "Royality-based"
       kyc_status:
         | "not_started"
         | "aadhar_submitted"
