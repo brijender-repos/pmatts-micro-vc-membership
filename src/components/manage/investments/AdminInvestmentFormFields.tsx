@@ -7,6 +7,7 @@ import { UseFormReturn } from "react-hook-form";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import * as z from "zod";
+import { InvestmentType } from "@/types/investment";
 
 const PaymentModes = [
   "Bank Transfer",
@@ -17,6 +18,18 @@ const PaymentModes = [
   "Others"
 ] as const;
 
+const InvestmentTypes: InvestmentType[] = [
+  "Pre-Seed",
+  "Seed",
+  "Post-Seed",
+  "Revenue-Based",
+  "Convertible-Notes/SAFEs",
+  "Equity-Crowdfunding",
+  "Syndicate",
+  "SPVs",
+  "Royality-based"
+];
+
 export const formSchema = z.object({
   project_name: z.string().min(1, "Project name is required"),
   units: z.number()
@@ -24,7 +37,7 @@ export const formSchema = z.object({
     .max(MAX_UNITS, `Maximum ${MAX_UNITS} units allowed`),
   notes: z.string().optional(),
   payment_mode: z.enum(PaymentModes),
-  investment_type: z.enum(["investment", "follow_on", "distribution", "exit", "dividend"]).default("investment"),
+  investment_type: z.enum(InvestmentTypes).default("Pre-Seed"),
 });
 
 export type FormFields = z.infer<typeof formSchema>;
@@ -68,6 +81,31 @@ export function AdminInvestmentFormFields({ form }: AdminInvestmentFormFieldsPro
                 {projects?.map((project) => (
                   <SelectItem key={project.name} value={project.name}>
                     {project.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={form.control}
+        name="investment_type"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Investment Type</FormLabel>
+            <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <FormControl>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select investment type" />
+                </SelectTrigger>
+              </FormControl>
+              <SelectContent>
+                {InvestmentTypes.map((type) => (
+                  <SelectItem key={type} value={type}>
+                    {type}
                   </SelectItem>
                 ))}
               </SelectContent>

@@ -1,7 +1,7 @@
 export interface InvestmentWithUser {
   id: string;
   project_name: string;
-  investment_type: "investment" | "follow_on" | "distribution" | "exit" | "dividend";
+  investment_type: InvestmentType;
   investment_date: string;
   amount: number;
   units: number | null;
@@ -20,5 +20,16 @@ export interface InvestmentWithUser {
     phone: string | null;
   };
 }
+
+export type InvestmentType = 
+  | "Pre-Seed"
+  | "Seed"
+  | "Post-Seed"
+  | "Revenue-Based"
+  | "Convertible-Notes/SAFEs"
+  | "Equity-Crowdfunding"
+  | "Syndicate"
+  | "SPVs"
+  | "Royality-based";
 
 export type PaymentMode = "Bank Transfer" | "UPI" | "Credit Card" | "Debit Card" | "Cash" | "Others";

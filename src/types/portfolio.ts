@@ -1,3 +1,5 @@
+import { InvestmentType } from "./investment";
+
 export interface ProjectInvestment {
   project_name: string;
   total_invested: number;
@@ -9,7 +11,7 @@ export interface Investment {
   project_name: string;
   amount: number;
   units?: number;
-  investment_type: string;
+  investment_type: InvestmentType;
   investment_date: string;
   notes?: string;
   transaction_id?: string;

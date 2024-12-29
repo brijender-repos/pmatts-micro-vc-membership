@@ -1,9 +1,10 @@
 import { BaseRow } from "./base";
+import { InvestmentType } from "../investment";
 
 export interface InvestmentRow extends BaseRow {
   user_id: string;
   project_name: string;
-  investment_type: "investment" | "follow_on" | "distribution" | "exit" | "dividend";
+  investment_type: InvestmentType;
   amount: number;
   units: number | null;
   equity_percentage: number | null;
