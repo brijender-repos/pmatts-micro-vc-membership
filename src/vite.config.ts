@@ -3,7 +3,7 @@ import react from "@vitejs/plugin-react-swc";
 import path from "path";
 
 export default defineConfig(({ mode }) => ({
-  base: mode === 'production' ? 'https://pmatts.com' : '/',
+  base: mode === 'production' ? '/pmatts-micro-vc-membership/' : '/',
   server: {
     host: "::",
     port: 8080,
