@@ -8,6 +8,7 @@ export const useAdmin = () => {
   useEffect(() => {
     const checkAdminStatus = async () => {
       const { data: { session } } = await supabase.auth.getSession();
+      console.log("Current session:", session);
       
       if (session) {
         const { data: profile } = await supabase
@@ -15,6 +16,9 @@ export const useAdmin = () => {
           .select('admin_role')
           .eq('id', session.user.id)
           .single();
+        
+        console.log("User profile:", profile);
+        console.log("Admin role:", profile?.admin_role);
         
         setIsAdmin(!!profile?.admin_role);
       }

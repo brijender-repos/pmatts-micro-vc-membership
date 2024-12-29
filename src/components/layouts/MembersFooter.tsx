@@ -3,7 +3,9 @@ import { Mail, Phone } from "lucide-react";
 import { useAdmin } from "@/hooks/use-admin";
 
 export const MembersFooter = () => {
-  const { isAdmin } = useAdmin();
+  const { isAdmin, loading } = useAdmin();
+
+  console.log("Footer - isAdmin:", isAdmin, "loading:", loading);
 
   return (
     <footer className="border-t bg-muted/50">
