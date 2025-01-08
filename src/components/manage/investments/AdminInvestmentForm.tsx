@@ -67,7 +67,12 @@ export function AdminInvestmentForm({
       units: existingInvestment?.units || 1,
       notes: existingInvestment?.notes || "",
       payment_mode: (existingInvestment?.payment_mode as PaymentMode) || "Bank Transfer",
-      investment_type: existingInvestment?.investment_type || "Pre-Seed", // Changed default from "investment" to "Pre-Seed"
+      investment_type: existingInvestment?.investment_type || "Pre-Seed",
+      transaction_id: "",
+      transaction_date: "",
+      transaction_amount: undefined,
+      transaction_details: "",
+      transaction_status: "pending",
     },
   });
 
@@ -79,6 +84,11 @@ export function AdminInvestmentForm({
         notes: existingInvestment.notes,
         payment_mode: existingInvestment.payment_mode as PaymentMode,
         investment_type: existingInvestment.investment_type,
+        transaction_id: "",
+        transaction_date: "",
+        transaction_amount: undefined,
+        transaction_details: "",
+        transaction_status: "pending",
       });
     }
   }, [existingInvestment, form]);
@@ -121,6 +131,7 @@ export function AdminInvestmentForm({
               setUploadedFiles(prev => [...prev, fileUrl]);
             }}
             existingFiles={existingProofs}
+            form={form}
           />
 
           <Button type="submit" disabled={isSubmitting}>

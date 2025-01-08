@@ -38,6 +38,12 @@ export const formSchema = z.object({
   notes: z.string().optional(),
   payment_mode: z.enum(PaymentModes),
   investment_type: z.enum(InvestmentTypes).default("Pre-Seed"),
+  // Add new fields for transaction proofs
+  transaction_id: z.string().optional(),
+  transaction_date: z.string().optional(),
+  transaction_amount: z.number().optional(),
+  transaction_details: z.string().optional(),
+  transaction_status: z.string().default('pending'),
 });
 
 export type FormFields = z.infer<typeof formSchema>;

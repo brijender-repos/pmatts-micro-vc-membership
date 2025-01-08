@@ -262,6 +262,12 @@ export type Database = {
           file_url: string
           id: string
           investment_id: string
+          payment_mode: string | null
+          transaction_amount: number | null
+          transaction_date: string | null
+          transaction_details: string | null
+          transaction_id: string | null
+          transaction_status: string | null
           updated_at: string
         }
         Insert: {
@@ -270,6 +276,12 @@ export type Database = {
           file_url: string
           id?: string
           investment_id: string
+          payment_mode?: string | null
+          transaction_amount?: number | null
+          transaction_date?: string | null
+          transaction_details?: string | null
+          transaction_id?: string | null
+          transaction_status?: string | null
           updated_at?: string
         }
         Update: {
@@ -278,6 +290,12 @@ export type Database = {
           file_url?: string
           id?: string
           investment_id?: string
+          payment_mode?: string | null
+          transaction_amount?: number | null
+          transaction_date?: string | null
+          transaction_details?: string | null
+          transaction_id?: string | null
+          transaction_status?: string | null
           updated_at?: string
         }
         Relationships: [
