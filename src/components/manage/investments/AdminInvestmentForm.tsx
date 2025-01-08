@@ -28,6 +28,7 @@ export function AdminInvestmentForm({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
   const [uploadedFiles, setUploadedFiles] = useState<string[]>([]);
+  const [savedInvestmentId, setSavedInvestmentId] = useState<string | undefined>(investmentId);
   
   const { data: existingInvestment } = useQuery({
     queryKey: ["investment", investmentId],
@@ -46,18 +47,18 @@ export function AdminInvestmentForm({
   });
 
   const { data: existingProofs } = useQuery({
-    queryKey: ["proofs", investmentId],
+    queryKey: ["proofs", savedInvestmentId],
     queryFn: async () => {
-      if (!investmentId) return [];
+      if (!savedInvestmentId) return [];
       const { data, error } = await supabase
         .from("transaction_proofs")
         .select("*")
-        .eq("investment_id", investmentId);
+        .eq("investment_id", savedInvestmentId);
 
       if (error) throw error;
       return data;
     },
-    enabled: !!investmentId,
+    enabled: !!savedInvestmentId,
   });
   
   const form = useForm<FormFields>({
@@ -68,11 +69,6 @@ export function AdminInvestmentForm({
       notes: existingInvestment?.notes || "",
       payment_mode: (existingInvestment?.payment_mode as PaymentMode) || "Bank Transfer",
       investment_type: existingInvestment?.investment_type || "Pre-Seed",
-      transaction_id: "",
-      transaction_date: "",
-      transaction_amount: undefined,
-      transaction_details: "",
-      transaction_status: "pending",
     },
   });
 
@@ -84,11 +80,6 @@ export function AdminInvestmentForm({
         notes: existingInvestment.notes,
         payment_mode: existingInvestment.payment_mode as PaymentMode,
         investment_type: existingInvestment.investment_type,
-        transaction_id: "",
-        transaction_date: "",
-        transaction_amount: undefined,
-        transaction_details: "",
-        transaction_status: "pending",
       });
     }
   }, [existingInvestment, form]);
@@ -103,10 +94,11 @@ export function AdminInvestmentForm({
   const onSubmit = async (values: FormFields) => {
     try {
       setIsSubmitting(true);
-      await submitInvestment(values);
+      const result = await submitInvestment(values);
+      setSavedInvestmentId(result.id);
       toast({
         title: `Investment ${investmentId ? 'Updated' : 'Added'}`,
-        description: `Investment details have been ${investmentId ? 'updated' : 'saved'} successfully`,
+        description: `Investment details have been ${investmentId ? 'updated' : 'saved'} successfully. You can now add transaction proofs.`,
       });
     } catch (error) {
       toast({
@@ -120,25 +112,31 @@ export function AdminInvestmentForm({
   };
 
   return (
-    <Card className="p-6">
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          <AdminInvestmentFormFields form={form} />
-          
+    <div className="space-y-6">
+      <Card className="p-6">
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <AdminInvestmentFormFields form={form} />
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? "Processing..." : investmentId ? "Update Investment" : "Add Investment"}
+            </Button>
+          </form>
+        </Form>
+      </Card>
+
+      {savedInvestmentId && (
+        <Card className="p-6">
+          <h3 className="text-lg font-semibold mb-4">Transaction Proofs</h3>
           <TransactionProofUpload 
-            investmentId={investmentId || userId} 
+            investmentId={savedInvestmentId} 
             onUploadComplete={(fileUrl) => {
               setUploadedFiles(prev => [...prev, fileUrl]);
             }}
             existingFiles={existingProofs}
             form={form}
           />
-
-          <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "Processing..." : investmentId ? "Update Investment" : "Add Investment"}
-          </Button>
-        </form>
-      </Form>
-    </Card>
+        </Card>
+      )}
+    </div>
   );
 }

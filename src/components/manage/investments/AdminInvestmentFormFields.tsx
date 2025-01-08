@@ -1,6 +1,5 @@
 import { FormField, FormItem, FormLabel, FormControl, FormDescription, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { UNIT_PRICE, MAX_UNITS } from "@/types/payment";
 import { UseFormReturn } from "react-hook-form";
@@ -38,12 +37,6 @@ export const formSchema = z.object({
   notes: z.string().optional(),
   payment_mode: z.enum(PaymentModes),
   investment_type: z.enum(InvestmentTypes).default("Pre-Seed"),
-  // Add new fields for transaction proofs
-  transaction_id: z.string().optional(),
-  transaction_date: z.string().optional(),
-  transaction_amount: z.number().optional(),
-  transaction_details: z.string().optional(),
-  transaction_status: z.string().default('pending'),
 });
 
 export type FormFields = z.infer<typeof formSchema>;
@@ -173,23 +166,6 @@ export function AdminInvestmentFormFields({ form }: AdminInvestmentFormFieldsPro
                 ))}
               </SelectContent>
             </Select>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-
-      <FormField
-        control={form.control}
-        name="notes"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Transaction Details</FormLabel>
-            <FormControl>
-              <Textarea 
-                placeholder="Enter transaction/transfer details"
-                {...field} 
-              />
-            </FormControl>
             <FormMessage />
           </FormItem>
         )}
