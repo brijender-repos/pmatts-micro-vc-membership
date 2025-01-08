@@ -26,6 +26,12 @@ const formSchema = z.object({
     .min(1, "Minimum 1 unit required")
     .max(MAX_UNITS, `Maximum ${MAX_UNITS} units allowed`),
   notes: z.string().optional(),
+  transaction_id: z.string().optional(),
+  transaction_date: z.string().optional(),
+  transaction_amount: z.number().optional(),
+  transaction_details: z.string().optional(),
+  transaction_status: z.string().default('pending'),
+  payment_mode: z.string().optional(),
 });
 
 interface InvestmentFormProps {
@@ -42,6 +48,12 @@ export function InvestmentForm({ projectName, onSuccess, onError }: InvestmentFo
     defaultValues: {
       units: 1,
       notes: "",
+      transaction_id: "",
+      transaction_date: "",
+      transaction_amount: undefined,
+      transaction_details: "",
+      transaction_status: "pending",
+      payment_mode: "",
     },
   });
 
@@ -168,7 +180,11 @@ export function InvestmentForm({ projectName, onSuccess, onError }: InvestmentFo
             )}
           />
 
-          <TransactionProofUpload investmentId={projectName} onUploadComplete={() => {}} />
+          <TransactionProofUpload 
+            investmentId={projectName} 
+            onUploadComplete={() => {}} 
+            form={form}
+          />
 
           <Button type="submit" disabled={isSubmitting}>
             {isSubmitting ? "Processing..." : "Invest Now"}

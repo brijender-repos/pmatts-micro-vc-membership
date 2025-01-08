@@ -1,0 +1,146 @@
+import { UseFormReturn } from "react-hook-form";
+import {
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
+const PAYMENT_MODES = [
+  "Bank Transfer",
+  "UPI",
+  "Credit Card",
+  "Debit Card",
+  "Cash",
+  "Others"
+];
+
+const TRANSACTION_STATUSES = [
+  "pending",
+  "completed",
+  "failed",
+  "refunded"
+];
+
+interface TransactionProofFormProps {
+  form: UseFormReturn<any>;
+}
+
+export function TransactionProofForm({ form }: TransactionProofFormProps) {
+  return (
+    <div className="grid gap-4">
+      <FormField
+        control={form.control}
+        name="transaction_id"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Transaction ID</FormLabel>
+            <FormControl>
+              <Input {...field} placeholder="Enter transaction ID" />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={form.control}
+        name="transaction_date"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Transaction Date</FormLabel>
+            <FormControl>
+              <Input type="datetime-local" {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={form.control}
+        name="transaction_amount"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Transaction Amount</FormLabel>
+            <FormControl>
+              <Input 
+                type="number" 
+                {...field} 
+                onChange={(e) => field.onChange(parseFloat(e.target.value))}
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={form.control}
+        name="payment_mode"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Payment Mode</FormLabel>
+            <Select onValueChange={field.onChange} value={field.value}>
+              <FormControl>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select payment mode" />
+                </SelectTrigger>
+              </FormControl>
+              <SelectContent>
+                {PAYMENT_MODES.map((mode) => (
+                  <SelectItem key={mode} value={mode}>
+                    {mode}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={form.control}
+        name="transaction_status"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Transaction Status</FormLabel>
+            <Select onValueChange={field.onChange} value={field.value}>
+              <FormControl>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select status" />
+                </SelectTrigger>
+              </FormControl>
+              <SelectContent>
+                {TRANSACTION_STATUSES.map((status) => (
+                  <SelectItem key={status} value={status}>
+                    {status.charAt(0).toUpperCase() + status.slice(1)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={form.control}
+        name="transaction_details"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Transaction Details</FormLabel>
+            <FormControl>
+              <Input {...field} placeholder="Enter transaction details" />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+    </div>
+  );
+}
