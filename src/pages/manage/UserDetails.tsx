@@ -10,7 +10,7 @@ import { useUserDetails } from "@/hooks/use-user-details";
 import { usePhoneUpdate } from "@/hooks/use-phone-update";
 
 export default function UserDetails() {
-  const { userId } = useParams(); // Changed from id to userId to match the route parameter
+  const { userId } = useParams();
   console.log("UserDetails - userId from params:", userId);
   
   const {
@@ -69,7 +69,7 @@ export default function UserDetails() {
         </TabsContent>
 
         <TabsContent value="portfolio">
-          {investments && <UserPortfolioTab investments={investments} />}
+          <UserPortfolioTab userId={userId || ''} />
         </TabsContent>
 
         <TabsContent value="kyc">
