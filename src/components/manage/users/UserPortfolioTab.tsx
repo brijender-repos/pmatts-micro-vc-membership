@@ -26,7 +26,7 @@ export function UserPortfolioTab({ userId }: UserPortfolioTabProps) {
       }
       
       console.log("Fetched investments:", data);
-      return data;
+      return data || [];
     },
     enabled: !!userId,
   });

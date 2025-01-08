@@ -11,8 +11,6 @@ import solarEnergyMatts from "@/data/projects/solar-energy-matts.json";
 import waterMatts from "@/data/projects/water-matts.json";
 import missingMatters from "@/data/projects/missing-matters.json";
 import techMatts from "@/data/projects/tech-matts.json";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 
 interface ProjectTilesProps {
   investments: Investment[];
@@ -32,30 +30,12 @@ const allProjects = [
 ];
 
 export function ProjectTiles({ investments }: ProjectTilesProps) {
-  // Fetch latest investment data
-  const { data: latestInvestments } = useQuery({
-    queryKey: ["investments"],
-    queryFn: async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session?.user) return [];
-
-      const { data, error } = await supabase
-        .from("investments")
-        .select("*")
-        .eq("user_id", session.user.id)
-        .order("investment_date", { ascending: false });
-
-      if (error) throw error;
-      return data;
-    },
-  });
-
   // Filter only successful investments before calculating totals
-  const successfulInvestments = (latestInvestments || investments).filter(
+  const successfulInvestments = investments.filter(
     inv => inv.transaction_status === 'success'
   );
 
-  // Calculate totals per project using latest successful investments
+  // Calculate totals per project using successful investments
   const projectTotals = successfulInvestments.reduce((acc, inv) => {
     if (!acc[inv.project_name]) {
       acc[inv.project_name] = {
@@ -65,8 +45,6 @@ export function ProjectTiles({ investments }: ProjectTilesProps) {
       };
     }
     
-    // Update condition to check for investment types
-
     if (["Pre-Seed", "Seed", "Post-Seed", "Revenue-Based", "Convertible-Notes or SAFEs", "Equity-Crowdfunding", "Syndicate", "SPVs", "Royality-based"].includes(inv.investment_type)) {
       acc[inv.project_name].total_invested += inv.amount;
       acc[inv.project_name].total_units += inv.units || 0;
@@ -96,4 +74,3 @@ export function ProjectTiles({ investments }: ProjectTilesProps) {
     </div>
   );
 }
-
