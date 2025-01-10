@@ -4,12 +4,13 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { InvestmentsTable } from "@/components/manage/investments/InvestmentsTable";
 
 export default function AddInvestment() {
   const { userId, investmentId } = useParams<{ userId: string; investmentId?: string }>();
   console.log("Retrieved userId from params:", userId);
 
-  const { data: profile, isLoading, error } = useQuery({
+  const { data: profile, isLoading: profileLoading, error: profileError } = useQuery({
     queryKey: ["user-profile", userId],
     queryFn: async () => {
       console.log("Fetching profile for userId:", userId);
@@ -29,6 +30,28 @@ export default function AddInvestment() {
     enabled: !!userId,
   });
 
+  const { data: investments, isLoading: investmentsLoading } = useQuery({
+    queryKey: ["user-investments", userId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("investments")
+        .select(`
+          *,
+          profiles:user_id (
+            full_name,
+            email,
+            phone
+          )
+        `)
+        .eq("user_id", userId)
+        .order("investment_date", { ascending: false });
+
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!userId,
+  });
+
   if (!userId) {
     console.log("No userId provided");
     return (
@@ -40,7 +63,7 @@ export default function AddInvestment() {
     );
   }
 
-  if (isLoading) {
+  if (profileLoading || investmentsLoading) {
     return (
       <div className="container mx-auto py-6 space-y-6">
         <Card className="p-6 space-y-4">
@@ -55,12 +78,12 @@ export default function AddInvestment() {
     );
   }
 
-  if (error) {
-    console.error("Error in component:", error);
+  if (profileError) {
+    console.error("Error in component:", profileError);
     return (
       <div className="container mx-auto py-6">
         <div className="bg-destructive/15 text-destructive p-4 rounded-md">
-          Error loading user details: {error.message}
+          Error loading user details: {profileError.message}
         </div>
       </div>
     );
@@ -80,6 +103,17 @@ export default function AddInvestment() {
           </div>
         </div>
       </Card>
+
+      {investments && investments.length > 0 && (
+        <Card className="p-6">
+          <h2 className="text-xl font-semibold mb-4">Existing Investments</h2>
+          <InvestmentsTable 
+            investments={investments}
+            isLoading={investmentsLoading}
+            toggleSort={() => {}}
+          />
+        </Card>
+      )}
       
       <AdminInvestmentForm 
         userId={userId}
