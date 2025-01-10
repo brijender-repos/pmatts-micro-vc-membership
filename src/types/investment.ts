@@ -11,7 +11,6 @@ export interface InvestmentWithUser {
   transaction_status: string;
   payment_mode: PaymentMode | null;
   transaction_id: string | null;
-  transaction_notes: string | null;
   created_at: string;
   updated_at: string;
   investment_status: InvestmentStatus;
