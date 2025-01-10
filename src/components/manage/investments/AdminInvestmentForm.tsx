@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { TransactionProofUpload } from "./TransactionProofUpload";
@@ -90,7 +90,14 @@ export function AdminInvestmentForm({
     userId,
     investmentId,
     onSuccess,
-    onError,
+    onError: (error) => {
+      toast({
+        title: "Investment Error",
+        description: error.message,
+        variant: "destructive",
+      });
+      onError?.(error);
+    },
   });
 
   const onSubmit = async (values: FormFields) => {
@@ -99,15 +106,11 @@ export function AdminInvestmentForm({
       const result = await submitInvestment(values);
       setSavedInvestmentId(result.id);
       toast({
-        title: `Investment ${investmentId ? 'Updated' : 'Added'}`,
-        description: `Investment details have been ${investmentId ? 'updated' : 'saved'} successfully. You can now add transaction proofs.`,
+        title: `Investment ${investmentId ? 'Updated' : 'Added'} Successfully`,
+        description: `The investment has been ${investmentId ? 'updated' : 'saved'} successfully. You can now add transaction proofs.`,
       });
     } catch (error) {
-      toast({
-        title: "Investment Error",
-        description: error instanceof Error ? error.message : "Failed to process investment",
-        variant: "destructive",
-      });
+      // Error is handled by useAdminInvestmentSubmit's onError callback
     } finally {
       setIsSubmitting(false);
     }
