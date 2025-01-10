@@ -10,20 +10,14 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const PAYMENT_MODES = [
-  "Bank Transfer",
+  "NEFT/RTGS/IMPS",
+  "Cheque or DD",
   "UPI",
-  "Credit Card",
   "Debit Card",
+  "Credit Card",
   "Cash",
-  "Others"
-];
-
-const TRANSACTION_STATUSES = [
-  "pending",
-  "completed",
-  "failed",
-  "refunded"
-];
+  "Other"
+] as const;
 
 interface TransactionProofFormProps {
   form: UseFormReturn<any>;
@@ -34,12 +28,17 @@ export function TransactionProofForm({ form }: TransactionProofFormProps) {
     <div className="grid gap-4">
       <FormField
         control={form.control}
-        name="transaction_id"
+        name="transaction_details"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Transaction ID</FormLabel>
+            <FormLabel>Transaction Details</FormLabel>
             <FormControl>
-              <Input {...field} placeholder="Enter transaction ID" />
+              <Input 
+                {...field} 
+                placeholder="Enter transaction details (max 1000 characters)"
+                maxLength={1000}
+                required 
+              />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -53,7 +52,11 @@ export function TransactionProofForm({ form }: TransactionProofFormProps) {
           <FormItem>
             <FormLabel>Transaction Date</FormLabel>
             <FormControl>
-              <Input type="datetime-local" {...field} />
+              <Input 
+                type="datetime-local" 
+                {...field} 
+                required 
+              />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -71,6 +74,9 @@ export function TransactionProofForm({ form }: TransactionProofFormProps) {
                 type="number" 
                 {...field} 
                 onChange={(e) => field.onChange(parseFloat(e.target.value))}
+                required
+                step="0.01"
+                min="0"
               />
             </FormControl>
             <FormMessage />
@@ -84,7 +90,7 @@ export function TransactionProofForm({ form }: TransactionProofFormProps) {
         render={({ field }) => (
           <FormItem>
             <FormLabel>Payment Mode</FormLabel>
-            <Select onValueChange={field.onChange} value={field.value}>
+            <Select onValueChange={field.onChange} value={field.value} required>
               <FormControl>
                 <SelectTrigger>
                   <SelectValue placeholder="Select payment mode" />
@@ -98,45 +104,6 @@ export function TransactionProofForm({ form }: TransactionProofFormProps) {
                 ))}
               </SelectContent>
             </Select>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-
-      <FormField
-        control={form.control}
-        name="transaction_status"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Transaction Status</FormLabel>
-            <Select onValueChange={field.onChange} value={field.value}>
-              <FormControl>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select status" />
-                </SelectTrigger>
-              </FormControl>
-              <SelectContent>
-                {TRANSACTION_STATUSES.map((status) => (
-                  <SelectItem key={status} value={status}>
-                    {status.charAt(0).toUpperCase() + status.slice(1)}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-
-      <FormField
-        control={form.control}
-        name="transaction_details"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Transaction Details</FormLabel>
-            <FormControl>
-              <Input {...field} placeholder="Enter transaction details" />
-            </FormControl>
             <FormMessage />
           </FormItem>
         )}

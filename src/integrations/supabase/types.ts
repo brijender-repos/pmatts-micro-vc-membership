@@ -265,10 +265,10 @@ export type Database = {
           file_url: string
           id: string
           investment_id: string
-          payment_mode: string | null
-          transaction_amount: number | null
-          transaction_date: string | null
-          transaction_details: string | null
+          payment_mode: string
+          transaction_amount: number
+          transaction_date: string
+          transaction_details: string
           transaction_id: string | null
           transaction_status: string | null
           updated_at: string
@@ -279,10 +279,10 @@ export type Database = {
           file_url: string
           id?: string
           investment_id: string
-          payment_mode?: string | null
-          transaction_amount?: number | null
-          transaction_date?: string | null
-          transaction_details?: string | null
+          payment_mode: string
+          transaction_amount: number
+          transaction_date?: string
+          transaction_details: string
           transaction_id?: string | null
           transaction_status?: string | null
           updated_at?: string
@@ -293,10 +293,10 @@ export type Database = {
           file_url?: string
           id?: string
           investment_id?: string
-          payment_mode?: string | null
-          transaction_amount?: number | null
-          transaction_date?: string | null
-          transaction_details?: string | null
+          payment_mode?: string
+          transaction_amount?: number
+          transaction_date?: string
+          transaction_details?: string
           transaction_id?: string | null
           transaction_status?: string | null
           updated_at?: string

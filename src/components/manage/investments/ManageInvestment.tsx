@@ -6,12 +6,18 @@ import { TransactionProofList } from "./TransactionProofList";
 import { Form } from "@/components/ui/form";
 
 const formSchema = z.object({
-  transaction_id: z.string().optional(),
-  transaction_date: z.string().optional(),
-  transaction_amount: z.number().optional(),
-  transaction_details: z.string().optional(),
-  transaction_status: z.string().default('pending'),
-  payment_mode: z.string().optional(),
+  transaction_details: z.string().min(1).max(1000),
+  transaction_date: z.string().min(1),
+  transaction_amount: z.number().min(0).optional(),
+  payment_mode: z.enum([
+    "NEFT/RTGS/IMPS",
+    "Cheque or DD",
+    "UPI",
+    "Debit Card",
+    "Credit Card",
+    "Cash",
+    "Other"
+  ]),
 });
 
 interface ManageInvestmentProps {
@@ -22,12 +28,10 @@ export function ManageInvestment({ investmentId }: ManageInvestmentProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      transaction_id: "",
+      transaction_details: "",
       transaction_date: "",
       transaction_amount: undefined,
-      transaction_details: "",
-      transaction_status: "pending",
-      payment_mode: "",
+      payment_mode: "NEFT/RTGS/IMPS",
     },
   });
 
