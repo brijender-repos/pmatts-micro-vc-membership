@@ -32,7 +32,14 @@ export type InvestmentType =
   | "SPVs"
   | "Royality-based";
 
-export type PaymentMode = "Bank Transfer" | "UPI" | "Credit Card" | "Debit Card" | "Cash" | "Others";
+export type PaymentMode = 
+  | "Bank Transfer" 
+  | "UPI" 
+  | "Credit Card" 
+  | "Debit Card" 
+  | "Cash" 
+  | "Others"
+  | string; // Added to handle any other payment modes from the database
 
 export type InvestmentStatus = 
   | "Outstanding"
