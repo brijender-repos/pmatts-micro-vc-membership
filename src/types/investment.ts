@@ -14,6 +14,7 @@ export interface InvestmentWithUser {
   transaction_notes: string | null;
   created_at: string;
   updated_at: string;
+  investment_status: InvestmentStatus;
   profiles: {
     full_name: string | null;
     email: string | null;
@@ -33,3 +34,12 @@ export type InvestmentType =
   | "Royality-based";
 
 export type PaymentMode = "Bank Transfer" | "UPI" | "Credit Card" | "Debit Card" | "Cash" | "Others";
+
+export type InvestmentStatus = 
+  | "Outstanding"
+  | "Partially Settled"
+  | "Fully Settled"
+  | "Over Paid"
+  | "Voided"
+  | "Refunded"
+  | "Write Off";

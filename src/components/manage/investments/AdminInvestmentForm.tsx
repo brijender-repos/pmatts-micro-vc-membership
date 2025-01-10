@@ -10,7 +10,7 @@ import { useAdminInvestmentSubmit } from "./useAdminInvestmentSubmit";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
-import { PaymentMode } from "@/types/investment";
+import { PaymentMode, InvestmentStatus } from "@/types/investment";
 
 interface AdminInvestmentFormProps {
   userId: string;
@@ -69,7 +69,7 @@ export function AdminInvestmentForm({
       notes: existingInvestment?.notes || "",
       payment_mode: (existingInvestment?.payment_mode as PaymentMode) || "Bank Transfer",
       investment_type: existingInvestment?.investment_type || "Pre-Seed",
-      investment_status: existingInvestment?.investment_status || "Outstanding",
+      investment_status: (existingInvestment?.investment_status as InvestmentStatus) || "Outstanding",
     },
   });
 
@@ -81,7 +81,7 @@ export function AdminInvestmentForm({
         notes: existingInvestment.notes,
         payment_mode: existingInvestment.payment_mode as PaymentMode,
         investment_type: existingInvestment.investment_type,
-        investment_status: existingInvestment.investment_status,
+        investment_status: existingInvestment.investment_status as InvestmentStatus,
       });
     }
   }, [existingInvestment, form]);
