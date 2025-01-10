@@ -9,9 +9,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
 import { supabase } from "@/integrations/supabase/client"
 import { Link } from "react-router-dom"
 import { Plus } from "lucide-react"
+import { AdminInvestmentForm } from "../investments/AdminInvestmentForm"
+import { InvestmentsTable } from "../investments/InvestmentsTable"
+import { useQuery } from "@tanstack/react-query"
 
 interface User {
   id: string
@@ -54,6 +58,65 @@ export function UsersTable({ users, isLoading, refetch }: UsersTableProps) {
     }
   }
 
+  const UserInvestments = ({ userId }: { userId: string }) => {
+    const { data: investments, isLoading: investmentsLoading, refetch: refetchInvestments } = useQuery({
+      queryKey: ["user-investments", userId],
+      queryFn: async () => {
+        const { data, error } = await supabase
+          .from("investments")
+          .select(`
+            *,
+            profiles:user_id (
+              full_name,
+              email,
+              phone
+            )
+          `)
+          .eq("user_id", userId)
+          .order("investment_date", { ascending: false });
+
+        if (error) throw error;
+        return data;
+      },
+    });
+
+    return (
+      <div className="space-y-4">
+        <div className="flex justify-between items-center">
+          <h2 className="text-xl font-semibold">Investments</h2>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button>
+                <Plus className="h-4 w-4 mr-2" />
+                Add Investment
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+              <AdminInvestmentForm 
+                userId={userId} 
+                onSuccess={() => {
+                  refetchInvestments();
+                  toast({
+                    title: "Success",
+                    description: "Investment added successfully",
+                  });
+                }}
+              />
+            </DialogContent>
+          </Dialog>
+        </div>
+        <InvestmentsTable 
+          investments={investments}
+          isLoading={investmentsLoading}
+          toggleSort={() => {}}
+          onManageInvestment={(investmentId) => {
+            // Handle transaction proofs view
+          }}
+        />
+      </div>
+    );
+  };
+
   return (
     <div className="rounded-md border">
       <Table>
@@ -82,35 +145,36 @@ export function UsersTable({ users, isLoading, refetch }: UsersTableProps) {
             </TableRow>
           ) : (
             users?.map((user) => (
-              <TableRow key={user.id}>
-                <TableCell>{user.full_name || "N/A"}</TableCell>
-                <TableCell>{user.email || "N/A"}</TableCell>
-                <TableCell>{user.phone || "N/A"}</TableCell>
-                <TableCell>
-                  {new Date(user.created_at).toLocaleDateString()}
-                </TableCell>
-                <TableCell>
-                  <Switch
-                    checked={user.is_active}
-                    onCheckedChange={() =>
-                      handleToggleActive(user.id, user.is_active)
-                    }
-                  />
-                </TableCell>
-                <TableCell className="text-right space-x-2">
-                  <Button variant="outline" size="sm" asChild>
-                    <Link to={`/manage/users/${user.id}`}>
-                      View Details
-                    </Link>
-                  </Button>
-                  <Button variant="outline" size="sm" asChild>
-                    <Link to={`/manage/users/${user.id}/add-investment`}>
-                      <Plus className="h-4 w-4 mr-1" />
-                      Add Investment
-                    </Link>
-                  </Button>
-                </TableCell>
-              </TableRow>
+              <>
+                <TableRow key={user.id}>
+                  <TableCell>{user.full_name || "N/A"}</TableCell>
+                  <TableCell>{user.email || "N/A"}</TableCell>
+                  <TableCell>{user.phone || "N/A"}</TableCell>
+                  <TableCell>
+                    {new Date(user.created_at).toLocaleDateString()}
+                  </TableCell>
+                  <TableCell>
+                    <Switch
+                      checked={user.is_active}
+                      onCheckedChange={() =>
+                        handleToggleActive(user.id, user.is_active)
+                      }
+                    />
+                  </TableCell>
+                  <TableCell className="text-right space-x-2">
+                    <Button variant="outline" size="sm" asChild>
+                      <Link to={`/manage/users/${user.id}`}>
+                        View Details
+                      </Link>
+                    </Button>
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell colSpan={6} className="bg-muted/30">
+                    <UserInvestments userId={user.id} />
+                  </TableCell>
+                </TableRow>
+              </>
             ))
           )}
         </TableBody>

@@ -9,9 +9,13 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { ArrowUpDown } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 import { InvestmentWithUser } from "@/types/investment";
+import { TransactionProofList } from "./TransactionProofList";
+import { TransactionProofUpload } from "./TransactionProofUpload";
+import { useForm } from "react-hook-form";
 
 interface InvestmentsTableProps {
   investments: InvestmentWithUser[] | undefined;
@@ -26,6 +30,8 @@ export function InvestmentsTable({
   toggleSort,
   onManageInvestment 
 }: InvestmentsTableProps) {
+  const form = useForm();
+
   return (
     <div className="border rounded-lg">
       <Table>
@@ -112,15 +118,26 @@ export function InvestmentsTable({
                   </Badge>
                 </TableCell>
                 <TableCell>
-                  {onManageInvestment && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => onManageInvestment(investment.id)}
-                    >
-                      Manage
-                    </Button>
-                  )}
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                      >
+                        Transaction Proofs
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-4xl">
+                      <div className="space-y-4">
+                        <TransactionProofList investmentId={investment.id} />
+                        <TransactionProofUpload 
+                          investmentId={investment.id}
+                          onUploadComplete={() => {}}
+                          form={form}
+                        />
+                      </div>
+                    </DialogContent>
+                  </Dialog>
                 </TableCell>
               </TableRow>
             ))

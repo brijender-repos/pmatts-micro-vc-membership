@@ -48,4 +48,5 @@ export type InvestmentStatus =
   | "Over Paid"
   | "Voided"
   | "Refunded"
-  | "Write Off";
+  | "Write Off"
+  | string; // Added to handle any other statuses from the database
