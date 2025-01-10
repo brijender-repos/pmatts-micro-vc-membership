@@ -60,6 +60,9 @@ export function AdminInvestmentForm({
     },
     enabled: !!savedInvestmentId,
   });
+
+  const defaultPaymentMode: PaymentMode = "Bank Transfer";
+  const defaultInvestmentStatus: InvestmentStatus = "Outstanding";
   
   const form = useForm<FormFields>({
     resolver: zodResolver(formSchema),
@@ -67,9 +70,9 @@ export function AdminInvestmentForm({
       project_name: existingInvestment?.project_name || "",
       units: existingInvestment?.units || 1,
       notes: existingInvestment?.notes || "",
-      payment_mode: (existingInvestment?.payment_mode as PaymentMode) || "Bank Transfer",
+      payment_mode: (existingInvestment?.payment_mode as PaymentMode) || defaultPaymentMode,
       investment_type: existingInvestment?.investment_type || "Pre-Seed",
-      investment_status: (existingInvestment?.investment_status as InvestmentStatus) || "Outstanding",
+      investment_status: (existingInvestment?.investment_status as InvestmentStatus) || defaultInvestmentStatus,
     },
   });
 
@@ -79,9 +82,9 @@ export function AdminInvestmentForm({
         project_name: existingInvestment.project_name,
         units: existingInvestment.units,
         notes: existingInvestment.notes,
-        payment_mode: (existingInvestment.payment_mode as PaymentMode) || "Bank Transfer",
+        payment_mode: (existingInvestment.payment_mode as PaymentMode) || defaultPaymentMode,
         investment_type: existingInvestment.investment_type,
-        investment_status: (existingInvestment.investment_status as InvestmentStatus) || "Outstanding",
+        investment_status: (existingInvestment.investment_status as InvestmentStatus) || defaultInvestmentStatus,
       });
     }
   }, [existingInvestment, form]);
