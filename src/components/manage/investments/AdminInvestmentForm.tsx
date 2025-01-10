@@ -69,6 +69,7 @@ export function AdminInvestmentForm({
       notes: existingInvestment?.notes || "",
       payment_mode: (existingInvestment?.payment_mode as PaymentMode) || "Bank Transfer",
       investment_type: existingInvestment?.investment_type || "Pre-Seed",
+      investment_status: existingInvestment?.investment_status || "Outstanding",
     },
   });
 
@@ -80,6 +81,7 @@ export function AdminInvestmentForm({
         notes: existingInvestment.notes,
         payment_mode: existingInvestment.payment_mode as PaymentMode,
         investment_type: existingInvestment.investment_type,
+        investment_status: existingInvestment.investment_status,
       });
     }
   }, [existingInvestment, form]);

@@ -39,6 +39,7 @@ export function useAdminInvestmentSubmit({
         units: values.units,
         amount: values.units * UNIT_PRICE,
         investment_type: values.investment_type as InvestmentType,
+        investment_status: values.investment_status,
         notes: values.notes,
         payment_mode: values.payment_mode,
       };

@@ -29,6 +29,16 @@ const InvestmentTypes = [
   "Royality-based"
 ] as const;
 
+const InvestmentStatuses = [
+  "Outstanding",
+  "Partially Settled",
+  "Fully Settled",
+  "Over Paid",
+  "Voided",
+  "Refunded",
+  "Write Off"
+] as const;
+
 export const formSchema = z.object({
   project_name: z.string().min(1, "Project name is required"),
   units: z.number()
@@ -37,6 +47,7 @@ export const formSchema = z.object({
   notes: z.string().optional(),
   payment_mode: z.enum(PaymentModes),
   investment_type: z.enum(InvestmentTypes).default("Pre-Seed"),
+  investment_status: z.enum(InvestmentStatuses).default("Outstanding"),
 });
 
 export type FormFields = z.infer<typeof formSchema>;
@@ -105,6 +116,31 @@ export function AdminInvestmentFormFields({ form }: AdminInvestmentFormFieldsPro
                 {InvestmentTypes.map((type) => (
                   <SelectItem key={type} value={type}>
                     {type}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={form.control}
+        name="investment_status"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Investment Status</FormLabel>
+            <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <FormControl>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select investment status" />
+                </SelectTrigger>
+              </FormControl>
+              <SelectContent>
+                {InvestmentStatuses.map((status) => (
+                  <SelectItem key={status} value={status}>
+                    {status}
                   </SelectItem>
                 ))}
               </SelectContent>
