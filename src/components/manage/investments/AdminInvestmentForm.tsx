@@ -79,9 +79,9 @@ export function AdminInvestmentForm({
         project_name: existingInvestment.project_name,
         units: existingInvestment.units,
         notes: existingInvestment.notes,
-        payment_mode: existingInvestment.payment_mode as PaymentMode,
+        payment_mode: (existingInvestment.payment_mode as PaymentMode) || "Bank Transfer",
         investment_type: existingInvestment.investment_type,
-        investment_status: existingInvestment.investment_status as InvestmentStatus,
+        investment_status: (existingInvestment.investment_status as InvestmentStatus) || "Outstanding",
       });
     }
   }, [existingInvestment, form]);
