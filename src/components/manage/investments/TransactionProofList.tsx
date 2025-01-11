@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { FileText, ExternalLink } from "lucide-react";
+import { ExternalLink } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import {
   Card,
@@ -8,6 +8,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 interface TransactionProofListProps {
   investmentId: string;
@@ -44,28 +52,42 @@ export function TransactionProofList({ investmentId }: TransactionProofListProps
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="space-y-2">
-          {proofs.map((proof) => (
-            <div
-              key={proof.id}
-              className="flex items-center justify-between p-2 border rounded"
-            >
-              <div className="flex items-center gap-2">
-                <FileText className="h-4 w-4" />
-                <span className="truncate max-w-[200px]">{proof.file_name}</span>
-              </div>
-              <a
-                href={proof.file_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-1 text-sm text-blue-500 hover:text-blue-600"
-              >
-                View
-                <ExternalLink className="h-4 w-4" />
-              </a>
-            </div>
-          ))}
-        </div>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Date</TableHead>
+              <TableHead>Amount</TableHead>
+              <TableHead>Payment Mode</TableHead>
+              <TableHead>Transaction ID</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>File</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {proofs.map((proof) => (
+              <TableRow key={proof.id}>
+                <TableCell>
+                  {new Date(proof.transaction_date).toLocaleDateString()}
+                </TableCell>
+                <TableCell>₹{proof.transaction_amount.toLocaleString('en-IN')}</TableCell>
+                <TableCell>{proof.payment_mode}</TableCell>
+                <TableCell>{proof.transaction_id || 'N/A'}</TableCell>
+                <TableCell>{proof.transaction_status || 'Pending'}</TableCell>
+                <TableCell>
+                  <a
+                    href={proof.file_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1 text-sm text-blue-500 hover:text-blue-600"
+                  >
+                    View
+                    <ExternalLink className="h-4 w-4" />
+                  </a>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
       </CardContent>
     </Card>
   );
