@@ -33,11 +33,21 @@ export function useUserDetails(userId: string | undefined) {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("investments")
-        .select("*, projects(name, status)")
+        .select(`
+          *,
+          projects (
+            name,
+            status
+          )
+        `)
         .eq("user_id", userId)
-        .order("investment_date", { ascending: false });
+        .order('investment_date', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Investments fetch error:", error);
+        throw error;
+      }
+      console.log("Investments data fetched:", data);
       return data;
     },
     enabled: !!userId,

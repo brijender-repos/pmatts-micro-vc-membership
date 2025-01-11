@@ -27,14 +27,14 @@ export function InvestmentSummary({ investments }: InvestmentSummaryProps) {
   );
 
   const totalInvested = validInvestments.reduce((total, inv) => {
-    if (inv.investment_type === 'investment' || inv.investment_type === 'follow_on') {
+    if (inv.investment_type === 'Pre-Seed' || inv.investment_type === 'Seed' || inv.investment_type === 'Post-Seed') {
       return total + inv.amount;
     }
     return total;
   }, 0);
 
   const totalReturns = validInvestments.reduce((total, inv) => {
-    if (inv.investment_type === 'distribution' || inv.investment_type === 'dividend' || inv.investment_type === 'exit') {
+    if (inv.investment_type === 'Revenue-Based' || inv.investment_type === 'Convertible-Notes or SAFEs' || inv.investment_type === 'Equity-Crowdfunding') {
       return total + inv.amount;
     }
     return total;
