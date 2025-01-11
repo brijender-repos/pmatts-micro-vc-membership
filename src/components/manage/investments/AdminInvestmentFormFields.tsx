@@ -6,39 +6,14 @@ import { UseFormReturn } from "react-hook-form";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import * as z from "zod";
-import { InvestmentType, PaymentMode } from "@/types/investment";
-
-const PaymentModes = [
-  "NEFT/RTGS/IMPS",
-  "Cheque or DD",
-  "UPI",
-  "Debit Card",
-  "Credit Card",
-  "Cash",
-  "Other"
-] as const;
-
-const InvestmentTypes = [
-  "Pre-Seed",
-  "Seed",
-  "Post-Seed",
-  "Revenue-Based",
-  "Convertible-Notes or SAFEs",
-  "Equity-Crowdfunding",
-  "Syndicate",
-  "SPVs",
-  "Royality-based"
-] as const;
-
-const InvestmentStatuses = [
-  "Outstanding",
-  "Partially Settled",
-  "Fully Settled",
-  "Over Paid",
-  "Voided",
-  "Refunded",
-  "Write Off"
-] as const;
+import { 
+  InvestmentType, 
+  PaymentMode, 
+  InvestmentStatus,
+  PAYMENT_MODES,
+  INVESTMENT_TYPES,
+  INVESTMENT_STATUSES 
+} from "@/types/investment";
 
 export const formSchema = z.object({
   project_name: z.string().min(1, "Project name is required"),
@@ -46,9 +21,9 @@ export const formSchema = z.object({
     .min(1, "Minimum 1 unit required")
     .max(MAX_UNITS, `Maximum ${MAX_UNITS} units allowed`),
   notes: z.string().optional(),
-  payment_mode: z.enum(PaymentModes),
-  investment_type: z.enum(InvestmentTypes).default("Pre-Seed"),
-  investment_status: z.enum(InvestmentStatuses).default("Outstanding"),
+  payment_mode: z.enum(PAYMENT_MODES),
+  investment_type: z.enum(INVESTMENT_TYPES).default("Pre-Seed"),
+  investment_status: z.enum(INVESTMENT_STATUSES).default("Outstanding"),
 });
 
 export type FormFields = z.infer<typeof formSchema>;
@@ -114,7 +89,7 @@ export function AdminInvestmentFormFields({ form }: AdminInvestmentFormFieldsPro
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
-                {InvestmentTypes.map((type) => (
+                {INVESTMENT_TYPES.map((type) => (
                   <SelectItem key={type} value={type}>
                     {type}
                   </SelectItem>
@@ -139,7 +114,7 @@ export function AdminInvestmentFormFields({ form }: AdminInvestmentFormFieldsPro
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
-                {InvestmentStatuses.map((status) => (
+                {INVESTMENT_STATUSES.map((status) => (
                   <SelectItem key={status} value={status}>
                     {status}
                   </SelectItem>
@@ -196,7 +171,7 @@ export function AdminInvestmentFormFields({ form }: AdminInvestmentFormFieldsPro
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
-                {PaymentModes.map((mode) => (
+                {PAYMENT_MODES.map((mode) => (
                   <SelectItem key={mode} value={mode}>
                     {mode}
                   </SelectItem>

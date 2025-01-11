@@ -49,3 +49,36 @@ export type InvestmentStatus =
   | "Voided"
   | "Refunded"
   | "Write Off";
+
+// Constants for reuse
+export const PAYMENT_MODES: PaymentMode[] = [
+  "NEFT/RTGS/IMPS",
+  "Cheque or DD",
+  "UPI",
+  "Debit Card",
+  "Credit Card",
+  "Cash",
+  "Other"
+];
+
+export const INVESTMENT_TYPES: InvestmentType[] = [
+  "Pre-Seed",
+  "Seed",
+  "Post-Seed",
+  "Revenue-Based",
+  "Convertible-Notes or SAFEs",
+  "Equity-Crowdfunding",
+  "Syndicate",
+  "SPVs",
+  "Royality-based"
+];
+
+export const INVESTMENT_STATUSES: InvestmentStatus[] = [
+  "Outstanding",
+  "Partially Settled",
+  "Fully Settled",
+  "Over Paid",
+  "Voided",
+  "Refunded",
+  "Write Off"
+];
