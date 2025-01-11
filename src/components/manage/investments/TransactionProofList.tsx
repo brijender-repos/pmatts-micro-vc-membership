@@ -1,19 +1,10 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { ExternalLink, Pencil, RefreshCw, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 import { TransactionProofDialog } from "./transaction-proof/TransactionProofDialog";
 import { useForm } from "react-hook-form";
+import { TransactionProofsTable } from "./transaction-proof/TransactionProofsTable";
 
 interface TransactionProofListProps {
   investmentId: string;
@@ -25,7 +16,7 @@ export function TransactionProofList({ investmentId }: TransactionProofListProps
   const [editingProof, setEditingProof] = useState<any>(null);
   const form = useForm();
 
-  const { data: proofs, isLoading, refetch } = useQuery({
+  const { data: proofs, isLoading } = useQuery({
     queryKey: ['transaction-proofs', investmentId],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -63,14 +54,6 @@ export function TransactionProofList({ investmentId }: TransactionProofListProps
     }
   };
 
-  const handleRefresh = () => {
-    refetch();
-    toast({
-      title: "Refreshing",
-      description: "Updating transaction proofs list...",
-    });
-  };
-
   const handleEdit = (proof: any) => {
     form.reset({
       transaction_details: proof.transaction_details,
@@ -91,63 +74,14 @@ export function TransactionProofList({ investmentId }: TransactionProofListProps
     return <div>Loading proofs...</div>;
   }
 
-  if (!proofs?.length) {
-    return <div>No transaction proofs uploaded yet.</div>;
-  }
-
   return (
     <div>
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Date</TableHead>
-            <TableHead>Amount</TableHead>
-            <TableHead>Payment Mode</TableHead>
-            <TableHead>File</TableHead>
-            <TableHead>Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {proofs.map((proof) => (
-            <TableRow key={proof.id}>
-              <TableCell>
-                {new Date(proof.transaction_date).toLocaleDateString()}
-              </TableCell>
-              <TableCell>₹{proof.transaction_amount.toLocaleString('en-IN')}</TableCell>
-              <TableCell>{proof.payment_mode}</TableCell>
-              <TableCell>
-                <a
-                  href={proof.file_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-1 text-sm text-blue-500 hover:text-blue-600"
-                >
-                  View
-                  <ExternalLink className="h-4 w-4" />
-                </a>
-              </TableCell>
-              <TableCell>
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => handleEdit(proof)}
-                  >
-                    <Pencil className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => handleDelete(proof.id)}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+      <TransactionProofsTable
+        proofs={proofs || []}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+      />
+      
       {editingProof && (
         <TransactionProofDialog
           investmentId={investmentId}
