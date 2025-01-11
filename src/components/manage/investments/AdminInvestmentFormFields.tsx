@@ -15,15 +15,20 @@ import {
   INVESTMENT_STATUSES 
 } from "@/types/investment";
 
+// Convert arrays to tuples for Zod
+const PaymentModesEnum = PAYMENT_MODES as unknown as [PaymentMode, ...PaymentMode[]];
+const InvestmentTypesEnum = INVESTMENT_TYPES as unknown as [InvestmentType, ...InvestmentType[]];
+const InvestmentStatusesEnum = INVESTMENT_STATUSES as unknown as [InvestmentStatus, ...InvestmentStatus[]];
+
 export const formSchema = z.object({
   project_name: z.string().min(1, "Project name is required"),
   units: z.number()
     .min(1, "Minimum 1 unit required")
     .max(MAX_UNITS, `Maximum ${MAX_UNITS} units allowed`),
   notes: z.string().optional(),
-  payment_mode: z.enum(PAYMENT_MODES),
-  investment_type: z.enum(INVESTMENT_TYPES).default("Pre-Seed"),
-  investment_status: z.enum(INVESTMENT_STATUSES).default("Outstanding"),
+  payment_mode: z.enum(PaymentModesEnum),
+  investment_type: z.enum(InvestmentTypesEnum).default("Pre-Seed"),
+  investment_status: z.enum(InvestmentStatusesEnum).default("Outstanding"),
 });
 
 export type FormFields = z.infer<typeof formSchema>;
