@@ -73,26 +73,33 @@ export function FileUploader({ investmentId, onUploadComplete }: FileUploaderPro
   };
 
   return (
-    <div>
-      <label className="block text-sm font-medium mb-2">
-        Upload Proof
-      </label>
-      <input
-        id="transaction-proof"
-        type="file"
-        multiple
-        accept=".jpg,.jpeg,.png,.bmp,.pdf"
-        onChange={handleFileUpload}
-        disabled={isUploading}
-        className="hidden"
-      />
-      <Button
-        type="button"
-        variant="outline"
-        onClick={() => document.getElementById('transaction-proof')?.click()}
-        disabled={isUploading}
-      >
-        {isUploading ? "Uploading..." : "Upload Proof"}
+    <div className="space-y-4">
+      <div>
+        <label className="block text-sm font-medium mb-2">
+          Upload Proof
+        </label>
+        <input
+          id="transaction-proof"
+          type="file"
+          multiple
+          accept=".jpg,.jpeg,.png,.bmp,.pdf"
+          onChange={handleFileUpload}
+          disabled={isUploading}
+          className="hidden"
+        />
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => document.getElementById('transaction-proof')?.click()}
+          disabled={isUploading}
+          className="w-full"
+        >
+          {isUploading ? "Uploading..." : "Choose File"}
+        </Button>
+      </div>
+      
+      <Button type="submit" className="w-full">
+        Submit Transaction Proof
       </Button>
     </div>
   );

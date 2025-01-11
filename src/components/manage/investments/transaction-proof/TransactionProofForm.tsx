@@ -28,36 +28,24 @@ export function TransactionProofForm({ form }: TransactionProofFormProps) {
     <div className="grid gap-4">
       <FormField
         control={form.control}
-        name="transaction_details"
+        name="payment_mode"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Transaction Details</FormLabel>
-            <FormControl>
-              <Input 
-                {...field} 
-                placeholder="Enter transaction details (max 1000 characters)"
-                maxLength={1000}
-                required 
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-
-      <FormField
-        control={form.control}
-        name="transaction_date"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Transaction Date</FormLabel>
-            <FormControl>
-              <Input 
-                type="datetime-local" 
-                {...field} 
-                required 
-              />
-            </FormControl>
+            <FormLabel>Payment Mode</FormLabel>
+            <Select onValueChange={field.onChange} value={field.value} required>
+              <FormControl>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select payment mode" />
+                </SelectTrigger>
+              </FormControl>
+              <SelectContent>
+                {PAYMENT_MODES.map((mode) => (
+                  <SelectItem key={mode} value={mode}>
+                    {mode}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
             <FormMessage />
           </FormItem>
         )}
@@ -86,24 +74,36 @@ export function TransactionProofForm({ form }: TransactionProofFormProps) {
 
       <FormField
         control={form.control}
-        name="payment_mode"
+        name="transaction_date"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Payment Mode</FormLabel>
-            <Select onValueChange={field.onChange} value={field.value} required>
-              <FormControl>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select payment mode" />
-                </SelectTrigger>
-              </FormControl>
-              <SelectContent>
-                {PAYMENT_MODES.map((mode) => (
-                  <SelectItem key={mode} value={mode}>
-                    {mode}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <FormLabel>Transaction Date</FormLabel>
+            <FormControl>
+              <Input 
+                type="datetime-local" 
+                {...field} 
+                required 
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={form.control}
+        name="transaction_details"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Transaction Details</FormLabel>
+            <FormControl>
+              <Input 
+                {...field} 
+                placeholder="Enter transaction details (max 1000 characters)"
+                maxLength={1000}
+                required 
+              />
+            </FormControl>
             <FormMessage />
           </FormItem>
         )}
