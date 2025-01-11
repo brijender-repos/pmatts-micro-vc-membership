@@ -16,7 +16,13 @@ export function UserPortfolioTab({ userId }: UserPortfolioTabProps) {
       console.log("Fetching investments for user:", userId);
       const { data, error } = await supabase
         .from("investments")
-        .select("*, projects(name, status)")
+        .select(`
+          *,
+          projects (
+            name,
+            status
+          )
+        `)
         .eq("user_id", userId)
         .order("investment_date", { ascending: false });
 
