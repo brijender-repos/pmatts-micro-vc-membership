@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { InvestmentsTable } from "@/components/manage/investments/InvestmentsTable";
+import { InvestmentWithUser, PaymentMode, InvestmentType } from "@/types/investment";
 
 export default function AddInvestment() {
   const { userId, investmentId } = useParams<{ userId: string; investmentId?: string }>();
@@ -47,7 +48,14 @@ export default function AddInvestment() {
         .order("investment_date", { ascending: false });
 
       if (error) throw error;
-      return data;
+
+      // Transform the data to match InvestmentWithUser type
+      return (data || []).map(investment => ({
+        ...investment,
+        payment_mode: (investment.payment_mode || "NEFT/RTGS/IMPS") as PaymentMode,
+        investment_type: investment.investment_type as InvestmentType,
+        investment_status: investment.investment_status || "Outstanding"
+      })) as InvestmentWithUser[];
     },
     enabled: !!userId,
   });
