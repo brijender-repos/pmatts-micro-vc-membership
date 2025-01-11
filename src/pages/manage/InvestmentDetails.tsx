@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
 import { TransactionProofList } from "@/components/manage/investments/TransactionProofList";
-import { TransactionProofUpload } from "@/components/manage/investments/TransactionProofUpload";
+import { TransactionProofDialog } from "@/components/manage/investments/transaction-proof/TransactionProofDialog";
 
 export default function InvestmentDetails() {
   const { investmentId } = useParams<{ investmentId: string }>();
@@ -101,22 +101,17 @@ export default function InvestmentDetails() {
         </CardContent>
       </Card>
 
-      <TransactionProofList investmentId={investmentId!} />
-
       <Card>
-        <CardHeader>
-          <CardTitle>Add Transaction Proof</CardTitle>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <CardTitle>Transaction Proofs</CardTitle>
+          <TransactionProofDialog
+            investmentId={investmentId!}
+            onUploadComplete={handleUploadComplete}
+            form={form}
+          />
         </CardHeader>
         <CardContent>
-          <Form {...form}>
-            <form className="space-y-6">
-              <TransactionProofUpload
-                investmentId={investmentId!}
-                onUploadComplete={handleUploadComplete}
-                form={form}
-              />
-            </form>
-          </Form>
+          <TransactionProofList investmentId={investmentId!} />
         </CardContent>
       </Card>
     </div>
