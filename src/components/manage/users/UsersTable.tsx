@@ -16,6 +16,7 @@ import { Plus } from "lucide-react"
 import { AdminInvestmentForm } from "../investments/AdminInvestmentForm"
 import { InvestmentsTable } from "../investments/InvestmentsTable"
 import { useQuery } from "@tanstack/react-query"
+import { InvestmentWithUser, PaymentMode } from "@/types/investment"
 
 interface User {
   id: string
@@ -76,13 +77,18 @@ export function UsersTable({ users, isLoading, refetch }: UsersTableProps) {
           .order("investment_date", { ascending: false });
 
         if (error) throw error;
-        return data;
+
+        // Transform the data to match InvestmentWithUser type
+        return (data || []).map(investment => ({
+          ...investment,
+          payment_mode: (investment.payment_mode || "NEFT/RTGS/IMPS") as PaymentMode,
+        })) as InvestmentWithUser[];
       },
     });
 
     return (
       <div className="space-y-4">
-        <div className="flex justify-between items-center">
+        <div className="flex items-center justify-between">
           <h2 className="text-xl font-semibold">Investments</h2>
           <Dialog>
             <DialogTrigger asChild>
