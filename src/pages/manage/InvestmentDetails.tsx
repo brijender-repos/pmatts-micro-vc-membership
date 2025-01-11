@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useForm } from "react-hook-form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { TransactionProofForm } from "@/components/manage/investments/transaction-proof/TransactionProofForm";
+import { Form } from "@/components/ui/form";
 import { TransactionProofList } from "@/components/manage/investments/TransactionProofList";
 import { TransactionProofUpload } from "@/components/manage/investments/TransactionProofUpload";
 
@@ -124,12 +124,16 @@ export default function InvestmentDetails() {
           <CardTitle>Add Transaction Proof</CardTitle>
         </CardHeader>
         <CardContent>
-          <TransactionProofUpload
-            investmentId={investmentId!}
-            onUploadComplete={handleUploadComplete}
-            existingFiles={proofs}
-            form={form}
-          />
+          <Form {...form}>
+            <form className="space-y-6">
+              <TransactionProofUpload
+                investmentId={investmentId!}
+                onUploadComplete={handleUploadComplete}
+                existingFiles={proofs}
+                form={form}
+              />
+            </form>
+          </Form>
         </CardContent>
       </Card>
     </div>
