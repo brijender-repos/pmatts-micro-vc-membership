@@ -102,15 +102,22 @@ export default function InvestmentDetails() {
       </Card>
 
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle>Transaction Proofs</CardTitle>
-          <TransactionProofDialog
-            investmentId={investmentId!}
-            onUploadComplete={handleUploadComplete}
-            form={form}
-          />
-        </CardHeader>
-        <CardContent>
+        <CardContent className="pt-6">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <CardTitle>Transaction Proofs</CardTitle>
+              <p className="text-sm text-muted-foreground mt-1">
+                View uploaded transaction proofs
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
+              <TransactionProofDialog
+                investmentId={investmentId!}
+                onUploadComplete={handleUploadComplete}
+                form={form}
+              />
+            </div>
+          </div>
           <TransactionProofList investmentId={investmentId!} />
         </CardContent>
       </Card>
