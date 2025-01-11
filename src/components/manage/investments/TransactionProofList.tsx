@@ -103,8 +103,6 @@ export function TransactionProofList({ investmentId }: TransactionProofListProps
             <TableHead>Date</TableHead>
             <TableHead>Amount</TableHead>
             <TableHead>Payment Mode</TableHead>
-            <TableHead>Transaction ID</TableHead>
-            <TableHead>Status</TableHead>
             <TableHead>File</TableHead>
             <TableHead>Actions</TableHead>
           </TableRow>
@@ -117,8 +115,6 @@ export function TransactionProofList({ investmentId }: TransactionProofListProps
               </TableCell>
               <TableCell>₹{proof.transaction_amount.toLocaleString('en-IN')}</TableCell>
               <TableCell>{proof.payment_mode}</TableCell>
-              <TableCell>{proof.transaction_id || 'N/A'}</TableCell>
-              <TableCell>{proof.transaction_status || 'Pending'}</TableCell>
               <TableCell>
                 <a
                   href={proof.file_url}
