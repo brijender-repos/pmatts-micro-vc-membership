@@ -1,19 +1,20 @@
-import { FormField, FormItem, FormLabel, FormControl, FormDescription, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { UNIT_PRICE, MAX_UNITS } from "@/types/payment";
 import { UseFormReturn } from "react-hook-form";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import * as z from "zod";
+import { z } from "zod";
+import { UNIT_PRICE, MAX_UNITS } from "@/types/payment";
 import { 
-  InvestmentType, 
   PaymentMode, 
+  InvestmentType,
   InvestmentStatus,
   PAYMENT_MODES,
   INVESTMENT_TYPES,
   INVESTMENT_STATUSES 
 } from "@/types/investment";
+import { ProjectNameField } from "./form-fields/ProjectNameField";
+import { InvestmentTypeField } from "./form-fields/InvestmentTypeField";
+import { InvestmentStatusField } from "./form-fields/InvestmentStatusField";
+import { UnitsField } from "./form-fields/UnitsField";
+import { PaymentModeField } from "./form-fields/PaymentModeField";
+import { FormLabel } from "@/components/ui/form";
 
 // Convert arrays to tuples for Zod
 const PaymentModesEnum = PAYMENT_MODES as unknown as [PaymentMode, ...PaymentMode[]];
@@ -38,123 +39,17 @@ interface AdminInvestmentFormFieldsProps {
 }
 
 export function AdminInvestmentFormFields({ form }: AdminInvestmentFormFieldsProps) {
-  const { data: projects } = useQuery({
-    queryKey: ["projects"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("projects")
-        .select("name")
-        .order("name");
-
-      if (error) throw error;
-      return data;
-    },
-  });
-
   const units = form.watch("units");
   const totalAmount = units * UNIT_PRICE;
 
   return (
     <div className="space-y-6">
-      <FormField
-        control={form.control}
-        name="project_name"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Project Name</FormLabel>
-            <Select onValueChange={field.onChange} defaultValue={field.value}>
-              <FormControl>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select project" />
-                </SelectTrigger>
-              </FormControl>
-              <SelectContent>
-                {projects?.map((project) => (
-                  <SelectItem key={project.name} value={project.name}>
-                    {project.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-
-      <FormField
-        control={form.control}
-        name="investment_type"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Investment Type</FormLabel>
-            <Select onValueChange={field.onChange} defaultValue={field.value}>
-              <FormControl>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select investment type" />
-                </SelectTrigger>
-              </FormControl>
-              <SelectContent>
-                {INVESTMENT_TYPES.map((type) => (
-                  <SelectItem key={type} value={type}>
-                    {type}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-
-      <FormField
-        control={form.control}
-        name="investment_status"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Investment Status</FormLabel>
-            <Select onValueChange={field.onChange} defaultValue={field.value}>
-              <FormControl>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select investment status" />
-                </SelectTrigger>
-              </FormControl>
-              <SelectContent>
-                {INVESTMENT_STATUSES.map((status) => (
-                  <SelectItem key={status} value={status}>
-                    {status}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-
+      <ProjectNameField form={form} />
+      <InvestmentTypeField form={form} />
+      <InvestmentStatusField form={form} />
+      
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <FormField
-          control={form.control}
-          name="units"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Number of Units</FormLabel>
-              <FormControl>
-                <Input
-                  type="number"
-                  min={1}
-                  max={MAX_UNITS}
-                  {...field}
-                  onChange={(e) => field.onChange(parseInt(e.target.value))}
-                />
-              </FormControl>
-              <FormDescription>
-                Cost per unit: ₹{UNIT_PRICE.toLocaleString('en-IN')}
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
+        <UnitsField form={form} />
         <div>
           <FormLabel>Total Amount</FormLabel>
           <div className="h-10 px-3 py-2 rounded-md border border-input bg-muted">
@@ -163,30 +58,7 @@ export function AdminInvestmentFormFields({ form }: AdminInvestmentFormFieldsPro
         </div>
       </div>
 
-      <FormField
-        control={form.control}
-        name="payment_mode"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Payment Mode</FormLabel>
-            <Select onValueChange={field.onChange} defaultValue={field.value}>
-              <FormControl>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select payment mode" />
-                </SelectTrigger>
-              </FormControl>
-              <SelectContent>
-                {PAYMENT_MODES.map((mode) => (
-                  <SelectItem key={mode} value={mode}>
-                    {mode}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+      <PaymentModeField form={form} />
     </div>
   );
 }
