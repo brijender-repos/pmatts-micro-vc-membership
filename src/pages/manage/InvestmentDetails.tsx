@@ -8,12 +8,14 @@ import { TransactionProofList } from "@/components/manage/investments/Transactio
 import { TransactionProofUpload } from "@/components/manage/investments/TransactionProofUpload";
 
 export default function InvestmentDetails() {
-  const { id } = useParams<{ id: string }>();
+  const { investmentId } = useParams<{ investmentId: string }>();
   const form = useForm();
 
   const { data: investment, isLoading: isLoadingInvestment } = useQuery({
-    queryKey: ['investment', id],
+    queryKey: ['investment', investmentId],
     queryFn: async () => {
+      if (!investmentId) throw new Error('Investment ID is required');
+      
       const { data, error } = await supabase
         .from('investments')
         .select(`
@@ -24,25 +26,30 @@ export default function InvestmentDetails() {
             phone
           )
         `)
-        .eq('id', id)
-        .single();
+        .eq('id', investmentId)
+        .maybeSingle();
       
       if (error) throw error;
+      if (!data) throw new Error('Investment not found');
       return data;
     },
+    retry: false,
   });
 
   const { data: proofs } = useQuery({
-    queryKey: ['transaction-proofs', id],
+    queryKey: ['transaction-proofs', investmentId],
     queryFn: async () => {
+      if (!investmentId) return [];
+      
       const { data, error } = await supabase
         .from('transaction_proofs')
         .select('*')
-        .eq('investment_id', id);
+        .eq('investment_id', investmentId);
       
       if (error) throw error;
-      return data;
+      return data || [];
     },
+    enabled: !!investment,
   });
 
   if (isLoadingInvestment) {
@@ -50,7 +57,18 @@ export default function InvestmentDetails() {
   }
 
   if (!investment) {
-    return <div>Investment not found</div>;
+    return (
+      <Card className="mx-auto max-w-2xl mt-8">
+        <CardHeader>
+          <CardTitle className="text-center text-red-500">Investment Not Found</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-center text-muted-foreground">
+            The investment you're looking for could not be found. Please check the URL and try again.
+          </p>
+        </CardContent>
+      </Card>
+    );
   }
 
   const handleUploadComplete = () => {
@@ -99,7 +117,7 @@ export default function InvestmentDetails() {
         </CardContent>
       </Card>
 
-      <TransactionProofList investmentId={id!} />
+      <TransactionProofList investmentId={investmentId!} />
 
       <Card>
         <CardHeader>
@@ -107,7 +125,7 @@ export default function InvestmentDetails() {
         </CardHeader>
         <CardContent>
           <TransactionProofUpload
-            investmentId={id!}
+            investmentId={investmentId!}
             onUploadComplete={handleUploadComplete}
             existingFiles={proofs}
             form={form}
