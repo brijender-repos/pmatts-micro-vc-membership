@@ -15,6 +15,7 @@ import { formatCurrency } from "@/lib/utils";
 import { InvestmentWithUser } from "@/types/investment";
 import { TransactionProofList } from "./TransactionProofList";
 import { TransactionProofUpload } from "./TransactionProofUpload";
+import { Form } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 
 interface InvestmentsTableProps {
@@ -30,7 +31,14 @@ export function InvestmentsTable({
   toggleSort,
   onManageInvestment 
 }: InvestmentsTableProps) {
-  const form = useForm();
+  const form = useForm({
+    defaultValues: {
+      transaction_details: "",
+      transaction_date: "",
+      transaction_amount: 0,
+      payment_mode: "",
+    },
+  });
 
   return (
     <div className="border rounded-lg">
@@ -128,14 +136,16 @@ export function InvestmentsTable({
                       </Button>
                     </DialogTrigger>
                     <DialogContent className="max-w-4xl">
-                      <div className="space-y-4">
-                        <TransactionProofList investmentId={investment.id} />
-                        <TransactionProofUpload 
-                          investmentId={investment.id}
-                          onUploadComplete={() => {}}
-                          form={form}
-                        />
-                      </div>
+                      <Form {...form}>
+                        <div className="space-y-4">
+                          <TransactionProofList investmentId={investment.id} />
+                          <TransactionProofUpload 
+                            investmentId={investment.id}
+                            onUploadComplete={() => {}}
+                            form={form}
+                          />
+                        </div>
+                      </Form>
                     </DialogContent>
                   </Dialog>
                 </TableCell>
