@@ -1,5 +1,5 @@
-import { useQuery } from "@tanstack/react-query";
-import { ExternalLink } from "lucide-react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { ExternalLink, Pencil, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import {
   Card,
@@ -16,12 +16,17 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 
 interface TransactionProofListProps {
   investmentId: string;
 }
 
 export function TransactionProofList({ investmentId }: TransactionProofListProps) {
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+
   const { data: proofs, isLoading } = useQuery({
     queryKey: ['transaction-proofs', investmentId],
     queryFn: async () => {
@@ -34,6 +39,32 @@ export function TransactionProofList({ investmentId }: TransactionProofListProps
       return data;
     },
   });
+
+  const handleDelete = async (proofId: string) => {
+    try {
+      const { error } = await supabase
+        .from('transaction_proofs')
+        .delete()
+        .eq('id', proofId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Transaction proof deleted successfully",
+      });
+
+      // Refresh the proofs list
+      queryClient.invalidateQueries({ queryKey: ['transaction-proofs', investmentId] });
+    } catch (error) {
+      console.error('Error deleting proof:', error);
+      toast({
+        title: "Error",
+        description: "Failed to delete transaction proof",
+        variant: "destructive",
+      });
+    }
+  };
 
   if (isLoading) {
     return <div>Loading proofs...</div>;
@@ -61,6 +92,7 @@ export function TransactionProofList({ investmentId }: TransactionProofListProps
               <TableHead>Transaction ID</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>File</TableHead>
+              <TableHead>Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -83,6 +115,30 @@ export function TransactionProofList({ investmentId }: TransactionProofListProps
                     View
                     <ExternalLink className="h-4 w-4" />
                   </a>
+                </TableCell>
+                <TableCell>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => {
+                        // TODO: Implement edit functionality
+                        toast({
+                          title: "Info",
+                          description: "Edit functionality coming soon",
+                        });
+                      }}
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleDelete(proof.id)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </TableCell>
               </TableRow>
             ))}

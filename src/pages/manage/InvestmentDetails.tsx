@@ -36,21 +36,9 @@ export default function InvestmentDetails() {
     retry: false,
   });
 
-  const { data: proofs } = useQuery({
-    queryKey: ['transaction-proofs', investmentId],
-    queryFn: async () => {
-      if (!investmentId) return [];
-      
-      const { data, error } = await supabase
-        .from('transaction_proofs')
-        .select('*')
-        .eq('investment_id', investmentId);
-      
-      if (error) throw error;
-      return data || [];
-    },
-    enabled: !!investment,
-  });
+  const handleUploadComplete = () => {
+    // Refresh the transaction proofs list
+  };
 
   if (isLoadingInvestment) {
     return <div>Loading investment details...</div>;
@@ -70,10 +58,6 @@ export default function InvestmentDetails() {
       </Card>
     );
   }
-
-  const handleUploadComplete = () => {
-    // Refresh the transaction proofs list
-  };
 
   return (
     <div className="space-y-6">
@@ -129,7 +113,6 @@ export default function InvestmentDetails() {
               <TransactionProofUpload
                 investmentId={investmentId!}
                 onUploadComplete={handleUploadComplete}
-                existingFiles={proofs}
                 form={form}
               />
             </form>
