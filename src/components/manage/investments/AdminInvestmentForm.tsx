@@ -62,7 +62,7 @@ export function AdminInvestmentForm({
   });
 
   // Define valid default values that match our type definitions
-  const defaultPaymentMode = "Bank Transfer" as PaymentMode;
+  const defaultPaymentMode = "NEFT/RTGS/IMPS" as PaymentMode;
   const defaultInvestmentStatus = "Outstanding" as InvestmentStatus;
   
   const form = useForm<FormFields>({

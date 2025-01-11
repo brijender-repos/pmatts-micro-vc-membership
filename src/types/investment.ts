@@ -33,13 +33,13 @@ export type InvestmentType =
   | "Royality-based";
 
 export type PaymentMode = 
-  | "Bank Transfer" 
-  | "UPI" 
-  | "Credit Card" 
-  | "Debit Card" 
-  | "Cash" 
-  | "Others"
-  | string; // Added to handle any other payment modes from the database
+  | "NEFT/RTGS/IMPS"
+  | "Cheque or DD"
+  | "UPI"
+  | "Debit Card"
+  | "Credit Card"
+  | "Cash"
+  | "Other";
 
 export type InvestmentStatus = 
   | "Outstanding"
@@ -48,5 +48,4 @@ export type InvestmentStatus =
   | "Over Paid"
   | "Voided"
   | "Refunded"
-  | "Write Off"
-  | string; // Added to handle any other statuses from the database
+  | "Write Off";

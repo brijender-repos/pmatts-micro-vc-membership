@@ -6,15 +6,16 @@ import { UseFormReturn } from "react-hook-form";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import * as z from "zod";
-import { InvestmentType } from "@/types/investment";
+import { InvestmentType, PaymentMode } from "@/types/investment";
 
 const PaymentModes = [
-  "Bank Transfer",
+  "NEFT/RTGS/IMPS",
+  "Cheque or DD",
   "UPI",
-  "Credit Card",
   "Debit Card",
+  "Credit Card",
   "Cash",
-  "Others"
+  "Other"
 ] as const;
 
 const InvestmentTypes = [
