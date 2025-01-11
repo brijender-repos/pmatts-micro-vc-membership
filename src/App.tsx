@@ -18,6 +18,7 @@ const Settings = lazy(() => import("@/pages/members/Settings"))
 const ManageDashboard = lazy(() => import("@/pages/manage/Index"))
 const Users = lazy(() => import("@/pages/manage/Users"))
 const UserDetails = lazy(() => import("@/pages/manage/UserDetails"))
+const UserInvestments = lazy(() => import("@/pages/manage/UserInvestments"))
 const AddInvestment = lazy(() => import("@/pages/manage/AddInvestment"))
 const Investments = lazy(() => import("@/pages/manage/Investments"))
 const PaymentSuccess = lazy(() => import("@/pages/payment/Success"))
@@ -92,12 +93,20 @@ const router = createBrowserRouter([
         element: <UserDetails />,
       },
       {
+        path: "users/:userId/investments",
+        element: <UserInvestments />,
+      },
+      {
         path: "users/:userId/add-investment",
         element: <AddInvestment />,
       },
       {
         path: "investments",
         element: <Investments />,
+      },
+      {
+        path: "users/:userId/investments",
+        element: <UserInvestments />,
       },
     ],
   },
