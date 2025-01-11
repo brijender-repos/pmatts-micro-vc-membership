@@ -7,6 +7,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const PAYMENT_MODES = [
@@ -51,44 +52,46 @@ export function TransactionProofForm({ form }: TransactionProofFormProps) {
         )}
       />
 
-      <FormField
-        control={form.control}
-        name="transaction_amount"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Transaction Amount</FormLabel>
-            <FormControl>
-              <Input 
-                type="number" 
-                {...field} 
-                onChange={(e) => field.onChange(parseFloat(e.target.value))}
-                required
-                step="0.01"
-                min="0"
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+      <div className="grid grid-cols-2 gap-4">
+        <FormField
+          control={form.control}
+          name="transaction_amount"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Transaction Amount</FormLabel>
+              <FormControl>
+                <Input 
+                  type="number" 
+                  {...field} 
+                  onChange={(e) => field.onChange(parseFloat(e.target.value))}
+                  required
+                  step="0.01"
+                  min="0"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-      <FormField
-        control={form.control}
-        name="transaction_date"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Transaction Date</FormLabel>
-            <FormControl>
-              <Input 
-                type="datetime-local" 
-                {...field} 
-                required 
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+        <FormField
+          control={form.control}
+          name="transaction_date"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Transaction Date</FormLabel>
+              <FormControl>
+                <Input 
+                  type="datetime-local" 
+                  {...field} 
+                  required 
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      </div>
 
       <FormField
         control={form.control}
@@ -97,11 +100,13 @@ export function TransactionProofForm({ form }: TransactionProofFormProps) {
           <FormItem>
             <FormLabel>Transaction Details</FormLabel>
             <FormControl>
-              <Input 
+              <Textarea 
                 {...field} 
                 placeholder="Enter transaction details (max 1000 characters)"
                 maxLength={1000}
-                required 
+                required
+                rows={2}
+                className="resize-none"
               />
             </FormControl>
             <FormMessage />
