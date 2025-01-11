@@ -105,6 +105,10 @@ const router = createBrowserRouter([
         element: <Investments />,
       },
       {
+        path: "investments/:investmentId",
+        element: <InvestmentDetails />,
+      },
+      {
         path: "users/:userId/investments",
         element: <UserInvestments />,
       },

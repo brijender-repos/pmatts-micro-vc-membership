@@ -1,4 +1,5 @@
 import { format } from "date-fns";
+import { useNavigate } from "react-router-dom";
 import {
   Table,
   TableBody,
@@ -9,14 +10,9 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { ArrowUpDown } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 import { InvestmentWithUser } from "@/types/investment";
-import { TransactionProofList } from "./TransactionProofList";
-import { TransactionProofUpload } from "./TransactionProofUpload";
-import { Form } from "@/components/ui/form";
-import { useForm } from "react-hook-form";
 
 interface InvestmentsTableProps {
   investments: InvestmentWithUser[] | undefined;
@@ -31,14 +27,7 @@ export function InvestmentsTable({
   toggleSort,
   onManageInvestment 
 }: InvestmentsTableProps) {
-  const form = useForm({
-    defaultValues: {
-      transaction_details: "",
-      transaction_date: "",
-      transaction_amount: 0,
-      payment_mode: "",
-    },
-  });
+  const navigate = useNavigate();
 
   return (
     <div className="border rounded-lg">
@@ -126,28 +115,13 @@ export function InvestmentsTable({
                   </Badge>
                 </TableCell>
                 <TableCell>
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                      >
-                        Transaction Proofs
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent className="max-w-4xl">
-                      <Form {...form}>
-                        <div className="space-y-4">
-                          <TransactionProofList investmentId={investment.id} />
-                          <TransactionProofUpload 
-                            investmentId={investment.id}
-                            onUploadComplete={() => {}}
-                            form={form}
-                          />
-                        </div>
-                      </Form>
-                    </DialogContent>
-                  </Dialog>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => navigate(`/manage/investments/${investment.id}`)}
+                  >
+                    View Details
+                  </Button>
                 </TableCell>
               </TableRow>
             ))
