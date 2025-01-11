@@ -21,17 +21,19 @@ interface InvestmentSummaryProps {
 }
 
 export function InvestmentSummary({ investments }: InvestmentSummaryProps) {
-  // Filter only successful investments
-  const successfulInvestments = investments.filter(inv => inv.transaction_status === 'success');
+  // Filter valid investments (both 'success' and 'completed' statuses)
+  const validInvestments = investments.filter(inv => 
+    ['success', 'completed'].includes(inv.transaction_status.toLowerCase())
+  );
 
-  const totalInvested = successfulInvestments.reduce((total, inv) => {
+  const totalInvested = validInvestments.reduce((total, inv) => {
     if (inv.investment_type === 'investment' || inv.investment_type === 'follow_on') {
       return total + inv.amount;
     }
     return total;
   }, 0);
 
-  const totalReturns = successfulInvestments.reduce((total, inv) => {
+  const totalReturns = validInvestments.reduce((total, inv) => {
     if (inv.investment_type === 'distribution' || inv.investment_type === 'dividend' || inv.investment_type === 'exit') {
       return total + inv.amount;
     }
@@ -39,10 +41,14 @@ export function InvestmentSummary({ investments }: InvestmentSummaryProps) {
   }, 0);
 
   const activeProjects = new Set(
-    successfulInvestments
-      .filter(inv => inv.projects.status === 'active')
+    validInvestments
+      .filter(inv => inv.projects?.status === 'active')
       .map(inv => inv.project_name)
   ).size;
+
+  console.log('Summary - All investments:', investments);
+  console.log('Summary - Valid investments:', validInvestments);
+  console.log('Summary - Totals:', { totalInvested, totalReturns, activeProjects });
 
   return (
     <div className="grid gap-4 md:grid-cols-3 mb-8">

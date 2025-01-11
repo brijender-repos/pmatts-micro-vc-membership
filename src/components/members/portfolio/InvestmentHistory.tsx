@@ -37,10 +37,12 @@ export function InvestmentHistory({ investments }: InvestmentHistoryProps) {
   const [sortField, setSortField] = useState<SortField>('investment_date');
   const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
 
-  // Filter only completed investments
-  const successfulInvestments = investments.filter(inv => inv.transaction_status === 'completed');
+  // Filter investments with valid transaction status
+  const validInvestments = investments.filter(inv => 
+    ['success', 'completed'].includes(inv.transaction_status.toLowerCase())
+  );
 
-  const sortedInvestments = [...successfulInvestments].sort((a, b) => {
+  const sortedInvestments = [...validInvestments].sort((a, b) => {
     const aValue = sortField === 'amount' ? Number(a[sortField]) : String(a[sortField]);
     const bValue = sortField === 'amount' ? Number(b[sortField]) : String(b[sortField]);
     const multiplier = sortOrder === 'asc' ? 1 : -1;
@@ -62,8 +64,8 @@ export function InvestmentHistory({ investments }: InvestmentHistoryProps) {
     return sortOrder === 'asc' ? <ArrowUp className="ml-2 h-4 w-4" /> : <ArrowDown className="ml-2 h-4 w-4" />;
   };
 
-  console.log('Investments received:', investments);
-  console.log('Successful investments:', successfulInvestments);
+  console.log('All investments:', investments);
+  console.log('Valid investments:', validInvestments);
   console.log('Sorted investments:', sortedInvestments);
 
   return (

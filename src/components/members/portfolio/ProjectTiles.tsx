@@ -30,13 +30,13 @@ const allProjects = [
 ];
 
 export function ProjectTiles({ investments }: ProjectTilesProps) {
-  // Filter only successful investments before calculating totals
-  const successfulInvestments = investments.filter(
-    inv => inv.transaction_status === 'success'
+  // Filter valid investments
+  const validInvestments = investments.filter(inv => 
+    ['success', 'completed'].includes(inv.transaction_status.toLowerCase())
   );
 
-  // Calculate totals per project using successful investments
-  const projectTotals = successfulInvestments.reduce((acc, inv) => {
+  // Calculate totals per project using valid investments
+  const projectTotals = validInvestments.reduce((acc, inv) => {
     if (!acc[inv.project_name]) {
       acc[inv.project_name] = {
         project_name: inv.project_name,
@@ -52,6 +52,10 @@ export function ProjectTiles({ investments }: ProjectTilesProps) {
 
     return acc;
   }, {} as Record<string, { project_name: string; total_invested: number; total_units: number; }>);
+
+  console.log('ProjectTiles - All investments:', investments);
+  console.log('ProjectTiles - Valid investments:', validInvestments);
+  console.log('ProjectTiles - Project totals:', projectTotals);
 
   return (
     <div className="grid gap-3 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
