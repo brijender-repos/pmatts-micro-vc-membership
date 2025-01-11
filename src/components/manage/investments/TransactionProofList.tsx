@@ -1,5 +1,5 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { ExternalLink, Pencil, Trash2 } from "lucide-react";
+import { ExternalLink, Pencil, RefreshCw, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import {
   Card,
@@ -27,7 +27,7 @@ export function TransactionProofList({ investmentId }: TransactionProofListProps
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const { data: proofs, isLoading } = useQuery({
+  const { data: proofs, isLoading, refetch } = useQuery({
     queryKey: ['transaction-proofs', investmentId],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -66,6 +66,14 @@ export function TransactionProofList({ investmentId }: TransactionProofListProps
     }
   };
 
+  const handleRefresh = () => {
+    refetch();
+    toast({
+      title: "Refreshing",
+      description: "Updating transaction proofs list...",
+    });
+  };
+
   if (isLoading) {
     return <div>Loading proofs...</div>;
   }
@@ -76,11 +84,22 @@ export function TransactionProofList({ investmentId }: TransactionProofListProps
 
   return (
     <Card>
-      <CardHeader>
-        <CardTitle>Transaction Proofs</CardTitle>
-        <CardDescription>
-          View uploaded transaction proofs
-        </CardDescription>
+      <CardHeader className="flex flex-row items-center justify-between">
+        <div>
+          <CardTitle>Transaction Proofs</CardTitle>
+          <CardDescription>
+            View uploaded transaction proofs
+          </CardDescription>
+        </div>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={handleRefresh}
+          className="h-8 w-8"
+          title="Refresh proofs"
+        >
+          <RefreshCw className="h-4 w-4" />
+        </Button>
       </CardHeader>
       <CardContent>
         <Table>
