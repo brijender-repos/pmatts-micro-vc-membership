@@ -18,6 +18,9 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { useState } from "react";
+import { TransactionProofDialog } from "./transaction-proof/TransactionProofDialog";
+import { useForm } from "react-hook-form";
 
 interface TransactionProofListProps {
   investmentId: string;
@@ -26,6 +29,8 @@ interface TransactionProofListProps {
 export function TransactionProofList({ investmentId }: TransactionProofListProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [editingProof, setEditingProof] = useState<any>(null);
+  const form = useForm();
 
   const { data: proofs, isLoading, refetch } = useQuery({
     queryKey: ['transaction-proofs', investmentId],
@@ -54,7 +59,6 @@ export function TransactionProofList({ investmentId }: TransactionProofListProps
         description: "Transaction proof deleted successfully",
       });
 
-      // Refresh the proofs list
       queryClient.invalidateQueries({ queryKey: ['transaction-proofs', investmentId] });
     } catch (error) {
       console.error('Error deleting proof:', error);
@@ -72,6 +76,22 @@ export function TransactionProofList({ investmentId }: TransactionProofListProps
       title: "Refreshing",
       description: "Updating transaction proofs list...",
     });
+  };
+
+  const handleEdit = (proof: any) => {
+    form.reset({
+      transaction_details: proof.transaction_details,
+      transaction_date: new Date(proof.transaction_date).toISOString().slice(0, 16),
+      transaction_amount: proof.transaction_amount,
+      payment_mode: proof.payment_mode,
+    });
+    setEditingProof(proof);
+  };
+
+  const handleEditComplete = () => {
+    setEditingProof(null);
+    form.reset();
+    queryClient.invalidateQueries({ queryKey: ['transaction-proofs', investmentId] });
   };
 
   if (isLoading) {
@@ -140,13 +160,7 @@ export function TransactionProofList({ investmentId }: TransactionProofListProps
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={() => {
-                        // TODO: Implement edit functionality
-                        toast({
-                          title: "Info",
-                          description: "Edit functionality coming soon",
-                        });
-                      }}
+                      onClick={() => handleEdit(proof)}
                     >
                       <Pencil className="h-4 w-4" />
                     </Button>
@@ -164,6 +178,17 @@ export function TransactionProofList({ investmentId }: TransactionProofListProps
           </TableBody>
         </Table>
       </CardContent>
+      {editingProof && (
+        <TransactionProofDialog
+          investmentId={investmentId}
+          onUploadComplete={handleEditComplete}
+          form={form}
+          editMode={true}
+          proofId={editingProof.id}
+          open={!!editingProof}
+          onOpenChange={(open) => !open && setEditingProof(null)}
+        />
+      )}
     </Card>
   );
 }
