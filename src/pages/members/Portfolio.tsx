@@ -2,13 +2,13 @@ import { useQuery } from "@tanstack/react-query";
 import { ProjectTiles } from "@/components/members/portfolio/ProjectTiles";
 import { InvestmentHistory } from "@/components/members/portfolio/InvestmentHistory";
 import { InvestmentSummary } from "@/components/members/portfolio/InvestmentSummary";
-import { InvestmentReport } from "@/components/members/portfolio/InvestmentReport";
 import { Button } from "@/components/ui/button";
 import { Download, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { PDFDownloadLink, BlobProvider } from "@react-pdf/renderer";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
+import { InvestmentReport } from "@/components/members/portfolio/InvestmentReport";
 
 export default function Portfolio() {
   const [searchParams] = useSearchParams();
@@ -16,24 +16,40 @@ export default function Portfolio() {
   const projectFilter = searchParams.get('project');
 
   const { data: investments, isLoading } = useQuery({
-    queryKey: ["investments", projectFilter],
+    queryKey: ["user-investments", projectFilter],
     queryFn: async () => {
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session?.user) return [];
+      if (!session?.user) {
+        console.log("No user session found");
+        return [];
+      }
 
+      console.log("Fetching investments for user:", session.user.id);
       const query = supabase
         .from("investments")
-        .select("*, projects(name, status)")
+        .select(`
+          *,
+          projects (
+            name,
+            status
+          )
+        `)
         .eq("user_id", session.user.id)
-        .order("investment_date", { ascending: false });
+        .order('investment_date', { ascending: false });
 
       if (projectFilter) {
         query.eq("project_name", projectFilter);
       }
 
       const { data, error } = await query;
-      if (error) throw error;
-      return data;
+      
+      if (error) {
+        console.error("Error fetching investments:", error);
+        throw error;
+      }
+      
+      console.log("Fetched investments:", data);
+      return data || [];
     },
   });
 
@@ -57,7 +73,6 @@ export default function Portfolio() {
   }
 
   // Calculate summary values for the report
-
   const totalInvested = investments?.reduce((total, inv) => {
     if (["Pre-Seed", "Seed", "Post-Seed"].includes(inv.investment_type)) {
       return total + inv.amount;
