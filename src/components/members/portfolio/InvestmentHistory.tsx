@@ -30,7 +30,7 @@ interface InvestmentHistoryProps {
   investments: Investment[];
 }
 
-type SortField = 'investment_date' | 'project_name';
+type SortField = 'investment_date' | 'project_name' | 'investment_type' | 'amount';
 type SortOrder = 'asc' | 'desc';
 
 export function InvestmentHistory({ investments }: InvestmentHistoryProps) {
@@ -41,8 +41,8 @@ export function InvestmentHistory({ investments }: InvestmentHistoryProps) {
   const successfulInvestments = investments.filter(inv => inv.transaction_status === 'success');
 
   const sortedInvestments = [...successfulInvestments].sort((a, b) => {
-    const aValue = a[sortField];
-    const bValue = b[sortField];
+    const aValue = sortField === 'amount' ? Number(a[sortField]) : String(a[sortField]);
+    const bValue = sortField === 'amount' ? Number(b[sortField]) : String(b[sortField]);
     const multiplier = sortOrder === 'asc' ? 1 : -1;
     
     return aValue < bValue ? -1 * multiplier : aValue > bValue ? 1 * multiplier : 0;
@@ -87,8 +87,26 @@ export function InvestmentHistory({ investments }: InvestmentHistoryProps) {
                 <SortIcon field="project_name" />
               </Button>
             </TableHead>
-            <TableHead>Type</TableHead>
-            <TableHead className="text-right">Amount</TableHead>
+            <TableHead>
+              <Button 
+                variant="ghost" 
+                className="p-0 font-bold hover:bg-transparent"
+                onClick={() => toggleSort('investment_type')}
+              >
+                Type
+                <SortIcon field="investment_type" />
+              </Button>
+            </TableHead>
+            <TableHead className="text-right">
+              <Button 
+                variant="ghost" 
+                className="p-0 font-bold hover:bg-transparent"
+                onClick={() => toggleSort('amount')}
+              >
+                Amount
+                <SortIcon field="amount" />
+              </Button>
+            </TableHead>
             <TableHead className="text-right">Units</TableHead>
             <TableHead className="text-right">Equity %</TableHead>
           </TableRow>
@@ -104,6 +122,13 @@ export function InvestmentHistory({ investments }: InvestmentHistoryProps) {
               <TableCell className="text-right">{investment.equity_percentage ? `${investment.equity_percentage}%` : '-'}</TableCell>
             </TableRow>
           ))}
+          {sortedInvestments.length === 0 && (
+            <TableRow>
+              <TableCell colSpan={6} className="text-center text-muted-foreground py-4">
+                No investment history available
+              </TableCell>
+            </TableRow>
+          )}
         </TableBody>
       </Table>
     </div>
